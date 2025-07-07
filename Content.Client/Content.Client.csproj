@@ -25,4 +25,9 @@
   </ItemGroup>
   <Import Project="..\RobustToolbox\MSBuild\Robust.Properties.targets" />
   <Import Project="..\RobustToolbox\MSBuild\XamlIL.targets" />
+<ItemGroup>
+  <None Update="_Goobstation\Resources\ShaderPrototype\**\*.yml">
+    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  </None>
+</ItemGroup>
 </Project>

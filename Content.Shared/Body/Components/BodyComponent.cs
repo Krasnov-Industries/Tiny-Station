@@ -15,6 +15,7 @@ public sealed partial class BodyComponent : Component
     /// Relevant template to spawn for this body.
     /// </summary>
     [DataField, AutoNetworkedField]
+    public bool ThermalVisibility = true;
     public ProtoId<BodyPrototype>? Prototype;
 
     /// <summary>

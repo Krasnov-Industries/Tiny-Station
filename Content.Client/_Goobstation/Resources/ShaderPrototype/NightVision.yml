@@ -1,0 +1,19 @@
+# Content.Client/_Goobstation/Resources/ShaderPrototype/NightVision.yml
+- type: ShaderPrototype
+  id: NightVision
+
+  vertex: "EngineShaders/FullScreen.vert"
+
+  fragment: "Textures/_White/Shaders/nightvision.swsl"
+
+  sampler2D:
+    - name: CameraTexture
+      path: "EngineShaders/CameraSampler"
+
+  float:
+    - name: Brightness
+      default: 1.5
+    - name: Contrast
+      default: 1.2
+    - name: NoiseIntensity
+      default: 0.05
