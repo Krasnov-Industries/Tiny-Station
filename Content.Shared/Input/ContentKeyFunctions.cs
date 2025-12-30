@@ -65,6 +65,19 @@ namespace Content.Shared.Input
         public static readonly BoundKeyFunction ZoomIn = "ZoomIn";
         public static readonly BoundKeyFunction ResetZoom = "ResetZoom";
 
+        // Shitmed surgery targeting
+        public static readonly BoundKeyFunction TargetHead = "TargetHead";
+        public static readonly BoundKeyFunction TargetChest = "TargetChest";
+        public static readonly BoundKeyFunction TargetGroin = "TargetGroin";
+        public static readonly BoundKeyFunction TargetLeftArm = "TargetLeftArm";
+        public static readonly BoundKeyFunction TargetLeftHand = "TargetLeftHand";
+        public static readonly BoundKeyFunction TargetRightArm = "TargetRightArm";
+        public static readonly BoundKeyFunction TargetRightHand = "TargetRightHand";
+        public static readonly BoundKeyFunction TargetLeftLeg = "TargetLeftLeg";
+        public static readonly BoundKeyFunction TargetLeftFoot = "TargetLeftFoot";
+        public static readonly BoundKeyFunction TargetRightLeg = "TargetRightLeg";
+        public static readonly BoundKeyFunction TargetRightFoot = "TargetRightFoot";
+
         public static readonly BoundKeyFunction ArcadeUp = "ArcadeUp";
         public static readonly BoundKeyFunction ArcadeDown = "ArcadeDown";
         public static readonly BoundKeyFunction ArcadeLeft = "ArcadeLeft";

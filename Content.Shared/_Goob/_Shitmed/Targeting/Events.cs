@@ -1,0 +1,30 @@
+// Goob import.
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
+using Robust.Shared.Serialization;
+
+namespace Content.Shared._Goob._Shitmed.Targeting.Events;
+
+[Serializable, NetSerializable]
+public sealed class TargetChangeEvent : EntityEventArgs
+{
+    public NetEntity Uid { get; }
+    public TargetBodyPart BodyPart { get; }
+    public TargetChangeEvent(NetEntity uid, TargetBodyPart bodyPart)
+    {
+        Uid = uid;
+        BodyPart = bodyPart;
+    }
+}
+
+[Serializable, NetSerializable]
+public sealed class TargetIntegrityChangeEvent : EntityEventArgs
+{
+    public NetEntity Uid { get; }
+    public bool RefreshUi { get; }
+    public TargetIntegrityChangeEvent(NetEntity uid, bool refreshUi = true)
+    {
+        Uid = uid;
+        RefreshUi = refreshUi;
+    }
+}

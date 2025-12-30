@@ -279,6 +279,9 @@
   - type: FireVisuals
     alternateState: Standing
   - type: StunVisuals
+  # Shitmed surgery targeting
+  - type: Targeting
+  - type: SurgeryTarget
 
 - type: entity
   save: false

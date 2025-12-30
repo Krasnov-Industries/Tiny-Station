@@ -1,0 +1,12 @@
+# SPDX-FileCopyrightText: 2025 gluesniffler <159397573+gluesniffler@users.noreply.github.com>
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+- type: entity
+  parent: BaseFlatpack
+  id: MedicalBiofabricatorFlatpack
+  name: medical biofabricator flatpack
+  description: A flatpack used for constructing a medical biofabricator.
+  components:
+  - type: Flatpack
+    entity: MedicalBiofabricator

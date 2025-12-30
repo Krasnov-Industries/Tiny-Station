@@ -120,7 +120,7 @@ namespace Content.Client.Guidebook;
                         var output = args.Aggregate(string.Empty,
                             (current, pair) => current + $"{pair.Key}=\"{pair.Value}\" ");
 
-                        _sawmill.Error($"Tag: {tagId} \n Arguments: {output}/>");
+                        _sawmill.Warning($"Tag: {tagId} \n Arguments: {output}/> Exception: {e}");
                         return new GuidebookError($"Tag: {tagId}\nArguments: {output}", e.ToString());
                     }
                 },

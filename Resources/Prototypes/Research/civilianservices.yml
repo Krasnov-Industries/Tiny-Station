@@ -81,6 +81,7 @@
   recipeUnlocks:
   - FatExtractorMachineCircuitboard
   - BiofabricatorMachineCircuitboard
+  - MedicalBiofabMachineCircuitboard # Goob/Shitmed
   - BiomassReclaimerMachineCircuitboard
 
 # Tier 2

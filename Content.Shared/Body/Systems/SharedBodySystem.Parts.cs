@@ -658,11 +658,29 @@ public partial class SharedBodySystem
     public IEnumerable<(EntityUid Id, BodyPartComponent Component)> GetBodyChildrenOfType(
         EntityUid bodyId,
         BodyPartType type,
-        BodyComponent? body = null)
+        BodyComponent? body = null,
+        BodyPartSymmetry? symmetry = null)
     {
         foreach (var part in GetBodyChildren(bodyId, body))
         {
-            if (part.Component.PartType == type)
+            if (part.Component.PartType != type)
+                continue;
+
+            if (symmetry != null && part.Component.Symmetry != symmetry)
+                continue;
+
+            yield return part;
+        }
+    }
+
+    public IEnumerable<(EntityUid Id, BodyPartComponent Component)> GetBodyChildrenOfType(
+        EntityUid bodyId,
+        BodyPartType type,
+        BodyPartSymmetry symmetry)
+    {
+        foreach (var part in GetBodyChildren(bodyId, null))
+        {
+            if (part.Component.PartType == type && part.Component.Symmetry == symmetry)
                 yield return part;
         }
     }

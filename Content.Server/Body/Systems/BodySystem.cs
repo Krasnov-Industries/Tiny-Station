@@ -5,7 +5,9 @@ using Content.Shared.Body.Components;
 using Content.Shared.Body.Events;
 using Content.Shared.Body.Part;
 using Content.Shared.Body.Systems;
+using Content.Shared._Goob._Shitmed.Body.Part;
 using Content.Shared.Damage.Components;
+using Content.Shared.Damage.Systems;
 using Content.Shared.Humanoid;
 using Content.Shared.Mind;
 using Content.Shared.Mobs.Systems;
@@ -127,5 +129,15 @@ public sealed class BodySystem : SharedBodySystem
         QueueDel(bodyId);
 
         return gibs;
+    }
+
+    protected override void ApplyPartMarkings(EntityUid target, BodyPartAppearanceComponent component)
+    {
+        // Server-side noop; visuals handled on clients.
+    }
+
+    protected override void RemoveBodyMarkings(EntityUid target, BodyPartAppearanceComponent component, HumanoidAppearanceComponent humanoid)
+    {
+        // Server-side noop; visuals handled on clients.
     }
 }

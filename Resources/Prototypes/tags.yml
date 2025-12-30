@@ -34,6 +34,33 @@
   id: AppraisalTool # Storage whitelist: BaseClothingBeltEngineering
 
 - type: Tag
+  id: AugmentSurgeryToolElectronics # Goob augment tool PCB casing
+
+- type: Tag
+  id: AugmentToolPanelCasing # Goob augment tool panel frame
+
+- type: Tag
+  id: AugmentStrengthCasing # Goob augment strength frame
+
+- type: Tag
+  id: AugmentCellCasing # Goob augment cell slot frame
+
+- type: Tag
+  id: AugmentRechargerCasing # Goob augment charger frame
+
+- type: Tag
+  id: AugmentUtilityToolElectronics # Goob tool panel electronics (utility loadout)
+
+- type: Tag
+  id: AugmentBotanyToolElectronics # Goob tool panel electronics (botany loadout)
+
+- type: Tag
+  id: AugmentPaperworkToolElectronics # Goob tool panel electronics (paperwork loadout)
+
+- type: Tag
+  id: AugmentStrengthElectronics # Goob strength augment electronics
+
+- type: Tag
   id: Apron # ConstructionGraph: scraparmor
 
 - type: Tag
@@ -447,6 +474,21 @@
   id: Diagonal # Used by TileWallsCommand and FixRotationsCommand
 
 - type: Tag
+  id: Debug # Goob debug surgery tools
+
+- type: Tag
+  id: Eyes # Stub for Goob eye organ prototypes
+
+- type: Tag
+  id: Organ # Stub for Goob cybernetic organ tag
+
+- type: Tag
+  id: Liver # Stub for Goob liver organ tag
+
+- type: Tag
+  id: Lungs # Stub for Goob lungs organ tag
+
+- type: Tag
   id: Diamond # CargoBounty: BountySalvageDiamond
 
 - type: Tag
@@ -716,6 +758,9 @@
 
 - type: Tag
   id: Head # ConstructionGraph: RitualSeat
+
+- type: Tag
+  id: Heart # Stub for Goob heart organ tag
 
 - type: Tag
   id: HelmetEVA # ConstructionGraph: ClownHardsuit, MimeHardsuit. PartAssembly: VimHarness. ItemMapper: VimHarness

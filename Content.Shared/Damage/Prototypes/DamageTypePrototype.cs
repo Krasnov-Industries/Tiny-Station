@@ -28,5 +28,11 @@ namespace Content.Shared.Damage.Prototypes
         /// </summary>
         [DataField("armorFlatPrice")]
         public double ArmorPriceFlat { get; set; }
+
+        /// <summary>
+        /// Shitmed: multiplier applied when organs heal damage of this type.
+        /// </summary>
+        [DataField]
+        public float WoundHealingMultiplier { get; set; } = 1f;
     }
 }

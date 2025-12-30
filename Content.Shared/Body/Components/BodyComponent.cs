@@ -8,7 +8,7 @@ using Robust.Shared.Prototypes;
 namespace Content.Shared.Body.Components;
 
 [RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
-[Access(typeof(SharedBodySystem))]
+//[Access(typeof(SharedBodySystem))] // Shitmed compatibility - allow surgery systems to mutate body fields
 public sealed partial class BodyComponent : Component
 {
     /// <summary>

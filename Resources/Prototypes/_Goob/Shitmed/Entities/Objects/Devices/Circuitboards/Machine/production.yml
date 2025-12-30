@@ -1,0 +1,30 @@
+# SPDX-FileCopyrightText: 2025 Aiden <28298836+Aidenkrz@users.noreply.github.com>
+# SPDX-FileCopyrightText: 2025 deltanedas <39013340+deltanedas@users.noreply.github.com>
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+- type: entity
+  id: MedicalBiofabMachineBoard
+  parent: BaseMachineCircuitboard
+  name: medical biofab machine board
+  description: A machine printed circuit board for a medical biofab.
+  components:
+  - type: Sprite
+    state: medical
+  - type: MachineBoard
+    prototype: MedicalBiofabricator
+    stackRequirements:
+      Manipulator: 4
+
+- type: entity
+  id: AutodocCircuitboard
+  parent: BaseMachineCircuitboard
+  name: autodoc machine board
+  description: A machine circuit board for an autodoc.
+  components:
+  - type: Sprite
+    state: medical
+  - type: MachineBoard
+    prototype: Autodoc
+    stackRequirements:
+      Manipulator: 4

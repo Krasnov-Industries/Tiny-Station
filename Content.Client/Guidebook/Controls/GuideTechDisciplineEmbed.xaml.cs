@@ -50,12 +50,32 @@ public sealed partial class GuideTechDisciplineEmbed : BoxContainer, IDocumentTa
             return false;
         }
 
-        var prototypes = _prototype.EnumeratePrototypes<TechnologyPrototype>()
-            .Where(p => p.Discipline.Equals(group)).OrderBy(p => p.Tier).ThenBy(p => Loc.GetString(p.Name));
+        List<TechnologyPrototype> prototypes;
+        try
+        {
+            prototypes = _prototype.EnumeratePrototypes<TechnologyPrototype>()
+                .Where(p => p.Discipline.Equals(group))
+                .OrderBy(p => p.Tier)
+                .ThenBy(p => p.ID)
+                .ToList();
+        }
+        catch (Exception e)
+        {
+            _sawmill.Error($"Failed to build technology list for discipline {group}: {e}");
+            throw;
+        }
         foreach (var tech in prototypes)
         {
-            var embed = new GuideTechnologyEmbed(tech);
-            DisciplineContainer.AddChild(embed);
+            try
+            {
+                var embed = new GuideTechnologyEmbed(tech);
+                DisciplineContainer.AddChild(embed);
+            }
+            catch (Exception e)
+            {
+                _sawmill.Warning($"Failed to embed technology {tech.ID}: {e}");
+                // Skip broken entry to avoid failing the entire guide.
+            }
         }
 
         control = this;

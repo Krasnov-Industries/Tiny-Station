@@ -1,0 +1,48 @@
+# Shitmed compatibility base parts for missing upstream prototypes.
+
+- type: entity
+  id: BasePartInorganic
+  parent: BasePart
+  abstract: true
+  components:
+  - type: Damageable
+    damageContainer: Inorganic
+  - type: BodyPart
+    partComposition: Inorganic
+
+- type: entity
+  id: BaseChestInorganic
+  parent: BasePartInorganic
+  abstract: true
+  components:
+  - type: BodyPart
+    partType: Chest
+
+- type: entity
+  id: BaseGroinInorganic
+  parent: BasePartInorganic
+  abstract: true
+  components:
+  - type: BodyPart
+    partType: Groin
+
+- type: entity
+  id: PartAnimalBase
+  parent: PartAnimal
+  abstract: true
+
+- type: entity
+  id: ChestAnimal
+  parent: PartAnimal
+  abstract: true
+  components:
+  - type: BodyPart
+    partType: Chest
+
+- type: entity
+  id: GroinAnimal
+  parent: PartAnimal
+  abstract: true
+  components:
+  - type: BodyPart
+    partType: Groin

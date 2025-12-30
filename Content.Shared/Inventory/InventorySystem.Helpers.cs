@@ -136,4 +136,21 @@ public partial class InventorySystem
         //Try insert into hands, or drop on the floor
         _handsSystem.PickupOrDrop(entity, itemToSpawn, false);
     }
+
+    /// <summary>
+    /// Shitmed helper: drops the contents of a specific inventory slot to the ground.
+    /// </summary>
+    public bool DropSlotContents(EntityUid uid, string slot, InventoryComponent? inventory = null)
+    {
+        if (!Resolve(uid, ref inventory, logMissing: false))
+            return false;
+
+        if (!TryGetSlotContainer(uid, slot, out var container, out _, inventory)
+            || container.ContainedEntity is not { } contained)
+            return false;
+
+        _containerSystem.Remove(contained, container);
+        _transform.AttachToGridOrMap(contained);
+        return true;
+    }
 }

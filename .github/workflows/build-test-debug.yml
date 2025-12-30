@@ -2,11 +2,12 @@ name: Build & Test Debug
 
 on:
   push:
-    branches: [ master, staging, stable ]
+    # Run on any branch so forks/feature branches (e.g. surgery work) get CI too.
+    branches: [ '**' ]
   merge_group:
   pull_request:
     types: [ opened, reopened, synchronize, ready_for_review ]
-    branches: [ master, staging, stable ]
+    branches: [ '**' ]
 
 jobs:
   build:
@@ -18,7 +19,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - name: Checkout Master
+    - name: Checkout
       uses: actions/checkout@v4.2.2
 
     - name: Setup Submodule

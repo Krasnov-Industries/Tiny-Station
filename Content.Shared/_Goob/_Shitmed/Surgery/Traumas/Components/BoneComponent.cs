@@ -1,0 +1,26 @@
+﻿using Content.Shared.FixedPoint;
+using Robust.Shared.Audio;
+using Robust.Shared.GameStates;
+
+using Robust.Shared.GameObjects;
+
+namespace Content.Shared._Goob._Shitmed.Medical.Surgery.Traumas.Components;
+
+[RegisterComponent, ComponentProtoName("Bone"), AutoGenerateComponentState, NetworkedComponent]
+public sealed partial class BoneComponent : Component
+{
+    [AutoNetworkedField, ViewVariables]
+    public EntityUid? BoneWoundable;
+
+    [DataField, AutoNetworkedField, ViewVariables]
+    public FixedPoint2 IntegrityCap = 60f;
+
+    [DataField, AutoNetworkedField, ViewVariables]
+    public FixedPoint2 BoneIntegrity = 60f;
+
+    [AutoNetworkedField, ViewVariables]
+    public BoneSeverity BoneSeverity = BoneSeverity.Normal;
+
+    [DataField]
+    public SoundSpecifier BoneBreakSound = new SoundCollectionSpecifier("BoneGone");
+}

@@ -8,26 +8,43 @@
             "name": "Client",
             "type": "coreclr",
             "request": "launch",
+            "preLaunchTask": "build-debugopt",
             "program": "${workspaceFolder}/bin/Content.Client/Content.Client.dll",
-            "args": [],
-            "console": "internalConsole",
+            "args": [
+                "--contentroot",
+                "${workspaceFolder}"
+            ],
+            "cwd": "${workspaceFolder}/bin/Content.Client",
+            "console": "integratedTerminal",
             "stopAtEntry": false
         },
         {
             "name": "Client (Compatibility renderer)",
             "type": "coreclr",
             "request": "launch",
+            "preLaunchTask": "build-debugopt",
             "program": "${workspaceFolder}/bin/Content.Client/Content.Client.dll",
-            "args": "--cvar display.compat=true",
-            "console": "internalConsole",
+            "args": [
+                "--cvar",
+                "display.compat=true",
+                "--contentroot",
+                "${workspaceFolder}"
+            ],
+            "cwd": "${workspaceFolder}/bin/Content.Client",
+            "console": "integratedTerminal",
             "stopAtEntry": false
         },
         {
             "name": "Server",
             "type": "coreclr",
             "request": "launch",
+            "preLaunchTask": "build-debugopt",
             "program": "${workspaceFolder}/bin/Content.Server/Content.Server.dll",
-            "args": [],
+            "args": [
+                "--contentroot",
+                "${workspaceFolder}"
+            ],
+            "cwd": "${workspaceFolder}/bin/Content.Server",
             "console": "integratedTerminal",
             "stopAtEntry": false
         },

@@ -11,6 +11,8 @@ namespace Content.Shared.Body.Part
     {
         Other = 0,
         Torso,
+        Chest = Torso,
+        Groin = Torso,
         Head,
         Arm,
         Hand,
