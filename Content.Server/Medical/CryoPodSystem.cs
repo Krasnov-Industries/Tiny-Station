@@ -20,7 +20,6 @@ public sealed partial class CryoPodSystem : SharedCryoPodSystem
     [Dependency] private readonly NodeContainerSystem _nodeContainer = default!;
     [Dependency] private readonly DamageableSystem _damageable = default!;
 
-
     public override void Initialize()
     {
         base.Initialize();
