@@ -16,6 +16,86 @@
           damages:
             types:
               Slash: 10
+    - to: AmputateArmLeft
+      conditions:
+      - !type:OrganPresent
+        category: ArmLeft
+      completed:
+      - !type:RemoveOrgan
+        category: ArmLeft
+      steps:
+      - tool: Sawing
+        doAfter: 5
+    - to: AttachArmLeft
+      conditions:
+      - !type:OrganPresent
+        category: ArmLeft
+        shouldHave: false
+      steps:
+      - organCategory: ArmLeft
+        store: body_organs
+        doAfter: 5
+        name: organ-slot-insertion-arm-left
+    - to: AmputateArmRight
+      conditions:
+      - !type:OrganPresent
+        category: ArmRight
+      completed:
+      - !type:RemoveOrgan
+        category: ArmRight
+      steps:
+      - tool: Sawing
+        doAfter: 5
+    - to: AttachArmRight
+      conditions:
+      - !type:OrganPresent
+        category: ArmRight
+        shouldHave: false
+      steps:
+      - organCategory: ArmRight
+        store: body_organs
+        doAfter: 5
+        name: organ-slot-insertion-arm-right
+    - to: AmputateLegLeft
+      conditions:
+      - !type:OrganPresent
+        category: LegLeft
+      completed:
+      - !type:RemoveOrgan
+        category: LegLeft
+      steps:
+      - tool: Sawing
+        doAfter: 5
+    - to: AttachLegLeft
+      conditions:
+      - !type:OrganPresent
+        category: LegLeft
+        shouldHave: false
+      steps:
+      - organCategory: LegLeft
+        store: body_organs
+        doAfter: 5
+        name: organ-slot-insertion-leg-left
+    - to: AmputateLegRight
+      conditions:
+      - !type:OrganPresent
+        category: LegRight
+      completed:
+      - !type:RemoveOrgan
+        category: LegRight
+      steps:
+      - tool: Sawing
+        doAfter: 5
+    - to: AttachLegRight
+      conditions:
+      - !type:OrganPresent
+        category: LegRight
+        shouldHave: false
+      steps:
+      - organCategory: LegRight
+        store: body_organs
+        doAfter: 5
+        name: organ-slot-insertion-leg-right
   - node: OpenIncision
     edges:
     - &stop_surgery
@@ -160,6 +240,26 @@
       steps:
       - tool: Drilling
         doAfter: 2
+    - to: HeartExtraction
+      conditions:
+      - !type:OrganPresent
+        category: Heart
+      completed:
+      - !type:RemoveOrgan
+        category: Heart
+      steps:
+      - tool: Clamping
+        doAfter: 5
+    - to: HeartInsertion
+      conditions:
+      - !type:OrganPresent
+        category: Heart
+        shouldHave: false
+      steps:
+      - organCategory: Heart
+        store: body_organs
+        doAfter: 5
+        name: organ-slot-insertion-heart
     - to: OpenRibCageRecoupling
       steps:
       - tool: Recoupling
@@ -193,6 +293,26 @@
       - material: MedicatedSuture
         amount: 1
         doAfter: 3
+    - to: LungsExtraction
+      conditions:
+      - !type:OrganPresent
+        category: Lungs
+      completed:
+      - !type:RemoveOrgan
+        category: Lungs
+      steps:
+      - tool: Clamping
+        doAfter: 5
+    - to: LungsInsertion
+      conditions:
+      - !type:OrganPresent
+        category: Lungs
+        shouldHave: false
+      steps:
+      - organCategory: Lungs
+        store: body_organs
+        doAfter: 5
+        name: organ-slot-insertion-lungs
   - node: OpenRibCageMending
     edges:
     - to: OpenRibCageSetting
@@ -311,3 +431,75 @@
     actions:
     - !type:SetNode
       node: CavityManipulationOpen
+  - node: HeartExtraction
+    header: construction-component-to-perform-header
+    localizedName: surgery-heart-extraction-name
+    actions:
+    - !type:SetNode
+      node: OpenRibCage
+  - node: HeartInsertion
+    header: construction-component-to-perform-header
+    localizedName: surgery-heart-insertion-name
+    actions:
+    - !type:SetNode
+      node: OpenRibCage
+  - node: LungsExtraction
+    header: construction-component-to-perform-header
+    localizedName: surgery-lungs-extraction-name
+    actions:
+    - !type:SetNode
+      node: OpenRibCageRecoupling
+  - node: LungsInsertion
+    header: construction-component-to-perform-header
+    localizedName: surgery-lungs-insertion-name
+    actions:
+    - !type:SetNode
+      node: OpenRibCageRecoupling
+  - node: AmputateArmLeft
+    header: construction-component-to-perform-header
+    localizedName: surgery-amputate-arm-left-name
+    actions:
+    - !type:SetNode
+      node: Base
+  - node: AttachArmLeft
+    header: construction-component-to-perform-header
+    localizedName: surgery-attach-arm-left-name
+    actions:
+    - !type:SetNode
+      node: Base
+  - node: AmputateArmRight
+    header: construction-component-to-perform-header
+    localizedName: surgery-amputate-arm-right-name
+    actions:
+    - !type:SetNode
+      node: Base
+  - node: AttachArmRight
+    header: construction-component-to-perform-header
+    localizedName: surgery-attach-arm-right-name
+    actions:
+    - !type:SetNode
+      node: Base
+  - node: AmputateLegLeft
+    header: construction-component-to-perform-header
+    localizedName: surgery-amputate-leg-left-name
+    actions:
+    - !type:SetNode
+      node: Base
+  - node: AttachLegLeft
+    header: construction-component-to-perform-header
+    localizedName: surgery-attach-leg-left-name
+    actions:
+    - !type:SetNode
+      node: Base
+  - node: AmputateLegRight
+    header: construction-component-to-perform-header
+    localizedName: surgery-amputate-leg-right-name
+    actions:
+    - !type:SetNode
+      node: Base
+  - node: AttachLegRight
+    header: construction-component-to-perform-header
+    localizedName: surgery-attach-leg-right-name
+    actions:
+    - !type:SetNode
+      node: Base

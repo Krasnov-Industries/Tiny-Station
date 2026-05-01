@@ -107,3 +107,135 @@
   targetNode: CavityManipulationRemoval
   category: Surgery
   objectType: NodeToNode
+
+- type: construction
+  hide: true
+  id: HeartExtraction
+  name: surgery-heart-extraction-name
+  description: surgery-heart-extraction-desc
+  graph: SurgeryGraph
+  startNode: Base
+  targetNode: HeartExtraction
+  category: Surgery
+  objectType: NodeToNode
+
+- type: construction
+  hide: true
+  id: HeartInsertion
+  name: surgery-heart-insertion-name
+  description: surgery-heart-insertion-desc
+  graph: SurgeryGraph
+  startNode: Base
+  targetNode: HeartInsertion
+  category: Surgery
+  objectType: NodeToNode
+
+- type: construction
+  hide: true
+  id: LungsExtraction
+  name: surgery-lungs-extraction-name
+  description: surgery-lungs-extraction-desc
+  graph: SurgeryGraph
+  startNode: Base
+  targetNode: LungsExtraction
+  category: Surgery
+  objectType: NodeToNode
+
+- type: construction
+  hide: true
+  id: LungsInsertion
+  name: surgery-lungs-insertion-name
+  description: surgery-lungs-insertion-desc
+  graph: SurgeryGraph
+  startNode: Base
+  targetNode: LungsInsertion
+  category: Surgery
+  objectType: NodeToNode
+
+- type: construction
+  hide: true
+  id: AmputateArmLeft
+  name: surgery-amputate-arm-left-name
+  description: surgery-amputate-arm-left-desc
+  graph: SurgeryGraph
+  startNode: Base
+  targetNode: AmputateArmLeft
+  category: Surgery
+  objectType: NodeToNode
+
+- type: construction
+  hide: true
+  id: AttachArmLeft
+  name: surgery-attach-arm-left-name
+  description: surgery-attach-arm-left-desc
+  graph: SurgeryGraph
+  startNode: Base
+  targetNode: AttachArmLeft
+  category: Surgery
+  objectType: NodeToNode
+
+- type: construction
+  hide: true
+  id: AmputateArmRight
+  name: surgery-amputate-arm-right-name
+  description: surgery-amputate-arm-right-desc
+  graph: SurgeryGraph
+  startNode: Base
+  targetNode: AmputateArmRight
+  category: Surgery
+  objectType: NodeToNode
+
+- type: construction
+  hide: true
+  id: AttachArmRight
+  name: surgery-attach-arm-right-name
+  description: surgery-attach-arm-right-desc
+  graph: SurgeryGraph
+  startNode: Base
+  targetNode: AttachArmRight
+  category: Surgery
+  objectType: NodeToNode
+
+- type: construction
+  hide: true
+  id: AmputateLegLeft
+  name: surgery-amputate-leg-left-name
+  description: surgery-amputate-leg-left-desc
+  graph: SurgeryGraph
+  startNode: Base
+  targetNode: AmputateLegLeft
+  category: Surgery
+  objectType: NodeToNode
+
+- type: construction
+  hide: true
+  id: AttachLegLeft
+  name: surgery-attach-leg-left-name
+  description: surgery-attach-leg-left-desc
+  graph: SurgeryGraph
+  startNode: Base
+  targetNode: AttachLegLeft
+  category: Surgery
+  objectType: NodeToNode
+
+- type: construction
+  hide: true
+  id: AmputateLegRight
+  name: surgery-amputate-leg-right-name
+  description: surgery-amputate-leg-right-desc
+  graph: SurgeryGraph
+  startNode: Base
+  targetNode: AmputateLegRight
+  category: Surgery
+  objectType: NodeToNode
+
+- type: construction
+  hide: true
+  id: AttachLegRight
+  name: surgery-attach-leg-right-name
+  description: surgery-attach-leg-right-desc
+  graph: SurgeryGraph
+  startNode: Base
+  targetNode: AttachLegRight
+  category: Surgery
+  objectType: NodeToNode
