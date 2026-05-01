@@ -1,3 +1,5 @@
+using Content.Shared._Offbrand.Organs;
+using Content.Shared.Body;
 using Content.Shared.DoAfter;
 using Content.Shared.Examine;
 using Content.Shared.IdentityManagement;
@@ -17,7 +19,8 @@ public sealed class CprSystem : EntitySystem
     [Dependency] private readonly SharedDoAfterSystem _doAfter = default!;
     [Dependency] private readonly SharedPopupSystem _popup = default!;
     [Dependency] private readonly StatusEffectsSystem _statusEffects = default!;
-    // [Dependency] private readonly WoundableSystem _woundable = default!;
+    [Dependency] private readonly WoundableSystem _woundable = default!;
+    [Dependency] private readonly BodySystem _body = default!;
     [Dependency] private readonly MobStateSystem _mobState = default!;
 
     public override void Initialize()
@@ -57,18 +60,19 @@ public sealed class CprSystem : EntitySystem
         var seed = SharedRandomExtensions.HashCodeCombine((int)_timing.CurTick.Value, GetNetEntity(ent).Id);
         var rand = new System.Random(seed);
 
-        if (rand.Prob(ent.Comp.WoundProbability) && TryComp<WoundableBodyComponent>(ent, out var woundable))
+        if (rand.Prob(ent.Comp.WoundProbability)
+            && TryComp<WoundableBodyComponent>(ent, out var woundable)
+            && _body.TryGetOrgansWithCategoryAndComponent<WoundableOrganComponent>(ent.Owner, out var organs, "Torso"))
         {
-            throw new NotImplementedException($"TODO make this organ-aware...");
-            // if (_woundable.TryWound((ent, woundable), ent.Comp.Wound, unique: true))
-            // {
-            //     _popup.PopupClient(
-            //         Loc.GetString(ent.Comp.WoundPopup, ("target", Identity.Entity(ent, EntityManager))),
-            //         ent.Owner,
-            //         args.User,
-            //         PopupType.MediumCaution
-            //     );
-            // }
+            if (_woundable.TryWound((ent, woundable), organs[0], ent.Comp.Wound, unique: true))
+            {
+                _popup.PopupClient(
+                    Loc.GetString(ent.Comp.WoundPopup, ("target", Identity.Entity(ent, EntityManager))),
+                    ent.Owner,
+                    args.User,
+                    PopupType.MediumCaution
+                );
+            }
         }
 
         args.Repeat = TryComp<PerfusionComponent>(ent, out var perfusion) && perfusion.BaseCardiacOutput < 1;

@@ -38,3 +38,8 @@ construction-step-lung-damage-range = { $max ->
 }
 
 construction-component-to-perform-header = To perform {$targetName}...
+
+construction-examine-organ-should-have = The target needs to have { $category }.
+construction-examine-organ-should-not-have = The target needs to not have { $category }.
+construction-step-condition-organ-should-have = The target needs to have { $category }.
+construction-step-condition-organ-should-not-have = The target needs to not have { $category }.

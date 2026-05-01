@@ -1,3 +1,4 @@
+using Content.Shared._Offbrand.Organs;
 using Content.Shared.Damage.Components;
 using Content.Shared.Damage.Systems;
 using Content.Shared.Damage;
@@ -10,7 +11,8 @@ namespace Content.Shared._Offbrand.Wounds;
 public sealed partial class UniqueWoundOnDamageSystem : OffbrandDamageSystem
 {
     [Dependency] private readonly IGameTiming _timing = default!;
-    // [Dependency] private readonly WoundableSystem _woundable = default!;
+    [Dependency] private readonly WoundableSystem _woundable = default!;
+    [Dependency] private readonly WoundableOrganSystem _woundableOrgan = default!;
 
     public override void Initialize()
     {
@@ -30,6 +32,8 @@ public sealed partial class UniqueWoundOnDamageSystem : OffbrandDamageSystem
         var damageable = Comp<DamageableComponent>(ent);
         var woundable = Comp<WoundableBodyComponent>(ent);
 
+        Entity<WoundableOrganComponent>? target = null;
+
         foreach (var wound in ent.Comp.Wounds)
         {
             var incomingAmount = ThresholdHelpers.Count(wound.DamageTypes, delta);
@@ -42,8 +46,15 @@ public sealed partial class UniqueWoundOnDamageSystem : OffbrandDamageSystem
             if (!rand.Prob(probability))
                 continue;
 
-            throw new NotImplementedException($"TODO make this organ-aware...");
-            // _woundable.TryWound((ent.Owner, woundable), wound.WoundPrototype, wound.WoundDamages, unique: true);
+            if (target is null)
+            {
+                var organs = _woundableOrgan.GetWoundableOrgans(ent);
+                if (organs.Count == 0)
+                    return;
+                target = SharedRandomExtensions.Pick(organs, rand);
+            }
+
+            _woundable.TryWound((ent.Owner, woundable), target.Value, wound.WoundPrototype, wound.WoundDamages, unique: true);
         }
     }
 }
