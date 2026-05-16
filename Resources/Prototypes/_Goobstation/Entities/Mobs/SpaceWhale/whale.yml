@@ -69,17 +69,29 @@
   - type: MobThresholds
     thresholds:
       0: Alive
-      4000: Dead
+      3000: Dead
+  - type: Damageable
+    damageContainer: Biological
+    damageModifierSet: SpaceLeviathan
   - type: Destructible
     thresholds:
     - trigger:
         !type:DamageTrigger
-        damage: 4000
+        damage: 3000
       behaviors:
       - !type:GibBehavior
       - !type:SpawnEntitiesBehavior
         spawn:
-          SpaceCash1000000:
+          LeviathanRib:
+            min: 4
+            max: 4
+          LeviathanHeart:
+            min: 1
+            max: 1
+          LeviathanStomach:
+            min: 1
+            max: 1
+          LeviathanBrain:
             min: 1
             max: 1
   - type: DamageOnCollide
@@ -88,16 +100,17 @@
     damage:
       types:
         Structural: 3000
-        Blunt: 25
+        Blunt: 300
+        Slash: 100
+        Piercing: 100
   - type: WhaleAura
-    radius: 6
+    radius: 8
   - type: WhaleMemory
     aggressionWindow: 30
   - type: WhaleAbility
   - type: WhaleBrain
     tickInterval: 0.3
-    sightRadius: 30
-    scentRadius: 15
+    sightRadius: 60
     orbitClearance: 10
   - type: Devourer
     whitelist:
@@ -160,4 +173,6 @@
     damage:
       types:
         Structural: 400
-        Blunt: 15
+        Blunt: 60
+        Slash: 20
+        Piercing: 20

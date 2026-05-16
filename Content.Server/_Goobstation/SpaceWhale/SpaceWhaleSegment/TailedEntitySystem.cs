@@ -237,14 +237,16 @@ public sealed partial class TailedEntitySystem : EntitySystem
             var phase = MathF.Sin(time * comp.WaveFrequency + (i + 1) * comp.WavePhaseStep);
             // Дыхание: глобальная медленная модуляция амплитуды ±15%, цикл ~6с.
             var breathing = 1f + 0.15f * MathF.Sin(time * 1.0f);
-            var bendAngle = phase * comp.BendAmplitude * ampShape * compression * pushSuppress * breathing;
+            // В режиме погони гасим всю волну — кит идёт целеустремлённо.
+            var huntScale = comp.IsHunting ? comp.HuntingWaveScale : 1f;
+            var bendAngle = phase * comp.BendAmplitude * ampShape * compression * pushSuppress * breathing * huntScale;
 
             // Подёргивание кончика хвоста: bell-shape делает последние 4 сегмента
             // жёсткими, а у живой змеи кончик — самая подвижная часть. Компенсируем.
             if (i >= comp.Amount - 4)
             {
                 var tipPhase = MathF.Sin(time * 3.5f + (i + 1) * 0.8f);
-                bendAngle += tipPhase * 0.04f * compression * pushSuppress;
+                bendAngle += tipPhase * 0.04f * compression * pushSuppress * huntScale;
             }
 
             // Желаемая позиция: spacing от prev, но direction повёрнут на bendAngle.
@@ -339,28 +341,34 @@ public sealed partial class TailedEntitySystem : EntitySystem
         // (она и есть "истинное" направление к цели, не зависит от прошлого
         // wiggle), wiggle добавляется перпендикулярно. Multiplier гасит всё —
         // в стене кит не дёргается.
-        if (TryComp<PhysicsComponent>(whale, out var whaleBody))
+        //
+        // Исключение: Brain может на короткое время "забронировать" velocity
+        // под себя (charge / рывок), тогда не переопределяем.
+        if (_timing.CurTime < comp.BrainVelocityOverrideUntil)
+            return;
+
+        // Кит активно куда-то идёт (по решению AI). Поддерживаем velocity
+        // через headRot, даже если физика затормозила между AI-тиками
+        // (friction на тайлах станции).
+        if (comp.BrainDesiresMovement && TryComp<PhysicsComponent>(whale, out var whaleBody))
         {
-            var v = whaleBody.LinearVelocity;
-            if (v.Length() > 0.01f)
-            {
-                var baseSpeed = TryComp<MovementSpeedModifierComponent>(whale, out var mod)
-                    ? mod.CurrentSprintSpeed
-                    : 5f;
-                var headDir = headRot.ToWorldVec();
-                var sideways = new Vector2(-headDir.Y, headDir.X);
-                var wiggle = sideways
-                             * MathF.Sin(time * comp.HeadWiggleFrequency)
-                             * comp.HeadWiggleAmplitude;
-                // Минимум 8% базовой скорости. Голова всегда давит в препятствие —
-                // StartCollideEvent продолжает приходить, DamageOnCollide грызёт
-                // мебель/стены. Полного нуля нет — иначе кит застрянет навечно.
-                var mult = Math.Clamp(comp.HeadSpeedMultiplier, 0.08f, 1f);
-                _physics.SetLinearVelocity(
-                    whale,
-                    (headDir * baseSpeed + wiggle) * mult,
-                    body: whaleBody);
-            }
+            var baseSpeed = TryComp<MovementSpeedModifierComponent>(whale, out var mod)
+                ? mod.CurrentSprintSpeed
+                : 5f;
+            var headDir = headRot.ToWorldVec();
+            if (headDir.LengthSquared() < 0.001f)
+                return;
+            var sideways = new Vector2(-headDir.Y, headDir.X);
+            var wiggle = sideways
+                         * MathF.Sin(time * comp.HeadWiggleFrequency)
+                         * comp.HeadWiggleAmplitude;
+            // Минимум 8% базовой скорости — кит всегда давит в препятствие,
+            // StartCollideEvent приходит, DamageOnCollide грызёт мебель/стены.
+            var mult = Math.Clamp(comp.HeadSpeedMultiplier, 0.08f, 1f);
+            _physics.SetLinearVelocity(
+                whale,
+                (headDir * baseSpeed + wiggle) * mult,
+                body: whaleBody);
         }
     }
 }

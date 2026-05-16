@@ -95,6 +95,32 @@ public sealed partial class TailedEntityComponent : Component
     [ViewVariables] public List<EntityUid> TailSegments = new();
     [ViewVariables] public List<TailSegmentRuntimeState> SegmentStates = new();
     [ViewVariables] public float HeadSpeedMultiplier = 1f;
+
+    /// <summary>
+    /// Выставляется WhaleBrain'ом при наличии живой цели-моба. В режиме
+    /// погони wave и breathing амплитуда умножаются на HuntingWaveScale,
+    /// чтобы кит двигался целеустремлённее, а не вилял.
+    /// </summary>
+    [ViewVariables] public bool IsHunting;
+
+    /// <summary>
+    /// Множитель волны при погоне. 1 = без эффекта, 0.4 = вилка тише в 2.5 раза.
+    /// </summary>
+    [DataField] public float HuntingWaveScale = 0.4f;
+
+    /// <summary>
+    /// Пока CurTime &lt; этого момента — TailedEntitySystem НЕ переопределяет
+    /// velocity головы. Используется WhaleBrain'ом для рывка (charge), чтобы
+    /// physics могла дотащить кита на полной скорости рывка.
+    /// </summary>
+    [ViewVariables] public TimeSpan BrainVelocityOverrideUntil;
+
+    /// <summary>
+    /// AI говорит "хочу двигаться" (true) или "стою" (false). TailedEntitySystem
+    /// держит velocity головы по headRot только пока true — иначе friction
+    /// на тайлах станции гасит velocity между тиками AI и кит еле ползёт.
+    /// </summary>
+    [ViewVariables] public bool BrainDesiresMovement;
 }
 
 public sealed class TailSegmentRuntimeState

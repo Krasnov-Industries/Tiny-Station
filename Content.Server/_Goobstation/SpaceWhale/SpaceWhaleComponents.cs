@@ -144,15 +144,63 @@ public sealed partial class WhaleBrainComponent : Component
     [DataField] public float SightRadius = 30f;
 
     /// <summary>
-    /// Through-wall "scent" radius. Picks closest living mob even without line of sight.
-    /// </summary>
-    [DataField] public float ScentRadius = 15f;
-
-    /// <summary>
     /// How far from the station's outer edge the whale should orbit.
     /// </summary>
     [DataField] public float OrbitClearance = 10f;
 
+    // ----- Charge / рывок -----
+
+    /// <summary>
+    /// Сколько секунд кит должен "не приближаться" к одной и той же цели,
+    /// чтобы накопить рывок.
+    /// </summary>
+    [DataField] public float ChargeThresholdSeconds = 10f;
+
+    /// <summary>
+    /// Длительность самого рывка — на это время Brain переопределяет velocity
+    /// головы (TailedEntitySystem не трогает её).
+    /// </summary>
+    [DataField] public float ChargeDurationSeconds = 0.6f;
+
+    /// <summary>
+    /// Cooldown между рывками.
+    /// </summary>
+    [DataField] public float ChargeCooldownSeconds = 12f;
+
+    /// <summary>
+    /// Скорость рывка (тайлы/сек).
+    /// </summary>
+    [DataField] public float ChargeSpeed = 32f;
+
+    /// <summary>
+    /// На сколько тайлов цель должна приблизиться за тик, чтобы счётчик
+    /// "не догоняет" сбросился. Меньше = строже.
+    /// </summary>
+    [DataField] public float ChargeProgressEpsilon = 0.3f;
+
+    [ViewVariables] public EntityUid? LastChargeTarget;
+    [ViewVariables] public float LastChargeDistance;
+    [ViewVariables] public float ChargeBuildup;
+    [DataField(customTypeSerializer: typeof(TimeOffsetSerializer))]
+    public TimeSpan ChargeReadyAt;
+
+
     [ViewVariables] public EntityUid? CurrentTarget;
+
+    /// <summary>
+    /// Debug — что решил кит на последнем тике: "mob" / "orbit" / "idle".
+    /// </summary>
+    [ViewVariables] public string LastPickReason = "init";
+
+    /// <summary>
+    /// Debug — сколько живых мобов было в SightRadius на последнем тике (после
+    /// фильтра по живости и не-сегменту/не-киту).
+    /// </summary>
+    [ViewVariables] public int LastInRangeMobs;
+
+    /// <summary>
+    /// Debug — сколько из них прошли LOS-проверку (реально видимые).
+    /// </summary>
+    [ViewVariables] public int LastVisibleMobs;
 
 }
