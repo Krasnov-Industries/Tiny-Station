@@ -25,26 +25,26 @@ public sealed partial class WhaleAuraSystem : EntitySystem
                 continue;
 
             aura.NextTick = now + TimeSpan.FromSeconds(1);
-            TickAura(uid, aura, xform);
+            TickAura(xform);
         }
     }
 
-    private void TickAura(EntityUid uid, WhaleAuraComponent aura, TransformComponent xform)
+    private void TickAura(TransformComponent xform)
     {
         var radius = _cfg.GetCVar(CCVars.WhaleAuraRadius);
+        var restoreAt = _timing.CurTime + TimeSpan.FromSeconds(_cfg.GetCVar(CCVars.WhaleLightRestoreSeconds));
         foreach (var light in _lookup.GetEntitiesInRange<PoweredLightComponent>(xform.Coordinates, radius))
         {
             if (light.Comp.On)
             {
                 var affected = EnsureComp<WhaleAffectedLightComponent>(light.Owner);
-                affected.RestoreAt = _timing.CurTime + TimeSpan.FromSeconds(_cfg.GetCVar(CCVars.WhaleLightRestoreSeconds));
+                affected.RestoreAt = restoreAt;
                 _poweredLight.SetState(light.Owner, false, light.Comp);
             }
             else if (TryComp<WhaleAffectedLightComponent>(light.Owner, out var affected))
             {
-                affected.RestoreAt = _timing.CurTime + TimeSpan.FromSeconds(_cfg.GetCVar(CCVars.WhaleLightRestoreSeconds));
+                affected.RestoreAt = restoreAt;
             }
         }
-
     }
 }

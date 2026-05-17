@@ -19,6 +19,7 @@ public sealed partial class AwakeningTriggerSystem : EntitySystem
     [Dependency] private TagSystem _tag = default!;
     [Dependency] private WhaleThreatSystem _threat = default!;
     [Dependency] private NoiseSourceSystem _noise = default!;
+    [Dependency] private SharedMapSystem _map = default!;
 
     private static readonly ProtoId<TagPrototype> HeavyShipWeaponTag = "HeavyShipWeapon";
 
@@ -48,7 +49,7 @@ public sealed partial class AwakeningTriggerSystem : EntitySystem
         if (!_cfg.GetCVar(CCVars.WhaleEnabled))
             return;
 
-        var coords = new EntityCoordinates(EntityManager.System<SharedMapSystem>().GetMapOrInvalid(ev.Epicenter.MapId), ev.Epicenter.Position);
+        var coords = new EntityCoordinates(_map.GetMapOrInvalid(ev.Epicenter.MapId), ev.Epicenter.Position);
         if (ev.TotalIntensity > _cfg.GetCVar(CCVars.WhaleAwakenNukeForce))
         {
             _threat.Awaken("nuke explosion", coords);

@@ -1,7 +1,6 @@
 using Content.Shared.Damage;
 using Content.Shared.FixedPoint;
 using Robust.Shared.Map;
-using Robust.Shared.Serialization.TypeSerializers.Implementations.Custom;
 
 namespace Content.Server._Goobstation.SpaceWhale;
 
@@ -12,8 +11,8 @@ public sealed partial class WhaleSpawnedByComponent : Component;
 [RegisterComponent]
 public sealed partial class SpaceWhaleSegmentComponent : Component
 {
-    [DataField] public EntityUid? Whale;
-    [DataField] public int Index;
+    [ViewVariables] public EntityUid? Whale;
+    [ViewVariables] public int Index;
 
     /// <summary>
     /// Сегмент сейчас активно упирается в предыдущий (зажат, расстояние > spacing × PushDistanceFactor).
@@ -21,9 +20,6 @@ public sealed partial class SpaceWhaleSegmentComponent : Component
     /// </summary>
     [ViewVariables] public bool IsPushing;
 }
-
-[RegisterComponent]
-public sealed partial class SpaceWhaleSpawnerComponent : Component;
 
 public sealed class WhaleNoiseSnapshot
 {
@@ -34,30 +30,26 @@ public sealed class WhaleNoiseSnapshot
     public MapId MapId;
 }
 
-[RegisterComponent]
-public sealed partial class WhaleThreatComponent : Component
+public sealed class WhaleThreatState
 {
-    [DataField] public float Threat;
-    [DataField] public bool IsAwakened;
+    public float Threat;
+    public bool IsAwakened;
     [ViewVariables] public List<WhaleNoiseSnapshot> RecentNoises = new();
-    [DataField] public EntityUid? CurrentWhale;
-    [DataField] public Dictionary<EntityUid, TimeSpan> FarFromStationSince = new();
-    [DataField] public bool WarningAnnounced;
+    [ViewVariables] public EntityUid? CurrentWhale;
+    [ViewVariables] public Dictionary<EntityUid, TimeSpan> FarFromStationSince = new();
+    [ViewVariables] public bool WarningAnnounced;
 }
 
 [RegisterComponent]
 public sealed partial class WhaleAuraComponent : Component
 {
-    [DataField] public float Radius = 6f;
-    [DataField(customTypeSerializer: typeof(TimeOffsetSerializer))]
-    public TimeSpan NextTick;
+    [ViewVariables] public TimeSpan NextTick;
 }
 
 [RegisterComponent]
 public sealed partial class WhaleAffectedLightComponent : Component
 {
-    [DataField(customTypeSerializer: typeof(TimeOffsetSerializer))]
-    public TimeSpan RestoreAt;
+    [ViewVariables] public TimeSpan RestoreAt;
 }
 
 [RegisterComponent]
@@ -68,12 +60,10 @@ public sealed partial class WhaleMemoryComponent : Component
     [ViewVariables] public Dictionary<EntityUid, List<WhaleDamageRecord>> DamageHistory = new();
 }
 
-[DataDefinition]
-public sealed partial class WhaleDamageRecord
+public sealed class WhaleDamageRecord
 {
-    [DataField(customTypeSerializer: typeof(TimeOffsetSerializer))]
     public TimeSpan Time;
-    [DataField] public FixedPoint2 Amount;
+    public FixedPoint2 Amount;
 }
 
 [RegisterComponent]
@@ -100,6 +90,12 @@ public sealed partial class DamageOnCollideComponent : Component
     [DataField] public float Cooldown;
 
     /// <summary>
+    /// Extra range for damaging nearby damageable non-mobs that do not produce
+    /// physics contacts, like wallmounts and signs. 0 disables the sweep.
+    /// </summary>
+    [DataField] public float NearbyDamageRadius;
+
+    /// <summary>
     /// Если true — урон наносится только когда мы помечены как "толкающиеся"
     /// (для сегментов кита: расстояние до соседа выше порога).
     /// </summary>
@@ -114,17 +110,14 @@ public sealed partial class DamageOnCollideComponent : Component
 [RegisterComponent]
 public sealed partial class WhaleEatenCorpseComponent : Component
 {
-    [DataField(customTypeSerializer: typeof(TimeOffsetSerializer))]
-    public TimeSpan EatenAt;
+    [ViewVariables] public TimeSpan EatenAt;
 }
 
 [RegisterComponent]
 public sealed partial class WhaleConsumerComponent : Component
 {
     [DataField] public float SearchRadius = 2f;
-    [DataField] public float HealPerCorpse = 500f;
-    [DataField(customTypeSerializer: typeof(TimeOffsetSerializer))]
-    public TimeSpan NextScan;
+    [ViewVariables] public TimeSpan NextScan;
     [DataField] public float ScanInterval = 1f;
 }
 
@@ -136,8 +129,7 @@ public sealed partial class WhaleBrainComponent : Component
 {
     [DataField] public float TickInterval = 0.3f;
 
-    [DataField(customTypeSerializer: typeof(TimeOffsetSerializer))]
-    public TimeSpan NextTick;
+    [ViewVariables] public TimeSpan NextTick;
 
     /// <summary>
     /// LOS sight radius. Sees through holes/doors/etc.

@@ -1,4 +1,3 @@
-using System.Linq;
 using Content.Server._Goobstation.SpaceWhale.Threat;
 using Content.Shared.Damage.Systems;
 using Content.Shared.FixedPoint;
@@ -14,6 +13,8 @@ public sealed partial class WhaleMemorySystem : EntitySystem
 {
     [Dependency] private IGameTiming _timing = default!;
     [Dependency] private WhaleThreatSystem _threat = default!;
+
+    private readonly List<EntityUid> _attackersToRemove = new();
 
     private TimeSpan _nextUpdate;
 
@@ -51,16 +52,20 @@ public sealed partial class WhaleMemorySystem : EntitySystem
         EntityUid? top = null;
         var topDamage = FixedPoint2.Zero;
 
-        foreach (var (attacker, records) in comp.DamageHistory.ToArray())
+        _attackersToRemove.Clear();
+        foreach (var (attacker, records) in comp.DamageHistory)
         {
             records.RemoveAll(record => record.Time < cutoff);
-            if (records.Count == 0)
+            if (records.Count == 0 || Deleted(attacker))
             {
-                comp.DamageHistory.Remove(attacker);
+                _attackersToRemove.Add(attacker);
                 continue;
             }
 
-            var total = records.Aggregate(FixedPoint2.Zero, (sum, record) => sum + record.Amount);
+            var total = FixedPoint2.Zero;
+            foreach (var record in records)
+                total += record.Amount;
+
             if (total <= topDamage)
                 continue;
 
@@ -74,5 +79,8 @@ public sealed partial class WhaleMemorySystem : EntitySystem
             if (top != null)
                 _threat.LogWhale($"Top aggressor: {ToPrettyString(top.Value)} ({topDamage} dmg in {comp.AggressionWindow:0}s)");
         }
+
+        foreach (var attacker in _attackersToRemove)
+            comp.DamageHistory.Remove(attacker);
     }
 }

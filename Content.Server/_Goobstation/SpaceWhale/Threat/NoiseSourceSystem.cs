@@ -19,6 +19,7 @@ public sealed partial class NoiseSourceSystem : EntitySystem
     [Dependency] private WhaleThreatSystem _threat = default!;
     [Dependency] private MobStateSystem _mobState = default!;
     [Dependency] private TagSystem _tag = default!;
+    [Dependency] private SharedMapSystem _map = default!;
 
     private static readonly ProtoId<TagPrototype> HeavyShipWeaponTag = "HeavyShipWeapon";
 
@@ -60,7 +61,7 @@ public sealed partial class NoiseSourceSystem : EntitySystem
         if (threatAmount <= 0f)
             return;
 
-        var mapUid = EntityManager.System<SharedMapSystem>().GetMapOrInvalid(ev.Epicenter.MapId);
+        var mapUid = _map.GetMapOrInvalid(ev.Epicenter.MapId);
         var coords = new EntityCoordinates(mapUid, ev.Epicenter.Position);
 
         _threat.AddThreat(threatAmount);

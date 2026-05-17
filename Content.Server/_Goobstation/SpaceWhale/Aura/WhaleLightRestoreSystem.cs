@@ -1,6 +1,7 @@
-using System.Linq;
+using Content.Shared.CCVar;
 using Content.Shared.Light.Components;
 using Content.Shared.Light.EntitySystems;
+using Robust.Shared.Configuration;
 using Robust.Shared.Timing;
 
 namespace Content.Server._Goobstation.SpaceWhale.Aura;
@@ -10,6 +11,7 @@ public sealed partial class WhaleLightRestoreSystem : EntitySystem
     [Dependency] private EntityLookupSystem _lookup = default!;
     [Dependency] private IGameTiming _timing = default!;
     [Dependency] private SharedPoweredLightSystem _poweredLight = default!;
+    [Dependency] private IConfigurationManager _cfg = default!;
 
     private TimeSpan _nextTick;
 
@@ -27,11 +29,19 @@ public sealed partial class WhaleLightRestoreSystem : EntitySystem
             if (affected.RestoreAt > _timing.CurTime)
                 continue;
 
-            if (_lookup.GetEntitiesInRange<WhaleAuraComponent>(xform.Coordinates, 8f).Any())
+            if (HasWhaleAuraInRange(xform, _cfg.GetCVar(CCVars.WhaleAuraRadius)))
                 continue;
 
             _poweredLight.SetState(uid, true, light);
             RemComp<WhaleAffectedLightComponent>(uid);
         }
+    }
+
+    private bool HasWhaleAuraInRange(TransformComponent xform, float radius)
+    {
+        foreach (var _ in _lookup.GetEntitiesInRange<WhaleAuraComponent>(xform.Coordinates, radius))
+            return true;
+
+        return false;
     }
 }

@@ -1,8 +1,8 @@
-# Topornaya prosotaya verisya kita:
+# Simple space leviathan pass:
 #  - HP 4000
 #  - Bite + Roar (no phases, no Ram/TailSwipe/Retreat/PainLearning/RecentKills)
-#  - Wall-breaking through DamageOnCollide: Structural 5000 на любой контакт.
-#  - WhaleBrain (one tick): pick target (LOS 30 / scent 15 / orbit 10 from station rim).
+#  - Wall-breaking through DamageOnCollide while the body keeps contact.
+#  - WhaleBrain (one tick): pick target (LOS 60 / orbit 10 from station rim).
 # See LEGACY.md for what got pulled out and how to bring it back.
 
 - type: entity
@@ -97,14 +97,16 @@
   - type: DamageOnCollide
     inverted: true
     cooldown: 0.4
+    nearbyDamageRadius: 2.2
     damage:
       types:
         Structural: 100
         Blunt: 13
         Slash: 5
         Piercing: 5
+        Heat: 24
+        Shock: 30
   - type: WhaleAura
-    radius: 8
   - type: WhaleMemory
     aggressionWindow: 30
   - type: WhaleAbility
@@ -118,7 +120,6 @@
       - MobState
   - type: WhaleConsumer
     searchRadius: 4.0
-    healPerCorpse: 500
     scanInterval: 1.0
 
 - type: entity
@@ -137,6 +138,7 @@
   id: SpaceWhaleSegment
   parent: FlyingMobBase
   suffix: do not spawn
+  categories: [ HideSpawnMenu ]
   components:
   - type: SpaceWhaleSegment
   - type: Sprite
@@ -170,10 +172,14 @@
   # Если меняешь урон/cooldown головы выше, поправь и тут.
   - type: DamageOnCollide
     inverted: true
+    requirePushing: true
     cooldown: 0.8
+    nearbyDamageRadius: 1.15
     damage:
       types:
         Structural: 33
         Blunt: 4
         Slash: 2
         Piercing: 2
+        Heat: 8
+        Shock: 10

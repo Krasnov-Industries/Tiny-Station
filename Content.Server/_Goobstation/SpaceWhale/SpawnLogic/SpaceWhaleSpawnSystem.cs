@@ -1,4 +1,5 @@
 using System.Numerics;
+using Content.Server.Chat.Systems;
 using Content.Server._Goobstation.SpaceWhale.Threat;
 using Content.Shared.CCVar;
 using Robust.Shared.Audio;
@@ -22,6 +23,8 @@ public sealed partial class SpaceWhaleSpawnSystem : EntitySystem
     [Dependency] private SharedTransformSystem _transform = default!;
     [Dependency] private SharedAudioSystem _audio = default!;
     [Dependency] private SharedPhysicsSystem _physics = default!;
+    [Dependency] private SharedMapSystem _map = default!;
+    [Dependency] private ChatSystem _chat = default!;
 
     public bool TrySpawn(EntityCoordinates? preferred = null)
     {
@@ -49,7 +52,7 @@ public sealed partial class SpaceWhaleSpawnSystem : EntitySystem
         var angle = _random.NextAngle();
         var distance = _random.NextFloat(400f, 600f);
         var spawnMap = new MapCoordinates(mapOrigin.Position + angle.ToVec() * distance, mapOrigin.MapId);
-        var mapUid = EntityManager.System<SharedMapSystem>().GetMapOrInvalid(spawnMap.MapId);
+        var mapUid = _map.GetMapOrInvalid(spawnMap.MapId);
         var spawnCoords = new EntityCoordinates(mapUid, spawnMap.Position);
 
         var whale = Spawn("SpaceLeviathan", spawnCoords);
@@ -61,7 +64,7 @@ public sealed partial class SpaceWhaleSpawnSystem : EntitySystem
         _audio.PlayGlobal(SpawnSound, Filter.Broadcast(), true);
         _threat.PlayWhalePresenceCue(whale);
         _threat.LogWhale($"Spawned at {spawnMap}");
-        EntitySystem.Get<Content.Server.Chat.Systems.ChatSystem>().DispatchGlobalAnnouncement(Loc.GetString("threat-approaching-announcement"), colorOverride: Color.Gold);
+        _chat.DispatchGlobalAnnouncement(Loc.GetString("threat-approaching-announcement"), colorOverride: Color.Gold);
         return true;
     }
 }

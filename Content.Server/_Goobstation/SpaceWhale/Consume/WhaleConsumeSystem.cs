@@ -19,6 +19,21 @@ namespace Content.Server._Goobstation.SpaceWhale.Consume;
 /// </summary>
 public sealed partial class WhaleConsumeSystem : EntitySystem
 {
+    private static readonly string[] HealedDamageTypes =
+    [
+        "Blunt",
+        "Slash",
+        "Piercing",
+        "Heat",
+        "Cold",
+        "Shock",
+        "Caustic",
+        "Poison",
+        "Radiation",
+        "Asphyxiation",
+        "Bloodloss",
+    ];
+
     [Dependency] private IConfigurationManager _cfg = default!;
     [Dependency] private IGameTiming _timing = default!;
     [Dependency] private EntityLookupSystem _lookup = default!;
@@ -46,6 +61,8 @@ public sealed partial class WhaleConsumeSystem : EntitySystem
     private void TryConsume(EntityUid whale, WhaleConsumerComponent consumer, DevourerComponent devourer, TransformComponent xform)
     {
         var ate = 0;
+        DamageSpecifier? healSpec = null;
+
         foreach (var candidate in _lookup.GetEntitiesInRange<MobStateComponent>(xform.Coordinates, consumer.SearchRadius))
         {
             var target = candidate.Owner;
@@ -75,30 +92,28 @@ public sealed partial class WhaleConsumeSystem : EntitySystem
                 continue;
             }
 
-            var heal = _cfg.GetCVar(CCVars.WhaleConsumeHeal);
             // Универсальное лечение — снимаем `heal` единиц с каждого
             // основного типа урона. Если у кита нет урона этого типа, ничего
             // не происходит (TryChangeDamage не уходит ниже 0).
-            var healSpec = new DamageSpecifier();
-            var negHeal = FixedPoint2.New(-heal);
-            healSpec.DamageDict["Blunt"] = negHeal;
-            healSpec.DamageDict["Slash"] = negHeal;
-            healSpec.DamageDict["Piercing"] = negHeal;
-            healSpec.DamageDict["Heat"] = negHeal;
-            healSpec.DamageDict["Cold"] = negHeal;
-            healSpec.DamageDict["Shock"] = negHeal;
-            healSpec.DamageDict["Caustic"] = negHeal;
-            healSpec.DamageDict["Poison"] = negHeal;
-            healSpec.DamageDict["Radiation"] = negHeal;
-            healSpec.DamageDict["Asphyxiation"] = negHeal;
-            healSpec.DamageDict["Bloodloss"] = negHeal;
-            _damageable.TryChangeDamage(whale, healSpec, true, origin: whale);
+            var heal = healSpec ??= CreateHealSpecifier(_cfg.GetCVar(CCVars.WhaleConsumeHeal));
+            _damageable.TryChangeDamage(whale, heal, true, origin: whale);
 
             ate++;
         }
 
         if (ate > 0)
             _threat.LogWhale($"Consumed {ate} corpse(s), healed");
+    }
+
+    private static DamageSpecifier CreateHealSpecifier(float heal)
+    {
+        var spec = new DamageSpecifier();
+        var amount = FixedPoint2.New(-heal);
+
+        foreach (var type in HealedDamageTypes)
+            spec.DamageDict[type] = amount;
+
+        return spec;
     }
 }
 

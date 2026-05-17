@@ -5,21 +5,21 @@
 
 ## Текущая модель (минимум)
 
-- **HP**: 4000
+- **HP**: 3000
 - **Поведение**: подлетает к станции, кружит в 10 тайлах от борта.
-  Видит цели через LOS в радиусе 30, "чует" сквозь стены в радиусе 15.
+  Видит цели через LOS в радиусе 60.
   Атакует ближайшую цель.
 - **Атаки**:
   - Bite (через MeleeWeapon, 1 раз/сек)
   - Roar (AoE Stun 2с + Slow 5с + Jitter 3с + camera shake, cd 10 сек)
-- **Ломает постройки**: `DamageOnCollideComponent` — Structural 5000 + Blunt 10
-  при любой коллизии. Без cooldown, без проверок, тупо при контакте.
-- **Аура**: гасит лампы в радиусе 6 (восстанавливаются через 60 сек),
-  спавнит ложные radar-blip'ы.
+- **Ломает постройки**: `DamageOnCollideComponent` наносит контактный урон
+  с per-target cooldown; сегменты бьют только когда реально упираются.
+- **Аура**: гасит лампы в радиусе из `whale.aura_radius`
+  (восстанавливаются через `whale.light_restore`).
 - **Поедание трупов**: +500 HP за труп, желудок до 5 минут.
-- **Хвост-змейка**: 65 сегментов с волновой анимацией.
+- **Хвост-змейка**: 30 сегментов с волновой анимацией.
 - **TopAggressor**: запоминает того, кто за последние 30 сек больше всех урона нанёс — идёт за ним приоритетно.
-- **Spawn**: 4 триггера Awakening (ядерка, C4 в космосе, корабельные орудия, далёкий игрок 10 мин), затем Threat ≥ 40 → spawn.
+- **Spawn**: 4 триггера Awakening (ядерка, C4 в космосе, корабельные орудия, далёкий игрок 10 мин), затем Threat ≥ `whale.threat_spawn_at` → spawn.
 
 ## Что было снято (можно вернуть)
 
@@ -90,8 +90,8 @@
 
 ### Шум-карта как навигация (HasLoudNoise / MoveToNoiseSource)
 - Кит сворачивал на громкий шум по фазе (Hunt 1 / Frenzy 15 / Rampage 50 intensity).
-- Реализация хранится в `WhaleThreatComponent.RecentNoises` + `PickBestNoiseFor`.
-- Сама шум-карта осталась — она нужна для эмбиента и Threat-пула.
+- Сейчас осталась только агрегация шума в `WhaleThreatState.RecentNoises`
+  для выбора направления спавна.
 - Поведенческой ветки "идти к шуму" больше нет.
 
 ### LOS-фильтрация целей (`WhaleTargeting`)
@@ -105,8 +105,8 @@
 - Hunt: 35 тайлов, advance 0.7; Frenzy: 24, 1.0; Rampage: 12, 1.2 (у крупнейшей станции).
 - Investigation point с standoff (HTNMoveToNoiseSourceOperator):
   если шум возле станции — кит вставал на орбиту, не лез в борт.
-- Реализация: `TryGetStationOrbitPoint`, `TryGetNearestStationOrbitPoint`,
-  `TryGetLargestStationOrbitPoint`, `TryGetInvestigationPoint` в `WhaleThreatSystem`.
+- Реализация: `TryGetStationOrbitPoint` и `TryGetNearestStationOrbitPoint`
+  в `WhaleThreatSystem`.
 
 ### MovementIntent в DamageOnCollide
 - `DamageOnCollideComponent.MovementIntentUntil/RamIntentUntil/MovementIntentGrace`.
@@ -129,16 +129,11 @@
 - `whaletailswipe` — форс Tail Swipe.
 - `whaleresistdump` — дамп R8 резистов.
 
-## CVars, оставшиеся "на будущее" в `CCVars.SpaceWhale.cs`
+## CVars
 
-Я их **не удалял** — пусть лежат, занимают мало места, можно вернуть фичи быстро:
-- `whale.threat_decay`, `whale.threat_spawn_at` — используются.
-- `whale.rampage_hp_percent`, `whale.frenzy_hp_percent` — фаз больше нет, можно убрать.
-- `whale.noise_*` — частично используются (для AddNoise/PickBestNoiseFor — оставлены под Threat-пул).
-- `whale.r8_*` — для pain learning, не используются.
-- `whale.consume_heal`, `whale.stomach_cleanup_sec` — используются.
-- `whale.last_killed_max_age` — для RecentKills, не используется.
-- `whale.rampage_mob_search_radius`, `whale.retreat_hunt_damage`, `whale.retreat_frenzy_damage` — не используются.
+`CCVars.SpaceWhale.cs` оставляет только те настройки, которые реально читает
+текущая упрощённая реализация. Старые phase/R8/retreat/recent-kill CVars убраны
+вместе с кодом, который их использовал.
 
 ## Куда смотреть, если хочется вернуть
 

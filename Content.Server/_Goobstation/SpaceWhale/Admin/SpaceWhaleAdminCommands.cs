@@ -1,5 +1,6 @@
 using Content.Server.Administration;
 using Content.Server._Goobstation.SpaceWhale.AI;
+using Content.Server._Goobstation.SpaceWhale.SpaceWhaleSegment;
 using Content.Server._Goobstation.SpaceWhale.SpawnLogic;
 using Content.Server._Goobstation.SpaceWhale.Threat;
 using Content.Shared.Administration;
@@ -99,7 +100,7 @@ public sealed partial class WhaleStatusCommand : SpaceWhaleCommandBase
             shell.WriteLine($"Current: {brain.CurrentSpeed:0.##} (cruise {brain.CruiseSpeed:0.#} → hunting {brain.HuntingSpeed:0.#}, accel {brain.SpeedAccel:0.#}/s)");
         }
 
-        if (EntManager.TryGetComponent<Content.Server._Goobstation.SpaceWhale.SpaceWhaleSegment.TailedEntityComponent>(wid, out var tail))
+        if (EntManager.TryGetComponent<TailedEntityComponent>(wid, out var tail))
         {
             shell.WriteLine($"--- Tail ---");
             shell.WriteLine($"Segments: {tail.TailSegments.Count}/{tail.Amount}  HeadSpeedMultiplier: {tail.HeadSpeedMultiplier:0.##}");
@@ -307,8 +308,7 @@ public sealed partial class WhaleDebugCommand : SpaceWhaleCommandBase
             return;
         }
 
-        Config.SetCVar(CCVars.WhaleAdminDebugDraw, enabled);
         Config.SetCVar(CCVars.WhaleAdminChatSpam, enabled);
-        shell.WriteLine($"Whale debug {(enabled ? "enabled" : "disabled")}.");
+        shell.WriteLine($"Whale admin chat logs {(enabled ? "enabled" : "disabled")}.");
     }
 }

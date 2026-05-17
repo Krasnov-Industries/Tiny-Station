@@ -8,8 +8,8 @@
 - type: entity
   parent: BaseItem
   id: LeviathanRib
-  name: ребро левиафана
-  description: Огромная изогнутая кость от хвостовой пластины космического кита. Тёмная, тяжёлая, до сих пор тёплая. Сама по себе — трофей.
+  name: leviathan rib
+  description: A huge curved bone from a space leviathan's tail plate. Dark, heavy, and still warm.
   components:
   - type: Sprite
     sprite: Objects/Materials/materials.rsi
@@ -26,8 +26,8 @@
 - type: entity
   parent: BaseItem
   id: LeviathanHeart
-  name: сердце левиафана
-  description: Огромный пульсирующий орган космического хищника. Внутри — концентрат жизненной силы. Извлечь шприцем или измельчить в грайндере.
+  name: leviathan heart
+  description: A huge pulsing organ from a cosmic predator. A concentrated reserve of life churns inside.
   components:
   - type: Sprite
     sprite: Mobs/Species/Human/organs.rsi
@@ -59,8 +59,8 @@
 - type: entity
   parent: BaseItem
   id: LeviathanStomach
-  name: желудок левиафана
-  description: Мешок из плотной чёрной плоти, обтянутый венами. Внутри плещется концентрированная политриничная кислота — то, чем кит переваривает добычу заживо. Не открывайте.
+  name: leviathan stomach
+  description: A sack of dense black flesh wrapped in veins. Concentrated polytrinic acid sloshes inside.
   components:
   - type: Sprite
     sprite: Mobs/Species/Human/organs.rsi
@@ -92,8 +92,8 @@
 - type: entity
   parent: BaseItem
   id: LeviathanBrain
-  name: мозг левиафана
-  description: Тёмная мозговая ткань с глубокими извилинами. По веществу пробегают слабые лиловые искры. Концентрат древнего разума — способен пробудить сознание в любом существе.
+  name: leviathan brain
+  description: Dark brain tissue with deep folds. Faint violet sparks crawl across its surface.
   components:
   - type: Sprite
     sprite: Mobs/Species/Human/organs.rsi

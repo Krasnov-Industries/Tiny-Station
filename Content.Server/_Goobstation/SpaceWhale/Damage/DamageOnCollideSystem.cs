@@ -1,5 +1,7 @@
+using Content.Shared.Damage.Components;
 using Content.Shared.Damage.Systems;
 using Content.Shared.Item;
+using Content.Shared.Mobs.Components;
 using Robust.Shared.Physics.Components;
 using Robust.Shared.Physics.Systems;
 using Robust.Shared.Timing;
@@ -22,6 +24,7 @@ namespace Content.Server._Goobstation.SpaceWhale.Damage;
 public sealed partial class DamageOnCollideSystem : EntitySystem
 {
     [Dependency] private DamageableSystem _damageable = default!;
+    [Dependency] private EntityLookupSystem _lookup = default!;
     [Dependency] private IGameTiming _timing = default!;
     [Dependency] private SharedPhysicsSystem _physics = default!;
 
@@ -37,17 +40,34 @@ public sealed partial class DamageOnCollideSystem : EntitySystem
         {
             _contactsBuffer.Clear();
             _physics.GetContactingEntities(uid, _contactsBuffer);
-            if (_contactsBuffer.Count == 0)
-                continue;
 
             foreach (var other in _contactsBuffer)
                 TryDamage(uid, dmg, other, now);
+
+            TryDamageNearby(uid, dmg, now);
         }
     }
 
     private void TryDamage(EntityUid owner, DamageOnCollideComponent dmg, EntityUid other, TimeSpan now)
     {
         var target = dmg.Inverted ? other : owner;
+        TryDamageTarget(owner, dmg, target, now, false);
+    }
+
+    private void TryDamageNearby(EntityUid owner, DamageOnCollideComponent dmg, TimeSpan now)
+    {
+        if (dmg.NearbyDamageRadius <= 0f)
+            return;
+
+        if (!CanDamageFromOwner(owner, dmg))
+            return;
+
+        foreach (var target in _lookup.GetEntitiesInRange<DamageableComponent>(Transform(owner).Coordinates, dmg.NearbyDamageRadius))
+            TryDamageTarget(owner, dmg, target.Owner, now, true);
+    }
+
+    private void TryDamageTarget(EntityUid owner, DamageOnCollideComponent dmg, EntityUid target, TimeSpan now, bool fromNearby)
+    {
         if (target == owner || Deleted(target))
             return;
 
@@ -59,10 +79,12 @@ public sealed partial class DamageOnCollideSystem : EntitySystem
         if (HasComp<ItemComponent>(target))
             return;
 
-        // Для сегмента: только когда реально упирается.
-        if (dmg.RequirePushing
-            && TryComp<SpaceWhaleSegmentComponent>(owner, out var seg)
-            && !seg.IsPushing)
+        // Radius sweep нужен для wallmount/структур без контакта; мобов он не
+        // задевает, чтобы не превращать тело в невидимую урон-ауру.
+        if (fromNearby && HasComp<MobStateComponent>(target))
+            return;
+
+        if (!CanDamageFromOwner(owner, dmg))
             return;
 
         // Per-target cooldown — частота "вгрызания" в одну и ту же цель.
@@ -75,6 +97,14 @@ public sealed partial class DamageOnCollideSystem : EntitySystem
 
         if (dmg.Cooldown > 0f)
             dmg.NextHit[target] = now + TimeSpan.FromSeconds(dmg.Cooldown);
+    }
+
+    private bool CanDamageFromOwner(EntityUid owner, DamageOnCollideComponent dmg)
+    {
+        // Для сегмента: только когда реально упирается.
+        return !dmg.RequirePushing ||
+               !TryComp<SpaceWhaleSegmentComponent>(owner, out var seg) ||
+               seg.IsPushing;
     }
 
 }

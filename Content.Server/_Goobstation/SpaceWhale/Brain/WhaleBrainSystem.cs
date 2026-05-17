@@ -74,7 +74,7 @@ public sealed partial class WhaleBrainSystem : EntitySystem
         var target = PickTarget(whale, brain, xform);
         brain.CurrentTarget = target.Entity;
 
-        var tail = CompOrNull<Content.Server._Goobstation.SpaceWhale.SpaceWhaleSegment.TailedEntityComponent>(whale);
+        TryComp<TailedEntityComponent>(whale, out var tail);
 
         // Плавное изменение скорости: при погоне (target=моб) разгон к Hunting,
         // иначе — торможение к Cruise.
@@ -328,13 +328,13 @@ public sealed partial class WhaleBrainSystem : EntitySystem
         // Берём актуальную скорость от Brain (CurrentSpeed) — она плавно
         // меняется между Cruise (7) и Hunting (14) в зависимости от наличия
         // живой цели.
-        var brainComp = CompOrNull<WhaleBrainComponent>(whale);
-        var speed = brainComp?.CurrentSpeed
-                    ?? (TryComp<MovementSpeedModifierComponent>(whale, out var modifier)
-                        ? modifier.CurrentSprintSpeed
-                        : 5f);
+        var speed = TryComp<WhaleBrainComponent>(whale, out var brainComp)
+            ? brainComp.CurrentSpeed
+            : TryComp<MovementSpeedModifierComponent>(whale, out var modifier)
+                ? modifier.CurrentSprintSpeed
+                : 5f;
 
-        var tail = CompOrNull<Content.Server._Goobstation.SpaceWhale.SpaceWhaleSegment.TailedEntityComponent>(whale);
+        TryComp<TailedEntityComponent>(whale, out var tail);
         // При погоне голова не тормозит из-за хвоста — иначе застрявшие в
         // стенах сегменты не дают догнать жертву.
         if (tail != null && !tail.IsHunting)
@@ -360,12 +360,9 @@ public sealed partial class WhaleBrainSystem : EntitySystem
     {
         if (TryComp<PhysicsComponent>(whale, out var physics))
             _physics.SetLinearVelocity(whale, Vector2.Zero, body: physics);
-        if (TryComp<Content.Server._Goobstation.SpaceWhale.SpaceWhaleSegment.TailedEntityComponent>(whale, out var tail))
+        if (TryComp<TailedEntityComponent>(whale, out var tail))
             tail.BrainDesiresMovement = false;
     }
-
-    private T? CompOrNull<T>(EntityUid uid) where T : IComponent
-        => TryComp<T>(uid, out var comp) ? comp : default;
 
     private void TryBite(EntityUid whale, EntityUid target)
     {
