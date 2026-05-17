@@ -315,7 +315,7 @@ Resources/MapImages
 .code-review-graph/
 
 # Personal AI coding assistant configs
-.claude/
+.claude/*
 .cursorrules
 .kiro/
 .mcp.json
@@ -325,3 +325,8 @@ opencode.json
 AGENTS.md
 CLAUDE.md
 GEMINI.md
+
+# Shared agent contract and skill library — keep in repo
+!AGENTS.md
+!CLAUDE.md
+!.claude/skills/
