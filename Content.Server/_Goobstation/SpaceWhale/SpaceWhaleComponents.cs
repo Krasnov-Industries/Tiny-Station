@@ -8,6 +8,7 @@ namespace Content.Server._Goobstation.SpaceWhale;
 [RegisterComponent]
 public sealed partial class WhaleSpawnedByComponent : Component;
 
+
 [RegisterComponent]
 public sealed partial class SpaceWhaleSegmentComponent : Component
 {
@@ -148,42 +149,29 @@ public sealed partial class WhaleBrainComponent : Component
     /// </summary>
     [DataField] public float OrbitClearance = 10f;
 
-    // ----- Charge / рывок -----
+    // ----- Скорость с плавным разгоном/торможением -----
 
     /// <summary>
-    /// Сколько секунд кит должен "не приближаться" к одной и той же цели,
-    /// чтобы накопить рывок.
+    /// Минимальная (крейсерская) скорость — когда нет цели-моба.
     /// </summary>
-    [DataField] public float ChargeThresholdSeconds = 10f;
+    [DataField] public float CruiseSpeed = 7f;
 
     /// <summary>
-    /// Длительность самого рывка — на это время Brain переопределяет velocity
-    /// головы (TailedEntitySystem не трогает её).
+    /// Максимальная (погоня) скорость — постепенно нарастает при наличии
+    /// живой цели-моба.
     /// </summary>
-    [DataField] public float ChargeDurationSeconds = 0.6f;
+    [DataField] public float HuntingSpeed = 14f;
 
     /// <summary>
-    /// Cooldown между рывками.
+    /// Изменение скорости (тайл/сек) за секунду — разгон/торможение.
+    /// 4 значит "за ~2 секунды переходит с 7 на 14".
     /// </summary>
-    [DataField] public float ChargeCooldownSeconds = 12f;
+    [DataField] public float SpeedAccel = 2f;
 
     /// <summary>
-    /// Скорость рывка (тайлы/сек).
+    /// Текущая эффективная скорость (плавно меняется).
     /// </summary>
-    [DataField] public float ChargeSpeed = 32f;
-
-    /// <summary>
-    /// На сколько тайлов цель должна приблизиться за тик, чтобы счётчик
-    /// "не догоняет" сбросился. Меньше = строже.
-    /// </summary>
-    [DataField] public float ChargeProgressEpsilon = 0.3f;
-
-    [ViewVariables] public EntityUid? LastChargeTarget;
-    [ViewVariables] public float LastChargeDistance;
-    [ViewVariables] public float ChargeBuildup;
-    [DataField(customTypeSerializer: typeof(TimeOffsetSerializer))]
-    public TimeSpan ChargeReadyAt;
-
+    [ViewVariables] public float CurrentSpeed = 7f;
 
     [ViewVariables] public EntityUid? CurrentTarget;
 

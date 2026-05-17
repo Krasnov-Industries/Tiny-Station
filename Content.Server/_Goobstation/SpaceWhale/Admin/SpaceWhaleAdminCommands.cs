@@ -95,12 +95,8 @@ public sealed partial class WhaleStatusCommand : SpaceWhaleCommandBase
                 shell.WriteLine($"Distance to target: {dist:0.##} tiles");
             }
 
-            shell.WriteLine($"--- Charge ---");
-            shell.WriteLine($"Threshold: {brain.ChargeBuildup:0.#} / {brain.ChargeThresholdSeconds:0.#} sec without approach");
-            shell.WriteLine($"Last charge target: {(brain.LastChargeTarget is { } ct ? EntManager.ToPrettyString(ct) : "none")} (dist {brain.LastChargeDistance:0.##})");
-            var chargeReady = brain.ChargeReadyAt - now;
-            shell.WriteLine($"Cooldown: {(chargeReady.TotalSeconds <= 0 ? "READY" : $"{chargeReady.TotalSeconds:0.#}s remaining")}");
-
+            shell.WriteLine($"--- Speed ---");
+            shell.WriteLine($"Current: {brain.CurrentSpeed:0.##} (cruise {brain.CruiseSpeed:0.#} → hunting {brain.HuntingSpeed:0.#}, accel {brain.SpeedAccel:0.#}/s)");
         }
 
         if (EntManager.TryGetComponent<Content.Server._Goobstation.SpaceWhale.SpaceWhaleSegment.TailedEntityComponent>(wid, out var tail))

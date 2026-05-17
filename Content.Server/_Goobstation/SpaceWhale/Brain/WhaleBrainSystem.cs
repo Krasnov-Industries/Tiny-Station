@@ -74,14 +74,24 @@ public sealed partial class WhaleBrainSystem : EntitySystem
         var target = PickTarget(whale, brain, xform);
         brain.CurrentTarget = target.Entity;
 
-        // Флаг "погони" для TailedEntity — гасит wave, делает движение
-        // более целеустремлённым при наличии живой цели-моба.
-        if (TryComp<Content.Server._Goobstation.SpaceWhale.SpaceWhaleSegment.TailedEntityComponent>(whale, out var tail))
-            tail.IsHunting = target.Entity != null;
+        var tail = CompOrNull<Content.Server._Goobstation.SpaceWhale.SpaceWhaleSegment.TailedEntityComponent>(whale);
 
-        // Рывок: если одна и та же цель упорно не приближается N секунд —
-        // импульс к ней.
-        UpdateChargeTracking(whale, brain, xform, target.Entity, tail);
+        // Плавное изменение скорости: при погоне (target=моб) разгон к Hunting,
+        // иначе — торможение к Cruise.
+        var targetSpeed = target.Entity != null ? brain.HuntingSpeed : brain.CruiseSpeed;
+        var delta = targetSpeed - brain.CurrentSpeed;
+        var maxStep = brain.SpeedAccel * brain.TickInterval;
+        if (MathF.Abs(delta) <= maxStep)
+            brain.CurrentSpeed = targetSpeed;
+        else
+            brain.CurrentSpeed += MathF.Sign(delta) * maxStep;
+        brain.CurrentSpeed = Math.Clamp(brain.CurrentSpeed, brain.CruiseSpeed, brain.HuntingSpeed);
+
+        if (tail != null)
+        {
+            tail.IsHunting = target.Entity != null;
+            tail.OverrideBaseSpeed = brain.CurrentSpeed;
+        }
 
         MoveTo(whale, xform, target.Coords);
 
@@ -93,76 +103,6 @@ public sealed partial class WhaleBrainSystem : EntitySystem
 
         if (target.Entity != null || HasAnyLivingNear(whale, xform, RoarTriggerRadius))
             _abilities.TryRoar(whale, RoarCooldown);
-    }
-
-    private void UpdateChargeTracking(
-        EntityUid whale,
-        WhaleBrainComponent brain,
-        TransformComponent xform,
-        EntityUid? targetEntity,
-        Content.Server._Goobstation.SpaceWhale.SpaceWhaleSegment.TailedEntityComponent? tail)
-    {
-        // Нет цели — сбрасываем накопление.
-        if (targetEntity is not { } victim || !Exists(victim))
-        {
-            brain.LastChargeTarget = null;
-            brain.ChargeBuildup = 0f;
-            return;
-        }
-
-        var whalePos = _transform.GetWorldPosition(xform);
-        var targetPos = _transform.GetWorldPosition(Transform(victim));
-        var dist = (targetPos - whalePos).Length();
-
-        // Цель сменилась — обнуляем счётчик.
-        if (brain.LastChargeTarget != victim)
-        {
-            brain.LastChargeTarget = victim;
-            brain.LastChargeDistance = dist;
-            brain.ChargeBuildup = 0f;
-            return;
-        }
-
-        // Та же цель — приблизился ли существенно?
-        if (brain.LastChargeDistance - dist > brain.ChargeProgressEpsilon)
-            brain.ChargeBuildup = 0f;
-        else
-            brain.ChargeBuildup += brain.TickInterval;
-
-        brain.LastChargeDistance = dist;
-
-        // Накопили достаточно и cooldown прошёл — рывок.
-        var now = _timing.CurTime;
-        if (brain.ChargeBuildup >= brain.ChargeThresholdSeconds && now >= brain.ChargeReadyAt)
-        {
-            TriggerCharge(whale, brain, whalePos, targetPos, tail);
-            brain.ChargeBuildup = 0f;
-            brain.ChargeReadyAt = now + TimeSpan.FromSeconds(brain.ChargeCooldownSeconds);
-        }
-    }
-
-    private void TriggerCharge(
-        EntityUid whale,
-        WhaleBrainComponent brain,
-        Vector2 from,
-        Vector2 to,
-        Content.Server._Goobstation.SpaceWhale.SpaceWhaleSegment.TailedEntityComponent? tail)
-    {
-        var dir = to - from;
-        var len = dir.Length();
-        if (len < 0.1f)
-            return;
-        dir /= len;
-
-        if (TryComp<PhysicsComponent>(whale, out var phys))
-            _physics.SetLinearVelocity(whale, dir * brain.ChargeSpeed, body: phys);
-
-        _transform.SetWorldRotation(whale, dir.ToWorldAngle());
-
-        // Просим TailedEntitySystem не переопределять нашу velocity
-        // следующие ChargeDurationSeconds секунд.
-        if (tail != null)
-            tail.BrainVelocityOverrideUntil = _timing.CurTime + TimeSpan.FromSeconds(brain.ChargeDurationSeconds);
     }
 
     private readonly record struct PickResult(EntityUid? Entity, EntityCoordinates? Coords);
@@ -384,21 +324,36 @@ public sealed partial class WhaleBrainSystem : EntitySystem
         }
 
         var direction = delta / distance;
-        var speed = TryComp<MovementSpeedModifierComponent>(whale, out var modifier)
-            ? modifier.CurrentSprintSpeed
-            : 5f;
+
+        // Берём актуальную скорость от Brain (CurrentSpeed) — она плавно
+        // меняется между Cruise (7) и Hunting (14) в зависимости от наличия
+        // живой цели.
+        var brainComp = CompOrNull<WhaleBrainComponent>(whale);
+        var speed = brainComp?.CurrentSpeed
+                    ?? (TryComp<MovementSpeedModifierComponent>(whale, out var modifier)
+                        ? modifier.CurrentSprintSpeed
+                        : 5f);
 
         var tail = CompOrNull<Content.Server._Goobstation.SpaceWhale.SpaceWhaleSegment.TailedEntityComponent>(whale);
-        if (tail != null)
+        // При погоне голова не тормозит из-за хвоста — иначе застрявшие в
+        // стенах сегменты не дают догнать жертву.
+        if (tail != null && !tail.IsHunting)
             speed *= Math.Clamp(tail.HeadSpeedMultiplier, 0f, 1f);
 
         if (TryComp<PhysicsComponent>(whale, out var physics))
             _physics.SetLinearVelocity(whale, speed <= 0.05f ? Vector2.Zero : direction * speed, body: physics);
 
-        _transform.SetWorldRotation(whale, direction.ToWorldAngle());
-
+        // Желаемое направление взгляда — TailedEntitySystem каждый кадр
+        // плавно доворачивает rotation сюда, без резких "щелчков" между тиками.
         if (tail != null)
+        {
+            tail.DesiredFacing = direction;
             tail.BrainDesiresMovement = speed > 0.05f;
+        }
+        else
+        {
+            _transform.SetWorldRotation(whale, direction.ToWorldAngle());
+        }
     }
 
     private void Stop(EntityUid whale)

@@ -110,6 +110,18 @@ public sealed partial class TailedEntitySystem : EntitySystem
                 continue;
 
             var headPos = _transform.GetWorldPosition(xform);
+
+            // Плавный доворот головы к DesiredFacing — каждый кадр lerp'им
+            // rotation. Brain устанавливает desired раз в 0.3 сек, а голова
+            // плавно следует, без резких щелчков на разворотах.
+            if (comp.DesiredFacing.LengthSquared() > 0.0001f)
+            {
+                var currentRot = _transform.GetWorldRotation(xform);
+                var targetRot = comp.DesiredFacing.ToWorldAngle();
+                var step = MathF.Min(1f, frameTime * comp.HeadTurnSmooth);
+                var newRot = Angle.Lerp(currentRot, targetRot, step);
+                _transform.SetWorldRotation(uid, newRot);
+            }
             var headRot = _transform.GetWorldRotation(xform);
 
             EnsureSegments(uid, comp, xform, headPos, headRot);
@@ -234,7 +246,10 @@ public sealed partial class TailedEntitySystem : EntitySystem
             var ampShape = MathF.Sqrt(MathF.Sin(MathF.PI * indexNorm));
             var compression = MathF.Min(1f, distToPrev / MathF.Max(comp.Spacing, Epsilon));
             var pushSuppress = state.IsPushing ? 0.15f : 1f;
-            var phase = MathF.Sin(time * comp.WaveFrequency + (i + 1) * comp.WavePhaseStep);
+            // В режиме погони берём более медленную частоту — кит идёт
+            // тяжёлой альфой, а не суетится.
+            var waveFreq = comp.IsHunting ? comp.HuntingWaveFrequency : comp.WaveFrequency;
+            var phase = MathF.Sin(time * waveFreq + (i + 1) * comp.WavePhaseStep);
             // Дыхание: глобальная медленная модуляция амплитуды ±15%, цикл ~6с.
             var breathing = 1f + 0.15f * MathF.Sin(time * 1.0f);
             // В режиме погони гасим всю волну — кит идёт целеустремлённо.
@@ -352,19 +367,28 @@ public sealed partial class TailedEntitySystem : EntitySystem
         // (friction на тайлах станции).
         if (comp.BrainDesiresMovement && TryComp<PhysicsComponent>(whale, out var whaleBody))
         {
-            var baseSpeed = TryComp<MovementSpeedModifierComponent>(whale, out var mod)
-                ? mod.CurrentSprintSpeed
-                : 5f;
+            // Override от Brain (плавно меняется при погоне) приоритетнее
+            // штатного MovementSpeedModifier.
+            float baseSpeed;
+            if (comp.OverrideBaseSpeed > 0.01f)
+                baseSpeed = comp.OverrideBaseSpeed;
+            else if (TryComp<MovementSpeedModifierComponent>(whale, out var mod))
+                baseSpeed = mod.CurrentSprintSpeed;
+            else
+                baseSpeed = 5f;
             var headDir = headRot.ToWorldVec();
             if (headDir.LengthSquared() < 0.001f)
                 return;
             var sideways = new Vector2(-headDir.Y, headDir.X);
+            // При погоне голова идёт почти прямо к цели — wiggle подавляется.
+            var wiggleAmp = comp.IsHunting ? comp.HeadWiggleAmplitude * 0.33f : comp.HeadWiggleAmplitude;
             var wiggle = sideways
                          * MathF.Sin(time * comp.HeadWiggleFrequency)
-                         * comp.HeadWiggleAmplitude;
-            // Минимум 8% базовой скорости — кит всегда давит в препятствие,
-            // StartCollideEvent приходит, DamageOnCollide грызёт мебель/стены.
-            var mult = Math.Clamp(comp.HeadSpeedMultiplier, 0.08f, 1f);
+                         * wiggleAmp;
+            // При погоне игнорируем multiplier полностью — голова догоняет
+            // без оглядки на хвост. На крейсере multiplier применяется
+            // (минимум 8% — кит всегда хоть как-то ползёт в препятствие).
+            var mult = comp.IsHunting ? 1f : Math.Clamp(comp.HeadSpeedMultiplier, 0.08f, 1f);
             _physics.SetLinearVelocity(
                 whale,
                 (headDir * baseSpeed + wiggle) * mult,

@@ -1,50 +1,80 @@
 using Content.Shared.Damage.Systems;
-using Robust.Shared.Physics.Events;
+using Content.Shared.Item;
+using Robust.Shared.Physics.Components;
+using Robust.Shared.Physics.Systems;
 using Robust.Shared.Timing;
 
 namespace Content.Server._Goobstation.SpaceWhale.Damage;
 
 /// <summary>
-/// Урон на коллизию с двумя предохранителями:
-///   * Cooldown — per-target минимальный интервал.
-///   * RequirePushing — для сегментов кита: бьём только если сегмент реально
-///     упирается (выставляется TailedEntitySystem).
+/// Урон при ПОСТОЯННОМ контакте, а не разово на StartCollideEvent.
+/// Каждый тик проходим по активным контактам entity и наносим урон каждой
+/// цели, у которой прошёл per-target cooldown. Это даёт ощущение "кит
+/// вгрызается" — пока туша касается стены, она крошится; не двигается ровно
+/// — не теряет уроном.
+///
+/// Фильтры:
+///   * не бить себя и своих сегментов / собратьев-китов;
+///   * не уничтожать предметы (ItemComponent — рюкзаки, оружие, мелочёвка);
+///   * RequirePushing — для сегментов: бить только когда сегмент реально
+///     упирается (распрямлён сильнее spacing × PushDistanceFactor).
 /// </summary>
 public sealed partial class DamageOnCollideSystem : EntitySystem
 {
     [Dependency] private DamageableSystem _damageable = default!;
     [Dependency] private IGameTiming _timing = default!;
+    [Dependency] private SharedPhysicsSystem _physics = default!;
 
-    public override void Initialize()
+    private readonly HashSet<EntityUid> _contactsBuffer = new();
+
+    public override void Update(float frameTime)
     {
-        base.Initialize();
-        SubscribeLocalEvent<DamageOnCollideComponent, StartCollideEvent>(OnCollide);
+        base.Update(frameTime);
+
+        var now = _timing.CurTime;
+        var query = EntityQueryEnumerator<DamageOnCollideComponent, PhysicsComponent>();
+        while (query.MoveNext(out var uid, out var dmg, out var phys))
+        {
+            _contactsBuffer.Clear();
+            _physics.GetContactingEntities(uid, _contactsBuffer);
+            if (_contactsBuffer.Count == 0)
+                continue;
+
+            foreach (var other in _contactsBuffer)
+                TryDamage(uid, dmg, other, now);
+        }
     }
 
-    private void OnCollide(Entity<DamageOnCollideComponent> ent, ref StartCollideEvent args)
+    private void TryDamage(EntityUid owner, DamageOnCollideComponent dmg, EntityUid other, TimeSpan now)
     {
-        var target = ent.Comp.Inverted ? args.OtherEntity : ent.Owner;
-        if (target == ent.Owner || Deleted(target))
+        var target = dmg.Inverted ? other : owner;
+        if (target == owner || Deleted(target))
             return;
 
-        // Не бить себя и своих сегментов хвоста.
+        // Свои — не трогаем.
         if (HasComp<WhaleSpawnedByComponent>(target) || HasComp<SpaceWhaleSegmentComponent>(target))
             return;
 
-        if (ent.Comp.RequirePushing
-            && TryComp<SpaceWhaleSegmentComponent>(ent.Owner, out var seg)
+        // Предметы (рюкзаки, оружие на полу) — оставляем целыми.
+        if (HasComp<ItemComponent>(target))
+            return;
+
+        // Для сегмента: только когда реально упирается.
+        if (dmg.RequirePushing
+            && TryComp<SpaceWhaleSegmentComponent>(owner, out var seg)
             && !seg.IsPushing)
             return;
 
-        var now = _timing.CurTime;
-        if (ent.Comp.Cooldown > 0f
-            && ent.Comp.NextHit.TryGetValue(target, out var until)
+        // Per-target cooldown — частота "вгрызания" в одну и ту же цель.
+        if (dmg.Cooldown > 0f
+            && dmg.NextHit.TryGetValue(target, out var until)
             && now < until)
             return;
 
-        _damageable.TryChangeDamage(target, ent.Comp.Damage, origin: ent.Owner);
+        _damageable.TryChangeDamage(target, dmg.Damage, origin: owner);
 
-        if (ent.Comp.Cooldown > 0f)
-            ent.Comp.NextHit[target] = now + TimeSpan.FromSeconds(ent.Comp.Cooldown);
+        if (dmg.Cooldown > 0f)
+            dmg.NextHit[target] = now + TimeSpan.FromSeconds(dmg.Cooldown);
     }
+
 }

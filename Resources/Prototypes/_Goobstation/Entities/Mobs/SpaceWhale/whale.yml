@@ -17,8 +17,8 @@
     spacing: 0.8
     prototype: SpaceWhaleSegment
   - type: MovementSpeedModifier
-    baseSprintSpeed: 11
-    baseWalkSpeed: 11
+    baseSprintSpeed: 7
+    baseWalkSpeed: 7
   - type: WarpPoint
     follow: true
     location: space leviathan
@@ -96,13 +96,13 @@
             max: 1
   - type: DamageOnCollide
     inverted: true
-    cooldown: 0.3
+    cooldown: 0.4
     damage:
       types:
-        Structural: 3000
-        Blunt: 300
-        Slash: 100
-        Piercing: 100
+        Structural: 100
+        Blunt: 13
+        Slash: 5
+        Piercing: 5
   - type: WhaleAura
     radius: 8
   - type: WhaleMemory
@@ -166,13 +166,14 @@
   - type: Damageable
   - type: Injurable
     damageContainer: Biological
+  # Сегмент = голова / 3 по урону, cooldown × 2.
+  # Если меняешь урон/cooldown головы выше, поправь и тут.
   - type: DamageOnCollide
     inverted: true
-    cooldown: 0.5
-    requirePushing: true
+    cooldown: 0.8
     damage:
       types:
-        Structural: 400
-        Blunt: 60
-        Slash: 20
-        Piercing: 20
+        Structural: 33
+        Blunt: 4
+        Slash: 2
+        Piercing: 2

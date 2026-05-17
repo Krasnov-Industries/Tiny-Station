@@ -55,15 +55,19 @@ public sealed partial class TailedEntityComponent : Component
     // ---------------------------------------------------------------------
 
     /// <summary>
-    /// Амплитуда изгиба между соседними звеньями (радианы). Дополняет
-    /// головную волну (HeadWiggle), даёт микро-изгиб по телу.
+    /// Амплитуда изгиба между соседними звеньями (радианы).
     /// </summary>
-    [DataField] public float BendAmplitude = 0.1f;
+    [DataField] public float BendAmplitude = 0.25f;
 
     /// <summary>
-    /// Частота волны изгиба сегментов (рад/с).
+    /// Частота волны изгиба сегментов в режиме крейсера (рад/с).
     /// </summary>
     [DataField] public float WaveFrequency = 0.9f;
+
+    /// <summary>
+    /// Частота волны при погоне — медленнее, кит идёт как тяжёлая альфа-туша.
+    /// </summary>
+    [DataField] public float HuntingWaveFrequency = 0.45f;
 
     /// <summary>
     /// Сдвиг фазы между соседними сегментами (рад). Меньше — длиннее волна
@@ -106,7 +110,7 @@ public sealed partial class TailedEntityComponent : Component
     /// <summary>
     /// Множитель волны при погоне. 1 = без эффекта, 0.4 = вилка тише в 2.5 раза.
     /// </summary>
-    [DataField] public float HuntingWaveScale = 0.4f;
+    [DataField] public float HuntingWaveScale = 1.2f;
 
     /// <summary>
     /// Пока CurTime &lt; этого момента — TailedEntitySystem НЕ переопределяет
@@ -121,6 +125,25 @@ public sealed partial class TailedEntityComponent : Component
     /// на тайлах станции гасит velocity между тиками AI и кит еле ползёт.
     /// </summary>
     [ViewVariables] public bool BrainDesiresMovement;
+
+    /// <summary>
+    /// Если &gt; 0 — TailedEntitySystem использует эту скорость вместо
+    /// MovementSpeedModifier. Brain выставляет каждый тик с учётом
+    /// плавного разгона при погоне.
+    /// </summary>
+    [ViewVariables] public float OverrideBaseSpeed;
+
+    /// <summary>
+    /// Желаемое направление взгляда головы (нормализованный вектор). Brain
+    /// устанавливает per-tick (0.3с), TailedEntitySystem каждый кадр плавно
+    /// доворачивает rotation к этому вектору. Length≈0 → не трогаем (кит стоит).
+    /// </summary>
+    [ViewVariables] public System.Numerics.Vector2 DesiredFacing;
+
+    /// <summary>
+    /// Скорость доворота головы (1/сек). 6 = ~37% оставшегося угла за тик 60fps.
+    /// </summary>
+    [DataField] public float HeadTurnSmooth = 6f;
 }
 
 public sealed class TailSegmentRuntimeState

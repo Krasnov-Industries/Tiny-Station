@@ -2,6 +2,7 @@ using System.Numerics;
 using Content.Server.Chat.Managers;
 using Content.Server.Chat.Systems;
 using Content.Server.Station.Components;
+using Content.Shared.Station.Components;
 using Content.Server._Goobstation.SpaceWhale.SpawnLogic;
 using Content.Shared.CCVar;
 using Content.Shared.Mobs.Components;
@@ -371,6 +372,11 @@ public sealed partial class WhaleThreatSystem : EntitySystem
                 continue;
 
             if (grid.LocalAABB.Size.Length() < MinStationSize)
+                continue;
+
+            // Должен быть частью реальной станции (не обломок). Обычная
+            // станция = grid с StationMemberComponent, обломки этого не имеют.
+            if (!HasComp<StationMemberComponent>(uid))
                 continue;
 
             var stationPos = GetStationCenterWorld(xform, grid);
