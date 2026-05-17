@@ -1,6 +1,6 @@
 ---
 name: ss14-localization-strings
-description: A guide to working with localization files (.ftl) and strings in Space Station 14. Use this skill when adding or changing game text, item descriptions and interface.
+description: "A guide to working with localization files (.ftl) and strings in Space Station 14. Use this skill when adding or changing game text, item descriptions and interface."
 ---
 
 # Codex Bridge

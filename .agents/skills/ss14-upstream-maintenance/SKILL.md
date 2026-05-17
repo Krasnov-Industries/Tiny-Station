@@ -1,6 +1,6 @@
 ---
 name: ss14-upstream-maintenance
-description: Guide to working with the Tiny-Station fork using project-folder pattern (`_Tinystation` as primary, `_Goobstation`/`_EE` as inherited) to minimize merge conflicts with the upstream. Use when modifying vanilla code or prototypes.
+description: "Guide to working with the Tiny-Station fork using project-folder pattern (`_Tinystation` as primary, `_Goobstation`/`_EE` as inherited) to minimize merge conflicts with the upstream. Use when modifying vanilla code or prototypes."
 ---
 
 # Agents Bridge

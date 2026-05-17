@@ -1,6 +1,6 @@
 ---
 name: ss14-events
-description: A guide to using events in Space Station 14 - strict taxonomy, subscriptions, by-ref event prioritization, and networking patterns.
+description: "A guide to using events in Space Station 14 - strict taxonomy, subscriptions, by-ref event prioritization, and networking patterns."
 ---
 
 # 📨 SS14 Events Guide

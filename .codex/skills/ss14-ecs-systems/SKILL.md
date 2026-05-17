@@ -1,6 +1,6 @@
 ---
 name: SS14 ECS Systems
-description: Architecture guide for EntitySystem in Space Station 14 — lifecycle, events, queries, networking, prediction, and partial class decomposition patterns
+description: "Architecture guide for EntitySystem in Space Station 14 — lifecycle, events, queries, networking, prediction, and partial class decomposition patterns"
 ---
 
 # Codex Bridge

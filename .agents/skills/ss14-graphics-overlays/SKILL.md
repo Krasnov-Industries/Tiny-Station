@@ -1,6 +1,6 @@
 ---
 name: SS14 Graphics Overlays
-description: An in-depth practical guide to the SS14 overlay architecture: OverlaySpace, lifecycle, communication with shaders, ScreenTexture, render targets, stencil composition, graphics primitives and render optimization.
+description: "An in-depth practical guide to the SS14 overlay architecture: OverlaySpace, lifecycle, communication with shaders, ScreenTexture, render targets, stencil composition, graphics primitives and render optimization."
 ---
 
 # Agents Bridge

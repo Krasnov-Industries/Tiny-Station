@@ -1,6 +1,6 @@
 ---
 name: SS14 Tests Authoring
-description: Practical workflow for writing your own unit/integration tests in the Space Station 14 architecture: from choosing a strategy to stable assertions and test maintenance.
+description: "Practical workflow for writing your own unit/integration tests in the Space Station 14 architecture: from choosing a strategy to stable assertions and test maintenance."
 ---
 
 # Agents Bridge
