@@ -188,7 +188,7 @@ var meta = MetaData(uid);
 var prototypeName = Prototype(uid)?.ID;
 
 // Debug line
-var debugStr = ToPrettyString(uid);  // → "Scp096 (1234)"
+var debugStr = ToPrettyString(uid);  // → "MobKnight (1234)"
 ```
 
 ## Container system

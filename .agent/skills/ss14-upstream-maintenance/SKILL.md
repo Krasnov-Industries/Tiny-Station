@@ -171,7 +171,7 @@ Add an entry to the end of the file or to the appropriate section.
 ```yaml
 # ... existing migrations ...
 
-# Tinystation-Edit
+# Tinystation edit - migration replacement
 AirlockHatchSyndicate: AirlockHatchSyndicateLocked
 ```
 

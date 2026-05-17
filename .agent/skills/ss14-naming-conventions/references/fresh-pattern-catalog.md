@@ -2,7 +2,7 @@
 
 > All entries below have passed the freshness filter: date of modification is not older than 2024-02-20 and without TODO/HACK/FIXME on the topic of naming.
 
-| Domain | Pattern | Confirmed with a recent example | Date | Status |
+| Domain | Pattern | Example / source | Date | Status |
 |---|---|---|---|---|
 | Components | `XxxComponent` + `XxxSystem` with common base | `ClickableComponent` + `ClickableSystem` | 2025-05-18 | Use |
 | Components | Predicative component name | `ClickableComponent` | 2024-08-09 | Use |
@@ -13,9 +13,9 @@
 | Dependencies | `TransformSystem` -> `_transform` | `EntityPickupAnimationSystem` | 2026-01-08 | Use |
 | Dependencies | `EntityWhitelistSystem` -> `_whitelist` | `ChangeNameInContainerSystem` | 2024-10-09 | Use |
 | YAML components | In the prototype write `- type: Xxx` without `Component` | `- type: Clickable` | 2025-10-12 | Use |
-| Prototype IDs | `CamelCase` for ID | `FloorWaterEntity`, `Scp096CryOut` | 2026-01-08 | Use |
-| Fork IDs | Fork prefix for fork-only content | `SunriseAmmunition` | 2026-01-14 | Use |
-| Prototype fallback | English `name/description` in YAML | `name: emit mournful scream` | 2026-01-08 | Use |
+| Prototype IDs | `CamelCase` for ID | `FloorWaterEntity`, `ActionKnightLayOnHands` | 2026-01-08 | Use |
+| Fork IDs | Fork prefix for fork-only content | `TinystationKnightRelic` | Policy | Use |
+| Prototype fallback | English `name/description` in YAML | `name: lay on hands` | 2026-01-08 | Use |
 | Ent localization | `ent-MyEntity` + `.desc` | `ent-BasePart`, `.desc` | 2024-08-30 | Use |
 | Generic localization | Non-structural keys in `kebab-case` | `armable-examine-armed` | 2025-04-25 | Use |
 | Variables | Private fields with `_` | `_overlay`, `_transform`, `_whitelist` | 2026-01-08 | Use |

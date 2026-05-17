@@ -22,16 +22,16 @@ All prototype identifiers are **mandatory** recorded in CamelCase:
 ```yaml
 # Right
 - type: entity
-  id: Scp096
+  id: ActionKnightLayOnHands
 
 - type: entity
-  id: BaseScp
+  id: BaseAction
 
 - type: entity
-  id: MobCombat
+  id: MobKnight
 
 - type: entity
-  id: Scp096CryOut
+  id: ActionKnightRighteousFury
 
 - type: entity
   id: XenoArchTriggerHeat
@@ -43,16 +43,16 @@ All prototype identifiers are **mandatory** recorded in CamelCase:
 ```yml
 # Wrong
 - type: entity
-  id: scp_096          # underscores
+  id: action_knight_lay_on_hands # underscores
 
 - type: entity
-  id: scp-096          # hyphens
+  id: action-knight-lay-on-hands # hyphens
 
 - type: entity
-  id: SCP096           # all uppercase
+  id: ACTIONKNIGHTLAYONHANDS # all uppercase
 
 - type: entity
-  id: scp096           # all lowercase
+  id: actionknightlayonhands # all lowercase
 ```
 
 ## Entity prototype - basic structure
@@ -97,17 +97,15 @@ All prototype identifiers are **mandatory** recorded in CamelCase:
 
 ```yaml
 - type: entity
-  id: Scp096
+  id: MobKnightPerson
   parent:
-  - BaseScp                # Inherits from multiple parents
-  - MobCombat
-  - MobBloodstream
-  - StripableInventoryBase
+  - AppearanceKnightPerson # Inherits from multiple parents
+  - BaseSpeciesMob
   # The imposition of inheritance goes from the TOP TO THE DOWN!
   # The bottom one has the highest priority, its components and values ​​will overwrite the others if there is a conflict
   components:
-  - type: Scp096
-    # ...specific fields
+  - type: Damageable
+    damageModifierSet: Knight
 ```
 
 The order of the parents matters - the data is applied in the order specified.
@@ -344,7 +342,7 @@ ent-MyEntityId = entity name
 
 ### Naming rules
 
-1. **Names with lowercase letters**: `ent-Scp096CryOut = emit mournful scream`
+1. **Names with lowercase letters**: `ent-ActionKnightLayOnHands = lay on hands`
 2. **Descriptions with a capital letter**: `.desc = A strange creature that reacts to being seen.`
 3. **In the YAML prototype - only fallback in English**: the `name` and `description` fields in YAML serve as a fallback if there is no localization
 4. **Names are inherited from the parent** automatically via FTL - the child uses the parent’s name if its own is not specified

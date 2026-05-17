@@ -330,3 +330,4 @@ GEMINI.md
 !AGENTS.md
 !CLAUDE.md
 !.claude/skills/
+!.claude/skills/**

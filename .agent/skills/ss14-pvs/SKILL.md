@@ -166,7 +166,7 @@ An entity is considered “in” PVS if:
 │ • Subject to the budget │
 │ • Subject to visibility mask │
 │ • Sends entity + parents + children │
-│ Example: minds, SCP-096 for a specific purpose │
+│ Example: minds, private identity entities │
 └───────────────────────────────────────────────────────┘
 ```
 
@@ -217,7 +217,7 @@ _pvsOverride.RemoveForceSend(uid, session);
 | Explosion visible to everyone | `AddGlobalOverride` |
 | Player Inventory/Mind | `AddSessionOverride` |
 | Surveillance camera | `AddSessionOverride` |
-| SCP visible to specific targets | `AddSessionOverride` / `AddSessionOverrides` |
+| Entity visible to specific targets | `AddSessionOverride` / `AddSessionOverrides` |
 | Map/grid (world critical) | `AddForceSend` (system) |
 
 ### Automatic ForceSend

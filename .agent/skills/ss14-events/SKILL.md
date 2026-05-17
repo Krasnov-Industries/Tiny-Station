@@ -84,21 +84,25 @@ Used to check whether an action can be performed ("Attempt" events). Any subscri
 **Usage:**
 ```csharp
 // Definition
-public sealed class DisarmAttemptEvent : CancellableEntityEventArgs { }
-```
-
-```csharp
-// Subscription (Lock action)
-private void OnDisarmAttempt(Entity<ScpRestrictionComponent> ent, ref DisarmAttemptEvent args) {
-    if (!ent.Comp.CanBeDisarmed)
-        args.Cancel(); // Or args.Cancelled = true;
+[ByRefEvent]
+public record struct DisarmAttemptEvent
+{
+    public bool Cancelled;
 }
 ```
 
 ```csharp
-// Call (Permission check)
+// Subscription
+private void OnDisarmAttempt(Entity<StunnedComponent> ent, ref DisarmAttemptEvent args)
+{
+    args.Cancelled = true;
+}
+```
+
+```csharp
+// Call
 var attempt = new DisarmAttemptEvent();
-RaiseLocalEvent(target, attempt);
+RaiseLocalEvent(target, ref attempt);
 
 if (attempt.Cancelled)
     return; // Action interrupted

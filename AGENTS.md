@@ -104,6 +104,6 @@ These topics were intentionally skipped from the initial import — feel free to
 
 ## How skill content was adapted
 
-This library was imported from another SS14 fork and adapted for Tiny-Station. All `_Sunrise` / `_Scp` / `_Fish` / `_Lust` references were replaced with the Tiny-Station folder layout (`_Tinystation` + inherited `_Goobstation` / `_EE`). Examples that referenced fork-unique systems (e.g. `RandomPredictedSystem`, `FieldOfViewSetAlphaOverlay`, `HitscanRicochetSystem`) were either removed or generalised, because Tiny-Station does not have those classes.
+This library was imported from another SS14 fork and adapted for Tiny-Station. Source-fork folder references were replaced with the Tiny-Station folder layout (`_Tinystation` + inherited `_Goobstation` / `_EE`). Examples that referenced source-fork-only systems were either removed or generalised, because Tiny-Station does not have those classes.
 
-If you spot a remaining sunrise-specific reference or an example that does not match Tiny-Station code, fix it in `.agent/skills/<name>/SKILL.md` directly.
+If you spot a remaining source-fork-specific reference or an example that does not match Tiny-Station code, fix it in `.agent/skills/<name>/SKILL.md` directly.

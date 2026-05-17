@@ -80,7 +80,7 @@ Goal: leave only useful documentation that speeds up reviews and reduces the ris
 3. In `AccessOverriderSystem` public methods combine `summary` and `remarks` when you need to capture a behavior invariant.
 4. `BaseContainer` and `SharedContainerSystem.Remove(...)` show a stable API documentation style: `summary` + `remarks` + described parameters.
 5. In large abstract systems (e.g. `SharedDoorSystem`) the logic is decomposed into partial parts with separate blocks of responsibilities and dependencies.
-6. `Scp096PhotoSystem` and `ArtifactScp096MadnessSystem` show that the documentation should take into account non-standard call flags (`TryAddTarget(..., true, true)`), and not just the default path.
+6. `GameDataScrounger` shows that documentation should record non-obvious preconditions and boundary behavior in `remarks`, not only the default path.
 7. In YAML directories, level separators `# Rank 2` / `# Rank 3` make large lists readable without overload.
 8. In FTL, the correct group separator is `## Strings for the battery ...` and does not break parsing.
 

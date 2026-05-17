@@ -65,12 +65,12 @@ public float BaseSpeed = 5f;  // → baseSpeed ​​in YAML
 public EntProtoId EntityId;   // Required, error if not specified
 ```
 
-> **⚠️ Anti-pattern: string name in DataField (legacy)**
+> **⚠️ Anti-pattern: redundant string name in DataField**
 >
-> Do not specify a string field name in `DataField`. This is an outdated approach. The name in YAML is **always** equal to the name in C# with a lower case letter:
+> Do not specify a string field name in `DataField` when it only repeats the automatic name. The usual YAML name is derived from the C# field name with a lower-case first letter; keep an explicit string only when the existing YAML schema really needs a different key.
 >
 > ```csharp
-> // ❌ Legacy - DO NOT do this
+> // ❌ Redundant - DO NOT do this for new fields
 > [DataField("counter")]
 > public int Counter;
 >
@@ -83,6 +83,10 @@ public EntProtoId EntityId;   // Required, error if not specified
 >
 > [DataField]
 > public float BaseSpeed;    // → baseSpeed ​​in YAML
+>
+> // ✅ Acceptable when preserving an existing schema key
+> [DataField("ackChance")]
+> public float AcknowledgementChance;
 > ```
 
 > **⚠️ Anti-pattern: DataField on runtime fields**
@@ -349,7 +353,7 @@ public sealed partial class TargetMarkerComponent : Component
 6. **`[NonSerialized]` for runtime data** - audio streams, cached links to entities, temporary data
 7. **Organizing Fields** - Use `#region` blocks to group related fields in large components
 8. **`[DataField]` only for YAML configuration** - do not put on runtime fields (`EntityUid`, timestamps, caches)
-9. **Do not specify a string name in `[DataField]`** - the name is derived automatically from the field name
+9. **Do not specify redundant string names in `[DataField]`** - rely on automatic names unless compatibility requires an explicit YAML key
 
 ## Optimization through Active components (add-on)
 

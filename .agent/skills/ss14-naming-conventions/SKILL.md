@@ -87,7 +87,7 @@ Use it as a guideline: if new code/content doesn't follow the rules below, it's 
 
 1. MUST: format - `camelCase` for local/parameters, private fields with `_`.
 2. MUST: the name reflects the essence of the data.
-3. MUST: if the variable stores a component, use the base part of the component name (`ActiveScp096RageComponent` -> `scp096Rage`).
+3. MUST: if the variable stores a component, use the base part of the component name (`KnightRighteousFuryComponent` -> `knightRighteousFury`).
 4. MUST NOT: use meaningless names (`data`, `value2`, `tmp`) outside the micro-area.
 
 ### 9) File names
@@ -121,11 +121,11 @@ Use it as a guideline: if new code/content doesn't follow the rules below, it's 
 5. Alias ​​`TransformSystem` as `_transform`.
 6. Alias ​​`IPlayerManager` as `_player`.
 7. Alias ​​`EntityWhitelistSystem` as `_whitelist`.
-8. ID in the style `Scp096CryOut` with a clear domain prefix.
+8. ID in the style `ActionKnightLayOnHands` with a clear domain prefix.
 9. Fork ID with the prefix `Tinystation*` for unique fork content (inherited content keeps its original prefix: `Goob*`, `EE*`).
 10. `ent-BasePart = body part` as a short external name of the entity.
 11. `armable-examine-armed` is like a regular `kebab-case` non-entity string key.
-12. Private component field `scp096Rage` according to the basic part of the type.
+12. Private component field `knightRighteousFury` according to the basic part of the type.
 
 ## Anti-patterns ❌
 
@@ -209,11 +209,11 @@ Comment: YAML uses the base part of the component name.
 
 ```yaml
 - type: entity
-  id: Scp096CryOut
-  name: emit mournful scream
+  id: ActionKnightLayOnHands
+  name: lay on hands
 ```
 
-Comment: `Scp` prefix and `CamelCase` are respected; action name in English.
+Comment: domain prefix and `CamelCase` are respected; action name in English.
 
 ### Example 7: Tinystation prefix in fork content
 

@@ -284,7 +284,8 @@ if (_random.Prob(0.5f))
     DoAction();
 
 // ✅ Deterministic random
-if (_randomPredicted.ProbForEntity(uid, 0.5f))
+var random = new System.Random(HashCode.Combine(uid.Id, _timing.CurTick.Value));
+if (random.NextDouble() < 0.5)
     DoAction();
 ```
 

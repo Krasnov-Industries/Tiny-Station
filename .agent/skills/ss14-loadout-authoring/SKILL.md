@@ -161,7 +161,7 @@ Use this step when the project is still in hybrid state or the user explicitly a
 8. Automatically migrate hidden jobs/departments to the loadout system without an explicit request.
 9. Synchronize `startingGear` with cosmetics simply because the role has such groups.
 10. Consider the migration complete without checking the full link graph and YAML linter.
-11. Forgetting to migrate linen from Loadout to `startingGear`
+11. Forgetting to transfer required equipment from `startingGear` into required loadout groups during migration.
 
 ## Examples
 
