@@ -1,6 +1,6 @@
 ---
 name: ss14-migrations
-description: Guide to Creating and Managing Database Migrations in SS14 (PostgreSQL and SQLite)
+description: "Guide to Creating and Managing Database Migrations in SS14 (PostgreSQL and SQLite)"
 ---
 
 # Agents Bridge

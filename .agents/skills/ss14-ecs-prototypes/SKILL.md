@@ -1,6 +1,6 @@
 ---
 name: SS14 ECS Prototypes
-description: YAML prototypes in Space Station 14 — entity definitions, field inheritance, prototype classes, YAML linter, naming conventions, and localization
+description: "YAML prototypes in Space Station 14 — entity definitions, field inheritance, prototype classes, YAML linter, naming conventions, and localization"
 ---
 
 # Agents Bridge

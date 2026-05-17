@@ -1,6 +1,6 @@
 ---
 name: SS14 PVS (Potentially Visible Set)
-description: Architecture guide for PVS in Space Station 14 — chunk-based spatial partitioning, visibility determination, override types, budgets, Level-of-Detail, leave mechanics, visibility masks, and ExpandPvsEvent
+description: "Architecture guide for PVS in Space Station 14 — chunk-based spatial partitioning, visibility determination, override types, budgets, Level-of-Detail, leave mechanics, visibility masks, and ExpandPvsEvent"
 ---
 
 # Agents Bridge

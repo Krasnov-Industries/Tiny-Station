@@ -1,6 +1,6 @@
 ---
 name: SS14 Netcode Architecture
-description: Architecture guide for networking in Space Station 14 — Lidgren integration, NetManager abstraction, message system, game state synchronization, PVS, network events, and component networking
+description: "Architecture guide for networking in Space Station 14 — Lidgren integration, NetManager abstraction, message system, game state synchronization, PVS, network events, and component networking"
 ---
 
 # Codex Bridge

@@ -1,6 +1,6 @@
 ---
 name: ss14-matrix-transform-physics-sprite
-description: Highly specialized skill in matrix transformations in SS14: world/grid/local/screen conversions, Sprite render matrices, broadphase-space physics queries, Transform/Physics/Sprite client and server chains.
+description: "Highly specialized skill in matrix transformations in SS14: world/grid/local/screen conversions, Sprite render matrices, broadphase-space physics queries, Transform/Physics/Sprite client and server chains."
 ---
 
 # Matrices for Transform/Physics/Sprite in SS14

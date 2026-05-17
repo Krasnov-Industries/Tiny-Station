@@ -1,6 +1,6 @@
 ---
 name: SS14 ECS Entities
-description: Working with entities in Space Station 14 — EntityUid, Entity<T>, component operations, containers, network identity, and entity lifecycle
+description: "Working with entities in Space Station 14 — EntityUid, Entity<T>, component operations, containers, network identity, and entity lifecycle"
 ---
 
 # Agents Bridge
