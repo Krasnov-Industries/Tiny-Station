@@ -327,73 +327,25 @@ public sealed partial class WhaleThreatSystem : EntitySystem
         return station != default;
     }
 
-    public bool TryGetNearestStationOrbitPoint(EntityCoordinates near, float orbitDistance, float advanceRadians, out EntityCoordinates coords)
-    {
-        coords = default;
-        return TryGetNearestStation(near, out var station, out _, out _) &&
-               TryGetStationOrbitPoint(station, near, orbitDistance, advanceRadians, out coords);
-    }
-
     public bool TryGetRandomStationPoint(out EntityCoordinates coords)
     {
         coords = default;
         var count = 0;
-        var query = EntityQueryEnumerator<BecomesStationComponent, TransformComponent>();
-        while (query.MoveNext(out _, out _, out var xform))
+        var query = EntityQueryEnumerator<BecomesStationComponent, MapGridComponent, TransformComponent>();
+        while (query.MoveNext(out var uid, out _, out var grid, out var xform))
         {
+            if (grid.LocalAABB.Size.Length() < MinStationSize)
+                continue;
+
+            if (!HasComp<StationMemberComponent>(uid))
+                continue;
+
             count++;
             if (_random.Prob(1f / count))
-                coords = xform.Coordinates;
+                coords = new EntityCoordinates(_map.GetMapOrInvalid(xform.MapID), GetStationCenterWorld(xform, grid));
         }
 
         return count > 0;
-    }
-
-    private bool TryGetStationOrbitPoint(EntityUid station, EntityCoordinates near, float orbitDistance, float advanceRadians, out EntityCoordinates coords)
-    {
-        coords = default;
-        if (!TryComp<MapGridComponent>(station, out var grid))
-            return false;
-
-        var sourceMap = _transform.ToMapCoordinates(near);
-        if (sourceMap.MapId == MapId.Nullspace)
-            return false;
-
-        var stationXform = Transform(station);
-        if (stationXform.MapID != sourceMap.MapId)
-            return false;
-
-        var centerWorld = GetStationCenterWorld(stationXform, grid);
-        var stationRadius = grid.LocalAABB.Size.Length() / 2f;
-        var orbitRadius = MathF.Max(stationRadius + orbitDistance, stationRadius + 1f);
-
-        var offset = sourceMap.Position - centerWorld;
-        var currentDistance = offset.Length();
-        var angle = currentDistance > 0.01f
-            ? MathF.Atan2(offset.Y, offset.X)
-            : (float) _random.NextAngle().Theta;
-
-        if (currentDistance <= orbitRadius + orbitDistance)
-            angle += ClampOrbitAdvance(advanceRadians, stationRadius, orbitRadius);
-
-        var point = centerWorld + new Vector2(MathF.Cos(angle), MathF.Sin(angle)) * orbitRadius;
-        var mapUid = _map.GetMapOrInvalid(sourceMap.MapId);
-        coords = new EntityCoordinates(mapUid, point);
-        return true;
-    }
-
-    private float ClampOrbitAdvance(float advanceRadians, float stationRadius, float orbitRadius)
-    {
-        if (advanceRadians == 0f)
-            return 0f;
-
-        var clearanceRadius = stationRadius + 4f;
-        if (orbitRadius <= clearanceRadius)
-            return MathF.CopySign(0.05f, advanceRadians);
-
-        var ratio = Math.Clamp(clearanceRadius / orbitRadius, -1f, 1f);
-        var maxAdvance = MathF.Max(0.05f, 2f * MathF.Acos(ratio) * 0.75f);
-        return MathF.CopySign(MathF.Min(MathF.Abs(advanceRadians), maxAdvance), advanceRadians);
     }
 
     private Vector2 GetStationCenterWorld(TransformComponent xform, MapGridComponent grid)

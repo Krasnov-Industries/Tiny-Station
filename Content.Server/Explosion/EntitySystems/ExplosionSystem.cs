@@ -387,6 +387,14 @@ public sealed partial class ExplosionSystem : SharedExplosionSystem
 
         _audio.PlayGlobal(farSound, farFilter, true, farSound.Params);
 
+        // Goobstation added start - expose real explosions to the space whale threat/noise logic.
+        var whaleExplosion = new Content.Server._Goobstation.SpaceWhale.Threat.SpaceWhaleExplosionEvent(
+            pos,
+            queued.TotalIntensity,
+            queued.Cause);
+        RaiseLocalEvent(whaleExplosion);
+        // Goobstation added end
+
         return new Explosion(this,
             queued.Proto,
             spaceData,

@@ -730,6 +730,9 @@
   id: Head # ConstructionGraph: RitualSeat
 
 - type: Tag
+  id: HeavyShipWeapon # Space whale awakening threat detection.
+
+- type: Tag
   id: HelmetEVA # ConstructionGraph: ClownHardsuit, MimeHardsuit. PartAssembly: VimHarness. ItemMapper: VimHarness
 
 - type: Tag

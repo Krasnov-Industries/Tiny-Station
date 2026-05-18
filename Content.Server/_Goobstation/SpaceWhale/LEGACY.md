@@ -6,9 +6,10 @@
 ## Текущая модель (минимум)
 
 - **HP**: 3000
-- **Поведение**: подлетает к станции, кружит в 10 тайлах от борта.
-  Видит цели через LOS в радиусе 60.
-  Атакует ближайшую цель.
+- **Поведение**: охотник без орбиты. Приоритеты: видимая живая цель
+  (TopAggressor выше остальных), движущийся грид с живыми мобами, выход через
+  запомненный пробой, шум, старая точка смерти, брожение около последней
+  активности.
 - **Атаки**:
   - Bite (через MeleeWeapon, 1 раз/сек)
   - Roar (AoE Stun 2с + Slow 5с + Jitter 3с + camera shake, cd 10 сек)
@@ -19,7 +20,7 @@
 - **Поедание трупов**: +500 HP за труп, желудок до 5 минут.
 - **Хвост-змейка**: 30 сегментов с волновой анимацией.
 - **TopAggressor**: запоминает того, кто за последние 30 сек больше всех урона нанёс — идёт за ним приоритетно.
-- **Spawn**: 4 триггера Awakening (ядерка, C4 в космосе, корабельные орудия, далёкий игрок 10 мин), затем Threat ≥ `whale.threat_spawn_at` → spawn.
+- **Spawn**: 4 триггера Awakening (ядерка, C4 в космосе, корабельные орудия, далёкий игрок 10 мин), затем Threat ≥ `whale.threat_spawn_at` → spawn рядом со станцией.
 
 ## Что было снято (можно вернуть)
 
@@ -56,13 +57,16 @@
 - Max 2 типа одновременно.
 - Реализация: `WhalePainLearningSystem` + `WhalePainLearningComponent`.
 
-### Нюх — память на убийства (RecentKills)
+### Старый HTN-нюх — память на убийства (RecentKills)
 - Список из 5 точек последних убийств с TTL 5 мин, агрегация близких в радиусе 10.
 - Когда нет других целей — случайная точка из памяти как навигационная цель.
 - Отключён в Rampage.
 - Реализация: `HasFreshKillLocationPrecondition` + `HTNMoveToLastKilledOperator` +
   `WhaleMemoryComponent.RecentKills` + `WhaleKillRecord` +
   `WhaleMemorySystem.OnMobStateChanged/RegisterKill/PurgeOldKills`.
+- Сейчас похожая упрощённая версия встроена прямо в `WhaleBrainComponent`:
+  до 10 точек смерти, TTL 5 минут, выбор случайной старой точки кроме самой
+  свежей.
 
 ### RadarBlip — отображение кита на радаре
 - На голове, всех 65 сегментах хвоста и spoof-эхо стоял `RadarBlip` с разной формой
@@ -88,11 +92,10 @@
 - Реализация: было в `WhaleAuraSystem.TickAura`, использовало штатный `RadioJammerComponent` +
   `ActiveRadioJammerComponent`. Можно вернуть только через свой кастомный jammer.
 
-### Шум-карта как навигация (HasLoudNoise / MoveToNoiseSource)
+### Старый HTN-шум как навигация (HasLoudNoise / MoveToNoiseSource)
 - Кит сворачивал на громкий шум по фазе (Hunt 1 / Frenzy 15 / Rampage 50 intensity).
-- Сейчас осталась только агрегация шума в `WhaleThreatState.RecentNoises`
-  для выбора направления спавна.
-- Поведенческой ветки "идти к шуму" больше нет.
+- Сейчас осталась упрощённая ветка в `WhaleBrainSystem`: если целей нет, кит
+  идёт на лучшую свежую точку из `WhaleThreatState.RecentNoises`.
 
 ### LOS-фильтрация целей (`WhaleTargeting`)
 - При выборе цели проверялся `InRangeUnobstructed` со SightMask =

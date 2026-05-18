@@ -1,5 +1,6 @@
 using System.Numerics;
 using Content.Server.Chat.Systems;
+using Content.Server._Goobstation.SpaceWhale.Brain;
 using Content.Server._Goobstation.SpaceWhale.Threat;
 using Content.Shared.CCVar;
 using Robust.Shared.Audio;
@@ -25,8 +26,9 @@ public sealed partial class SpaceWhaleSpawnSystem : EntitySystem
     [Dependency] private SharedPhysicsSystem _physics = default!;
     [Dependency] private SharedMapSystem _map = default!;
     [Dependency] private ChatSystem _chat = default!;
+    [Dependency] private WhaleBrainSystem _brain = default!;
 
-    public bool TrySpawn(EntityCoordinates? preferred = null)
+    public bool TrySpawn(EntityCoordinates? preferred = null, bool force = false)
     {
         if (!_cfg.GetCVar(CCVars.WhaleEnabled))
             return false;
@@ -35,23 +37,40 @@ public sealed partial class SpaceWhaleSpawnSystem : EntitySystem
         if (state.CurrentWhale != null && !Deleted(state.CurrentWhale.Value))
             return false;
 
-        if (preferred == null && state.Threat < _cfg.GetCVar(CCVars.WhaleThreatSpawnAt))
+        if (!force && preferred == null && state.Threat < _cfg.GetCVar(CCVars.WhaleThreatSpawnAt))
             return false;
 
         EntityCoordinates? origin = preferred;
         if (origin == null && _threat.TryGetSpawnOrigin(out var spawnOrigin))
             origin = spawnOrigin;
 
-        EntityCoordinates station = default;
-        if (origin == null && !_threat.TryGetRandomStationPoint(out station))
+        EntityCoordinates? station = null;
+        if (origin is { } knownOrigin &&
+            _threat.TryGetNearestStation(knownOrigin, out _, out var nearestStation, out _))
+            station = nearestStation;
+        else if (_threat.TryGetRandomStationPoint(out var stationCoords))
+            station = stationCoords;
+
+        if (preferred == null && origin == null && station == null)
             return false;
 
-        origin ??= station;
+        MapCoordinates spawnMap;
+        if (preferred != null)
+        {
+            spawnMap = _transform.ToMapCoordinates(preferred.Value);
+        }
+        else
+        {
+            var anchor = station ?? origin!.Value;
+            var mapOrigin = _transform.ToMapCoordinates(anchor);
+            var angle = _random.NextAngle();
+            var distance = _random.NextFloat(80f, 120f);
+            spawnMap = new MapCoordinates(mapOrigin.Position + angle.ToVec() * distance, mapOrigin.MapId);
+        }
 
-        var mapOrigin = _transform.ToMapCoordinates(origin.Value);
-        var angle = _random.NextAngle();
-        var distance = _random.NextFloat(400f, 600f);
-        var spawnMap = new MapCoordinates(mapOrigin.Position + angle.ToVec() * distance, mapOrigin.MapId);
+        if (spawnMap.MapId == MapId.Nullspace)
+            return false;
+
         var mapUid = _map.GetMapOrInvalid(spawnMap.MapId);
         var spawnCoords = new EntityCoordinates(mapUid, spawnMap.Position);
 
@@ -61,6 +80,7 @@ public sealed partial class SpaceWhaleSpawnSystem : EntitySystem
             _physics.SetLinearVelocity(whale, Vector2.Zero, body: physics);
 
         _threat.SetCurrentWhale(whale);
+        _brain.RememberActivity(whale, spawnCoords);
         _audio.PlayGlobal(SpawnSound, Filter.Broadcast(), true);
         _threat.PlayWhalePresenceCue(whale);
         _threat.LogWhale($"Spawned at {spawnMap}");

@@ -101,16 +101,31 @@ public sealed partial class TailedEntityComponent : Component
     [ViewVariables] public float HeadSpeedMultiplier = 1f;
 
     /// <summary>
-    /// Выставляется WhaleBrain'ом при наличии живой цели-моба. В режиме
-    /// погони wave и breathing амплитуда умножаются на HuntingWaveScale,
+    /// Выставляется WhaleBrain'ом при быстрой охоте. В режиме погони
+    /// wave и breathing амплитуда умножаются на HuntingWaveScale,
     /// чтобы кит двигался целеустремлённее, а не вилял.
     /// </summary>
     [ViewVariables] public bool IsHunting;
 
     /// <summary>
-    /// Множитель волны при погоне. 1 = без эффекта, 0.4 = вилка тише в 2.5 раза.
+    /// Множитель волны при погоне. 1 = без эффекта, 0.8 = чуть тише, 0.4 = вилка тише в 2.5 раза.
     /// </summary>
-    [DataField] public float HuntingWaveScale = 1.2f;
+    [DataField] public float HuntingWaveScale = 0.8f;
+
+    /// <summary>
+    /// Осторожное движение: шум, запах, выход из станции, лурк.
+    /// </summary>
+    [ViewVariables] public bool IsCarefulMovement;
+
+    /// <summary>
+    /// Множитель волны при осторожном движении.
+    /// </summary>
+    [DataField] public float CarefulWaveScale = 0.35f;
+
+    /// <summary>
+    /// Множитель боковой вилки головы при осторожном движении.
+    /// </summary>
+    [DataField] public float CarefulHeadWiggleScale = 0.1f;
 
     /// <summary>
     /// Пока CurTime &lt; этого момента — TailedEntitySystem НЕ переопределяет

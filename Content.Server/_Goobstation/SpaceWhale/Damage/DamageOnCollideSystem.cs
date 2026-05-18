@@ -1,7 +1,10 @@
+using Content.Server._Goobstation.SpaceWhale.Brain;
 using Content.Shared.Damage.Components;
 using Content.Shared.Damage.Systems;
 using Content.Shared.Item;
+using Content.Shared.Mobs;
 using Content.Shared.Mobs.Components;
+using Content.Shared.Station.Components;
 using Robust.Shared.Physics.Components;
 using Robust.Shared.Physics.Systems;
 using Robust.Shared.Timing;
@@ -27,6 +30,7 @@ public sealed partial class DamageOnCollideSystem : EntitySystem
     [Dependency] private EntityLookupSystem _lookup = default!;
     [Dependency] private IGameTiming _timing = default!;
     [Dependency] private SharedPhysicsSystem _physics = default!;
+    [Dependency] private WhaleBrainSystem _brain = default!;
 
     private readonly HashSet<EntityUid> _contactsBuffer = new();
 
@@ -94,6 +98,8 @@ public sealed partial class DamageOnCollideSystem : EntitySystem
             return;
 
         _damageable.TryChangeDamage(target, dmg.Damage, origin: owner);
+        RememberBreach(owner, target);
+        RememberDeathScent(owner, target);
 
         if (dmg.Cooldown > 0f)
             dmg.NextHit[target] = now + TimeSpan.FromSeconds(dmg.Cooldown);
@@ -107,4 +113,42 @@ public sealed partial class DamageOnCollideSystem : EntitySystem
                seg.IsPushing;
     }
 
+    private void RememberBreach(EntityUid owner, EntityUid target)
+    {
+        if (HasComp<MobStateComponent>(target))
+            return;
+
+        if (!TryComp<TransformComponent>(target, out var targetXform) ||
+            !TryComp<TransformComponent>(owner, out var ownerXform))
+            return;
+
+        var stationGrid = targetXform.GridUid;
+        if (stationGrid == null && HasComp<StationMemberComponent>(target))
+            stationGrid = target;
+
+        if (stationGrid is not { } grid || !HasComp<StationMemberComponent>(grid))
+            return;
+
+        var whale = GetWhaleOwner(owner);
+        var preserveExisting = ownerXform.GridUid is { } ownerGrid && HasComp<StationMemberComponent>(ownerGrid);
+        _brain.RememberBreach(whale, ownerXform.Coordinates, grid, preserveExisting);
+    }
+
+    private void RememberDeathScent(EntityUid owner, EntityUid target)
+    {
+        if (!TryComp<MobStateComponent>(target, out var mob) || mob.CurrentState != MobState.Dead)
+            return;
+
+        if (!TryComp<TransformComponent>(target, out var xform))
+            return;
+
+        _brain.RememberDeathScent(GetWhaleOwner(owner), xform.Coordinates);
+    }
+
+    private EntityUid GetWhaleOwner(EntityUid owner)
+    {
+        return TryComp<SpaceWhaleSegmentComponent>(owner, out var segment) && segment.Whale is { } whale
+            ? whale
+            : owner;
+    }
 }

@@ -38,7 +38,7 @@ public sealed partial class CCVars
         CVarDef.Create("whale.noise_aggregate_window", 2f, CVar.SERVER);
 
     public static readonly CVarDef<float> WhaleConsumeHeal =
-        CVarDef.Create("whale.consume_heal", 500f, CVar.SERVER);
+        CVarDef.Create("whale.consume_heal", 300f, CVar.SERVER);
 
     public static readonly CVarDef<float> WhaleStomachCleanupSeconds =
         CVarDef.Create("whale.stomach_cleanup_sec", 300f, CVar.SERVER);

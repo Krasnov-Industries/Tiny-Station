@@ -252,16 +252,21 @@ public sealed partial class TailedEntitySystem : EntitySystem
             var phase = MathF.Sin(time * waveFreq + (i + 1) * comp.WavePhaseStep);
             // Дыхание: глобальная медленная модуляция амплитуды ±15%, цикл ~6с.
             var breathing = 1f + 0.15f * MathF.Sin(time * 1.0f);
-            // В режиме погони гасим всю волну — кит идёт целеустремлённо.
-            var huntScale = comp.IsHunting ? comp.HuntingWaveScale : 1f;
-            var bendAngle = phase * comp.BendAmplitude * ampShape * compression * pushSuppress * breathing * huntScale;
+            // В спокойных режимах гасим волну, чтобы кит не нарезал круги
+            // вокруг точки шума/запаха/выхода. Погоню оставляем резкой.
+            var movementScale = comp.IsHunting
+                ? comp.HuntingWaveScale
+                : comp.IsCarefulMovement
+                    ? comp.CarefulWaveScale
+                    : 1f;
+            var bendAngle = phase * comp.BendAmplitude * ampShape * compression * pushSuppress * breathing * movementScale;
 
             // Подёргивание кончика хвоста: bell-shape делает последние 4 сегмента
             // жёсткими, а у живой змеи кончик — самая подвижная часть. Компенсируем.
             if (i >= comp.Amount - 4)
             {
                 var tipPhase = MathF.Sin(time * 3.5f + (i + 1) * 0.8f);
-                bendAngle += tipPhase * 0.04f * compression * pushSuppress * huntScale;
+                bendAngle += tipPhase * 0.04f * compression * pushSuppress * movementScale;
             }
 
             // Желаемая позиция: spacing от prev, но direction повёрнут на bendAngle.
@@ -362,9 +367,9 @@ public sealed partial class TailedEntitySystem : EntitySystem
         if (_timing.CurTime < comp.BrainVelocityOverrideUntil)
             return;
 
-        // Кит активно куда-то идёт (по решению AI). Поддерживаем velocity
-        // через headRot, даже если физика затормозила между AI-тиками
-        // (friction на тайлах станции).
+        // Кит активно куда-то идёт (по решению AI). В погоне держим velocity
+        // через headRot, в осторожном режиме — через DesiredFacing, чтобы
+        // медленный подход к точке не превращался в орбиту из-за лага поворота.
         if (comp.BrainDesiresMovement && TryComp<PhysicsComponent>(whale, out var whaleBody))
         {
             // Override от Brain (плавно меняется при погоне) приоритетнее
@@ -376,12 +381,22 @@ public sealed partial class TailedEntitySystem : EntitySystem
                 baseSpeed = mod.CurrentSprintSpeed;
             else
                 baseSpeed = 5f;
-            var headDir = headRot.ToWorldVec();
+            var desiredDir = comp.DesiredFacing.LengthSquared() > 0.001f
+                ? Vector2.Normalize(comp.DesiredFacing)
+                : headRot.ToWorldVec();
+            var headDir = comp.IsCarefulMovement
+                ? desiredDir
+                : headRot.ToWorldVec();
             if (headDir.LengthSquared() < 0.001f)
                 return;
             var sideways = new Vector2(-headDir.Y, headDir.X);
             // При погоне голова идёт почти прямо к цели — wiggle подавляется.
-            var wiggleAmp = comp.IsHunting ? comp.HeadWiggleAmplitude * 0.33f : comp.HeadWiggleAmplitude;
+            var wiggleScale = comp.IsHunting
+                ? 0.33f
+                : comp.IsCarefulMovement
+                    ? comp.CarefulHeadWiggleScale
+                    : 1f;
+            var wiggleAmp = comp.HeadWiggleAmplitude * wiggleScale;
             var wiggle = sideways
                          * MathF.Sin(time * comp.HeadWiggleFrequency)
                          * wiggleAmp;

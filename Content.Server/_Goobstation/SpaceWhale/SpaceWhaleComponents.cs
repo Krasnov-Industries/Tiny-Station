@@ -66,6 +66,26 @@ public sealed class WhaleDamageRecord
     public FixedPoint2 Amount;
 }
 
+public enum WhaleBehavior
+{
+    Idle,
+    Lurk,
+    InvestigateNoise,
+    FollowDeathScent,
+    HuntMob,
+    ForcedMapHunt,
+    ConsumeTarget,
+    AttackEntity,
+    AttackMovingGrid,
+    ExitBreach,
+}
+
+public sealed class WhaleDeathScent
+{
+    public EntityCoordinates Coords;
+    public TimeSpan CreatedAt;
+}
+
 [RegisterComponent]
 public sealed partial class WhaleAbilityComponent : Component
 {
@@ -122,7 +142,7 @@ public sealed partial class WhaleConsumerComponent : Component
 }
 
 /// <summary>
-/// The whale's "brain" — tracks the current target and tick timer.
+/// The whale's "brain" — tracks current behavior and short-lived memory.
 /// </summary>
 [RegisterComponent]
 public sealed partial class WhaleBrainComponent : Component
@@ -136,17 +156,70 @@ public sealed partial class WhaleBrainComponent : Component
     /// </summary>
     [DataField] public float SightRadius = 30f;
 
-    /// <summary>
-    /// How far from the station's outer edge the whale should orbit.
-    /// </summary>
-    [DataField] public float OrbitClearance = 10f;
+    [DataField] public float LurkMinRadius = 15f;
+
+    [DataField] public float LurkMaxRadius = 40f;
+
+    [DataField] public float LurkPickInterval = 15f;
+
+    [DataField] public float DeathScentTtl = 300f;
+
+    [DataField] public int MaxDeathScents = 10;
+
+    [DataField] public float InvestigateDuration = 30f;
+
+    [DataField] public float NoiseInterestRadius = 200f;
+
+    [DataField] public float InvestigateArrivalRadius = 4f;
+
+    [DataField] public float DeathScentFollowDuration = 20f;
+
+    [DataField] public float DeathScentArrivalRadius = 4f;
+
+    [DataField] public float LurkArrivalRadius = 5f;
+
+    [DataField] public float BreachExitArrivalRadius = 3f;
+
+    [DataField] public float ForcedHuntNoKillDelay = 300f;
+
+    [DataField] public float ForcedHuntReleaseRadius = 35f;
 
     // ----- Скорость с плавным разгоном/торможением -----
 
     /// <summary>
-    /// Минимальная (крейсерская) скорость — когда нет цели-моба.
+    /// Базовая крейсерская скорость для старых/неизвестных режимов.
     /// </summary>
     [DataField] public float CruiseSpeed = 7f;
+
+    /// <summary>
+    /// Медленный обход последней активности.
+    /// </summary>
+    [DataField] public float LurkSpeed = 2.5f;
+
+    /// <summary>
+    /// Проверка обычного шума и осторожное движение к точкам интереса.
+    /// </summary>
+    [DataField] public float InvestigateSpeed = 4f;
+
+    /// <summary>
+    /// Скорость движения к резкому/сильному шуму.
+    /// </summary>
+    [DataField] public float AlertNoiseSpeed = 8f;
+
+    /// <summary>
+    /// Сила шума, с которой проверка становится быстрым выходом на точку.
+    /// </summary>
+    [DataField] public float AlertNoiseIntensity = 50f;
+
+    /// <summary>
+    /// Скорость движения по старым точкам смерти.
+    /// </summary>
+    [DataField] public float DeathScentSpeed = 3.5f;
+
+    /// <summary>
+    /// Скорость выхода со станции через запомненный пробой.
+    /// </summary>
+    [DataField] public float ExitBreachSpeed = 4.5f;
 
     /// <summary>
     /// Максимальная (погоня) скорость — постепенно нарастает при наличии
@@ -161,14 +234,32 @@ public sealed partial class WhaleBrainComponent : Component
     [DataField] public float SpeedAccel = 2f;
 
     /// <summary>
+    /// Торможение при переходе из погони в спокойный режим.
+    /// </summary>
+    [DataField] public float SpeedBrakeAccel = 5f;
+
+    /// <summary>
     /// Текущая эффективная скорость (плавно меняется).
     /// </summary>
     [ViewVariables] public float CurrentSpeed = 7f;
 
+    /// <summary>
+    /// Последняя целевая скорость выбранного режима. Для whalestatus.
+    /// </summary>
+    [ViewVariables] public float LastDesiredSpeed;
+
     [ViewVariables] public EntityUid? CurrentTarget;
 
+    [ViewVariables] public EntityUid? ForcedHuntTarget;
+
+    [ViewVariables] public TimeSpan LastKillAt;
+
+    [ViewVariables] public TimeSpan NextForcedHuntAt;
+
+    [ViewVariables] public WhaleBehavior CurrentBehavior = WhaleBehavior.Idle;
+
     /// <summary>
-    /// Debug — что решил кит на последнем тике: "mob" / "orbit" / "idle".
+    /// Debug — что решил кит на последнем тике.
     /// </summary>
     [ViewVariables] public string LastPickReason = "init";
 
@@ -183,4 +274,23 @@ public sealed partial class WhaleBrainComponent : Component
     /// </summary>
     [ViewVariables] public int LastVisibleMobs;
 
+    [ViewVariables] public EntityCoordinates? LastActivityCoords;
+
+    [ViewVariables] public EntityCoordinates? LastBreachCoords;
+
+    [ViewVariables] public EntityCoordinates? InvestigateCoords;
+
+    [ViewVariables] public TimeSpan InvestigateUntil;
+
+    [ViewVariables] public float ActiveNoiseIntensity;
+
+    [ViewVariables] public EntityCoordinates? LurkCoords;
+
+    [ViewVariables] public TimeSpan NextLurkPick;
+
+    [ViewVariables] public EntityCoordinates? ActiveDeathScentCoords;
+
+    [ViewVariables] public TimeSpan ActiveDeathScentUntil;
+
+    [ViewVariables] public List<WhaleDeathScent> DeathScents = new();
 }

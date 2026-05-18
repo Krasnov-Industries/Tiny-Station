@@ -1,8 +1,8 @@
 # Simple space leviathan pass:
-#  - HP 4000
+#  - HP 3000
 #  - Bite + Roar (no phases, no Ram/TailSwipe/Retreat/PainLearning/RecentKills)
 #  - Wall-breaking through DamageOnCollide while the body keeps contact.
-#  - WhaleBrain (one tick): pick target (LOS 60 / orbit 10 from station rim).
+#  - WhaleBrain (one tick): hunt visible mobs, moving grids, noise, old death points, or lurk.
 # See LEGACY.md for what got pulled out and how to bring it back.
 
 - type: entity
@@ -71,7 +71,6 @@
       0: Alive
       3000: Dead
   - type: Damageable
-    damageContainer: Biological
     damageModifierSet: SpaceLeviathan
   - type: Destructible
     thresholds:
@@ -101,11 +100,11 @@
     damage:
       types:
         Structural: 100
-        Blunt: 13
-        Slash: 5
-        Piercing: 5
-        Heat: 24
-        Shock: 30
+        Blunt: 8
+        Slash: 3
+        Piercing: 3
+        Heat: 12
+        Shock: 15
   - type: WhaleAura
   - type: WhaleMemory
     aggressionWindow: 30
@@ -113,7 +112,30 @@
   - type: WhaleBrain
     tickInterval: 0.3
     sightRadius: 60
-    orbitClearance: 10
+    lurkMinRadius: 15
+    lurkMaxRadius: 40
+    lurkPickInterval: 15
+    deathScentTtl: 300
+    maxDeathScents: 10
+    investigateDuration: 30
+    noiseInterestRadius: 200
+    investigateArrivalRadius: 4
+    deathScentFollowDuration: 20
+    deathScentArrivalRadius: 4
+    lurkArrivalRadius: 5
+    breachExitArrivalRadius: 3
+    forcedHuntNoKillDelay: 300
+    forcedHuntReleaseRadius: 35
+    cruiseSpeed: 7
+    lurkSpeed: 2.5
+    investigateSpeed: 4
+    alertNoiseSpeed: 8
+    alertNoiseIntensity: 50
+    deathScentSpeed: 3.5
+    exitBreachSpeed: 4.5
+    huntingSpeed: 14
+    speedAccel: 2
+    speedBrakeAccel: 5
   - type: Devourer
     whitelist:
       components:
@@ -178,8 +200,8 @@
     damage:
       types:
         Structural: 33
-        Blunt: 4
-        Slash: 2
-        Piercing: 2
-        Heat: 8
-        Shock: 10
+        Blunt: 2
+        Slash: 1
+        Piercing: 1
+        Heat: 4
+        Shock: 5

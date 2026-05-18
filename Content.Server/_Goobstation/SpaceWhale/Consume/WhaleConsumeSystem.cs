@@ -1,3 +1,4 @@
+using Content.Server._Goobstation.SpaceWhale.Brain;
 using Content.Server._Goobstation.SpaceWhale.Threat;
 using Content.Shared.CCVar;
 using Content.Shared.Damage;
@@ -7,6 +8,7 @@ using Content.Shared.FixedPoint;
 using Content.Shared.Mobs;
 using Content.Shared.Mobs.Components;
 using Content.Shared.Mobs.Systems;
+using Content.Shared.PAI;
 using Robust.Shared.Configuration;
 using Robust.Shared.Containers;
 using Robust.Shared.Timing;
@@ -41,6 +43,7 @@ public sealed partial class WhaleConsumeSystem : EntitySystem
     [Dependency] private DamageableSystem _damageable = default!;
     [Dependency] private MobStateSystem _mobState = default!;
     [Dependency] private WhaleThreatSystem _threat = default!;
+    [Dependency] private WhaleBrainSystem _brain = default!;
 
     public override void Update(float frameTime)
     {
@@ -81,6 +84,8 @@ public sealed partial class WhaleConsumeSystem : EntitySystem
             if (!_mobState.IsIncapacitated(target, candidate.Comp))
                 continue;
 
+            _brain.RememberDeathScent(whale, Transform(target).Coordinates);
+
             // Tag before inserting so it survives a later gib release.
             var tag = EnsureComp<WhaleEatenCorpseComponent>(target);
             tag.EatenAt = _timing.CurTime;
@@ -101,8 +106,26 @@ public sealed partial class WhaleConsumeSystem : EntitySystem
             ate++;
         }
 
+        foreach (var candidate in _lookup.GetEntitiesInRange<PAIComponent>(xform.Coordinates, consumer.SearchRadius))
+        {
+            var target = candidate.Owner;
+            if (target == whale || HasComp<WhaleEatenCorpseComponent>(target))
+                continue;
+
+            var tag = EnsureComp<WhaleEatenCorpseComponent>(target);
+            tag.EatenAt = _timing.CurTime;
+
+            if (!_container.Insert(target, devourer.Stomach))
+            {
+                RemComp<WhaleEatenCorpseComponent>(target);
+                continue;
+            }
+
+            ate++;
+        }
+
         if (ate > 0)
-            _threat.LogWhale($"Consumed {ate} corpse(s), healed");
+            _threat.LogWhale($"Consumed {ate} target(s)");
     }
 
     private static DamageSpecifier CreateHealSpecifier(float heal)
