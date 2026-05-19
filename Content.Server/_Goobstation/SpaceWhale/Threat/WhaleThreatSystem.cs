@@ -90,31 +90,33 @@ public sealed partial class WhaleThreatSystem : EntitySystem
         _nextWhaleAliveCue = _timing.CurTime + GetAliveCueInterval();
     }
 
-    public void Awaken(string reason, EntityCoordinates? noise = null)
+    public void Awaken(string reason)
     {
         if (!_cfg.GetCVar(CCVars.WhaleEnabled) || _state.IsAwakened)
             return;
 
         _state.IsAwakened = true;
-        _state.Threat = Math.Max(_state.Threat, Math.Min(100f, GetThreatMax()));
-
-        if (noise != null)
-            AddNoise(noise.Value, 30f);
+        _state.Threat = 0f;
+        _state.RecentNoises.Clear();
+        _state.WarningAnnounced = false;
+        _state.AwakenedAt = _timing.CurTime;
 
         PlayEventStartCue();
         _chat.DispatchGlobalAnnouncement(Loc.GetString("threat-awakening-announcement"), colorOverride: Color.Gold);
         LogWhale($"Awakening triggered: {reason}");
     }
 
-    public void AddThreat(float amount, EntityCoordinates? noise = null)
+    public bool WasAwakenedThisTick()
+    {
+        return _state.IsAwakened && _state.AwakenedAt == _timing.CurTime;
+    }
+
+    public void AddThreat(float amount)
     {
         if (!_state.IsAwakened)
             return;
 
         _state.Threat = ClampThreat(_state.Threat + amount);
-        if (noise != null && amount > 0f)
-            AddNoise(noise.Value, amount);
-
     }
 
     /// <summary>
@@ -182,48 +184,11 @@ public sealed partial class WhaleThreatSystem : EntitySystem
         _state.RecentNoises.RemoveAll(n => now - n.LastUpdatedAt > maxAge);
     }
 
-    /// <summary>
-    /// Returns the most intense recent noise (any age within max), used to determine
-    /// the direction from which the whale should spawn. Ignores distance and map of the whale
-    /// (whale doesn't exist yet at spawn time).
-    /// </summary>
-    public bool TryGetSpawnOrigin(out EntityCoordinates coords)
-    {
-        coords = default;
-        if (_state.RecentNoises.Count == 0)
-            return false;
-
-        WhaleNoiseSnapshot? best = null;
-        var bestScore = -1f;
-        var maxAge = _cfg.GetCVar(CCVars.WhaleNoiseMaxAge);
-        var now = _timing.CurTime;
-
-        foreach (var noise in _state.RecentNoises)
-        {
-            var ageSec = (float)(now - noise.LastUpdatedAt).TotalSeconds;
-            if (ageSec > maxAge)
-                continue;
-
-            var ageFactor = MathF.Max(0f, 1f - ageSec / maxAge);
-            var score = noise.Intensity * ageFactor;
-            if (score > bestScore)
-            {
-                bestScore = score;
-                best = noise;
-            }
-        }
-
-        if (best == null)
-            return false;
-
-        coords = best.Coords;
-        return true;
-    }
-
     public void ResetAll(string reason = "reset")
     {
         _state.Threat = 0f;
         _state.IsAwakened = false;
+        _state.AwakenedAt = TimeSpan.Zero;
         _state.RecentNoises.Clear();
         _state.CurrentWhale = null;
         _state.FarFromStationSince.Clear();

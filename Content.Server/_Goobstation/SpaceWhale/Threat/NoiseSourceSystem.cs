@@ -2,7 +2,6 @@ using Content.Server.Shuttles.Components;
 using Content.Shared.CCVar;
 using Content.Shared.Humanoid;
 using Content.Shared.Mobs.Components;
-using Content.Shared.Mobs.Systems;
 using Content.Shared.Tag;
 using Robust.Shared.Configuration;
 using Robust.Shared.Map;
@@ -17,7 +16,6 @@ public sealed partial class NoiseSourceSystem : EntitySystem
     [Dependency] private IConfigurationManager _cfg = default!;
     [Dependency] private IGameTiming _timing = default!;
     [Dependency] private WhaleThreatSystem _threat = default!;
-    [Dependency] private MobStateSystem _mobState = default!;
     [Dependency] private TagSystem _tag = default!;
     [Dependency] private SharedMapSystem _map = default!;
 
@@ -46,15 +44,14 @@ public sealed partial class NoiseSourceSystem : EntitySystem
 
     private void OnExplosion(SpaceWhaleExplosionEvent ev)
     {
-        if (!_threat.State.IsAwakened)
+        if (!_threat.State.IsAwakened || _threat.WasAwakenedThisTick())
             return;
 
         var threatAmount = ev.TotalIntensity switch
         {
-            > 200f => 60f,
-            > 50f => 30f,
-            > 30f => 15f,
-            > 10f => 5f,
+            > 200f => 40f,
+            > 50f => 18f,
+            > 10f => 4f,
             _ => 0f,
         };
 
@@ -71,7 +68,7 @@ public sealed partial class NoiseSourceSystem : EntitySystem
 
     public void AddGunNoise(EntityUid gun)
     {
-        if (!_cfg.GetCVar(CCVars.WhaleEnabled) || !_threat.State.IsAwakened)
+        if (!_cfg.GetCVar(CCVars.WhaleEnabled) || !_threat.State.IsAwakened || _threat.WasAwakenedThisTick())
             return;
 
         var xform = Transform(gun);
@@ -79,8 +76,8 @@ public sealed partial class NoiseSourceSystem : EntitySystem
             return;
 
         var isHeavy = _tag.HasTag(gun, HeavyShipWeaponTag);
-        var threatAmount = isHeavy ? 2f : 0.2f;
-        var noiseIntensity = isHeavy ? 5f : 1f;
+        var threatAmount = isHeavy ? 8f : 0.2f;
+        var noiseIntensity = isHeavy ? 20f : 1f;
 
         _threat.AddThreat(threatAmount);
         _threat.AddNoise(xform.Coordinates, noiseIntensity);
@@ -98,19 +95,20 @@ public sealed partial class NoiseSourceSystem : EntitySystem
                 continue;
 
             // Shuttles feed threat (escalation), but don't pollute the per-position noise list.
-            _threat.AddThreat(0.3f);
+            _threat.AddThreat(0.2f);
         }
     }
 
     private void AddEvaNoise()
     {
+        var awakenDistance = _cfg.GetCVar(CCVars.WhaleAwakenDistance);
         var query = EntityQueryEnumerator<HumanoidProfileComponent, MobStateComponent, TransformComponent>();
         while (query.MoveNext(out var uid, out _, out var mobState, out var xform))
         {
-            if (xform.GridUid != null || !_mobState.IsAlive(uid, mobState))
+            if (!_threat.IsLivingHumanoidFarFromStation(uid, xform, mobState, awakenDistance))
                 continue;
 
-            _threat.AddThreat(0.05f);
+            _threat.AddThreat(0.03f);
         }
     }
 }

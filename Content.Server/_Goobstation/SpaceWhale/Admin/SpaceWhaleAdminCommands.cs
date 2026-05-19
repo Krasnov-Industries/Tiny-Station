@@ -364,7 +364,7 @@ public sealed partial class WhaleAwakenCommand : SpaceWhaleCommandBase
             ? EntManager.GetComponent<TransformComponent>(ent).Coordinates
             : (EntityCoordinates?) null;
 
-        Threat.Awaken("админская команда", coords);
+        Threat.Awaken("админская команда");
 
         if (TryGetWhale(out var existing))
         {

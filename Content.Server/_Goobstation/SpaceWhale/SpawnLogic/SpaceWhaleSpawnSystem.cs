@@ -16,7 +16,7 @@ namespace Content.Server._Goobstation.SpaceWhale.SpawnLogic;
 
 public sealed partial class SpaceWhaleSpawnSystem : EntitySystem
 {
-    private const float SpawnDistanceFromStation = 2000f;
+    private const float SpawnDistanceFromStation = 1000f;
 
     private static readonly SoundSpecifier SpawnSound = new SoundPathSpecifier("/Audio/_Goobstation/Ambience/SpaceWhale/leviathan-appear.ogg");
 
@@ -42,18 +42,8 @@ public sealed partial class SpaceWhaleSpawnSystem : EntitySystem
         if (!force && preferred == null && state.Threat < _cfg.GetCVar(CCVars.WhaleThreatSpawnAt))
             return false;
 
-        EntityCoordinates? origin = preferred;
-        if (origin == null && _threat.TryGetSpawnOrigin(out var spawnOrigin))
-            origin = spawnOrigin;
-
-        EntityCoordinates? station = null;
-        if (origin is { } knownOrigin &&
-            _threat.TryGetNearestStation(knownOrigin, out _, out var nearestStation, out _))
-            station = nearestStation;
-        else if (_threat.TryGetRandomStationPoint(out var stationCoords))
-            station = stationCoords;
-
-        if (preferred == null && origin == null && station == null)
+        var station = default(EntityCoordinates);
+        if (preferred == null && !_threat.TryGetRandomStationPoint(out station))
             return false;
 
         MapCoordinates spawnMap;
@@ -63,8 +53,7 @@ public sealed partial class SpaceWhaleSpawnSystem : EntitySystem
         }
         else
         {
-            var anchor = station ?? origin!.Value;
-            var mapOrigin = _transform.ToMapCoordinates(anchor);
+            var mapOrigin = _transform.ToMapCoordinates(station);
             var angle = _random.NextAngle();
             spawnMap = new MapCoordinates(mapOrigin.Position + angle.ToVec() * SpawnDistanceFromStation, mapOrigin.MapId);
         }

@@ -19,7 +19,6 @@ public sealed partial class AwakeningTriggerSystem : EntitySystem
     [Dependency] private TagSystem _tag = default!;
     [Dependency] private WhaleThreatSystem _threat = default!;
     [Dependency] private NoiseSourceSystem _noise = default!;
-    [Dependency] private SharedMapSystem _map = default!;
 
     private static readonly ProtoId<TagPrototype> HeavyShipWeaponTag = "HeavyShipWeapon";
 
@@ -49,15 +48,10 @@ public sealed partial class AwakeningTriggerSystem : EntitySystem
         if (!_cfg.GetCVar(CCVars.WhaleEnabled))
             return;
 
-        var coords = new EntityCoordinates(_map.GetMapOrInvalid(ev.Epicenter.MapId), ev.Epicenter.Position);
-        if (ev.TotalIntensity > _cfg.GetCVar(CCVars.WhaleAwakenNukeForce))
-        {
-            _threat.Awaken("nuke explosion", coords);
+        if (ev.TotalIntensity <= _cfg.GetCVar(CCVars.WhaleAwakenNukeForce) || HasGridAt(ev.Epicenter))
             return;
-        }
 
-        if (ev.TotalIntensity > _cfg.GetCVar(CCVars.WhaleAwakenExplosion) && !HasGridAt(ev.Epicenter))
-            _threat.Awaken("C4 in space", coords);
+        _threat.Awaken("major explosion in space");
     }
 
     private void OnGunShot(Entity<GunComponent> gun, ref GunShotEvent args)
@@ -69,8 +63,11 @@ public sealed partial class AwakeningTriggerSystem : EntitySystem
         if (xform.GridUid != null)
             return;
 
-        if (_tag.HasTag(gun.Owner, HeavyShipWeaponTag))
-            _threat.Awaken("ship weapon in space", xform.Coordinates);
+        if (!_threat.State.IsAwakened && _tag.HasTag(gun.Owner, HeavyShipWeaponTag))
+        {
+            _threat.Awaken("ship weapon in space");
+            return;
+        }
 
         _noise.AddGunNoise(gun.Owner);
     }
@@ -91,7 +88,7 @@ public sealed partial class AwakeningTriggerSystem : EntitySystem
                 if (!state.FarFromStationSince.TryGetValue(uid, out var since))
                     state.FarFromStationSince[uid] = _timing.CurTime;
                 else if (_timing.CurTime - since >= awakenTime)
-                    _threat.Awaken("player far from station", xform.Coordinates);
+                    _threat.Awaken("player far from station");
             }
             else
             {

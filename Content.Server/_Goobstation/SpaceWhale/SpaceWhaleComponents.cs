@@ -34,6 +34,7 @@ public sealed class WhaleThreatState
 {
     public float Threat;
     public bool IsAwakened;
+    [ViewVariables] public TimeSpan AwakenedAt;
     [ViewVariables] public List<WhaleNoiseSnapshot> RecentNoises = new();
     [ViewVariables] public EntityUid? CurrentWhale;
     [ViewVariables] public Dictionary<EntityUid, TimeSpan> FarFromStationSince = new();

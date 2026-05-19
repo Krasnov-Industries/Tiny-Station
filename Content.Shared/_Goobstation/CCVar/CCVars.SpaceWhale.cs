@@ -49,9 +49,6 @@ public sealed partial class CCVars
     public static readonly CVarDef<float> WhaleAwakenDistanceTime =
         CVarDef.Create("whale.awaken_distance_time", 600f, CVar.SERVER);
 
-    public static readonly CVarDef<float> WhaleAwakenExplosion =
-        CVarDef.Create("whale.awaken_explosion", 50f, CVar.SERVER);
-
     public static readonly CVarDef<float> WhaleAwakenNukeForce =
         CVarDef.Create("whale.awaken_nuke_force", 200f, CVar.SERVER);
 
