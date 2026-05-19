@@ -143,6 +143,10 @@
   - type: WhaleConsumer
     searchRadius: 4.0
     scanInterval: 1.0
+  # Sum of organ StaticPrice on gib = 3.8M (4×rib 250k + heart 800k + stomach 800k + brain 1.2M).
+  # Set whale price strictly above so MaterialArbitrageTest.NoMaterialArbitrage passes.
+  - type: StaticPrice
+    price: 4000000
 
 - type: entity
   id: SpaceLeviathan
