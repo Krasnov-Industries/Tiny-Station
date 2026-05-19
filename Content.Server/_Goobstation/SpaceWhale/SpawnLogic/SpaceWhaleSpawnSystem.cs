@@ -16,6 +16,8 @@ namespace Content.Server._Goobstation.SpaceWhale.SpawnLogic;
 
 public sealed partial class SpaceWhaleSpawnSystem : EntitySystem
 {
+    private const float SpawnDistanceFromStation = 2000f;
+
     private static readonly SoundSpecifier SpawnSound = new SoundPathSpecifier("/Audio/_Goobstation/Ambience/SpaceWhale/leviathan-appear.ogg");
 
     [Dependency] private IConfigurationManager _cfg = default!;
@@ -64,8 +66,7 @@ public sealed partial class SpaceWhaleSpawnSystem : EntitySystem
             var anchor = station ?? origin!.Value;
             var mapOrigin = _transform.ToMapCoordinates(anchor);
             var angle = _random.NextAngle();
-            var distance = _random.NextFloat(80f, 120f);
-            spawnMap = new MapCoordinates(mapOrigin.Position + angle.ToVec() * distance, mapOrigin.MapId);
+            spawnMap = new MapCoordinates(mapOrigin.Position + angle.ToVec() * SpawnDistanceFromStation, mapOrigin.MapId);
         }
 
         if (spawnMap.MapId == MapId.Nullspace)
