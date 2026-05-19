@@ -275,7 +275,7 @@ public sealed partial class WhaleBrainSystem : EntitySystem
         if (brain.ForcedHuntTarget is { } existing)
         {
             if (IsValidWhaleMobTarget(whale, existing) &&
-                TryComp<TransformComponent>(existing, out var existingXform) &&
+                TryComp(existing, out TransformComponent? existingXform) &&
                 TryGetDistance(xform.Coordinates, existingXform.Coordinates, out var existingDistance))
             {
                 if (!CanReleaseForcedHunt(whale, brain, existing, existingDistance))
@@ -1145,7 +1145,7 @@ public sealed partial class WhaleBrainSystem : EntitySystem
         coords = default;
 
         if (!TryComp<MapGridComponent>(stationGrid, out var grid) ||
-            !TryComp<TransformComponent>(stationGrid, out var gridXform))
+            !TryComp(stationGrid, out TransformComponent? gridXform))
             return false;
 
         var fromMap = _transform.ToMapCoordinates(from);
@@ -1177,7 +1177,7 @@ public sealed partial class WhaleBrainSystem : EntitySystem
     private bool IsOutsideStationGridBounds(EntityCoordinates coords, EntityUid stationGrid)
     {
         if (!TryComp<MapGridComponent>(stationGrid, out var grid) ||
-            !TryComp<TransformComponent>(stationGrid, out var gridXform))
+            !TryComp(stationGrid, out TransformComponent? gridXform))
             return false;
 
         var map = _transform.ToMapCoordinates(coords);

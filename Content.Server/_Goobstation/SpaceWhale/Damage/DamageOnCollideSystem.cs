@@ -118,8 +118,8 @@ public sealed partial class DamageOnCollideSystem : EntitySystem
         if (HasComp<MobStateComponent>(target))
             return;
 
-        if (!TryComp<TransformComponent>(target, out var targetXform) ||
-            !TryComp<TransformComponent>(owner, out var ownerXform))
+        if (!TryComp(target, out TransformComponent? targetXform) ||
+            !TryComp(owner, out TransformComponent? ownerXform))
             return;
 
         var stationGrid = targetXform.GridUid;
@@ -139,7 +139,7 @@ public sealed partial class DamageOnCollideSystem : EntitySystem
         if (!TryComp<MobStateComponent>(target, out var mob) || mob.CurrentState != MobState.Dead)
             return;
 
-        if (!TryComp<TransformComponent>(target, out var xform))
+        if (!TryComp(target, out TransformComponent? xform))
             return;
 
         _brain.RememberDeathScent(GetWhaleOwner(owner), xform.Coordinates);
