@@ -33,9 +33,103 @@ public abstract partial class SpaceWhaleCommandBase : IConsoleCommand
     protected WhaleAbilitySystem Ability => EntManager.System<WhaleAbilitySystem>();
     protected WhaleBrainSystem Brain => EntManager.System<WhaleBrainSystem>();
 
-    protected EntityUid? Whale => Threat.State.CurrentWhale != null && EntManager.EntityExists(Threat.State.CurrentWhale.Value)
-        ? Threat.State.CurrentWhale.Value
-        : null;
+    protected EntityUid? Whale => TryGetWhale(out var whale) ? whale : null;
+
+    protected bool TryGetWhale(out EntityUid whale)
+    {
+        whale = default;
+
+        if (Threat.State.CurrentWhale is { } current && IsLiveWhaleHead(current))
+        {
+            whale = current;
+            return true;
+        }
+
+        if (TryFindWhaleHead(out whale))
+        {
+            Threat.SetCurrentWhale(whale);
+            return true;
+        }
+
+        Threat.SetCurrentWhale(null);
+        return false;
+    }
+
+    protected bool TryFindWhaleHead(out EntityUid whale)
+    {
+        whale = default;
+
+        var query = EntManager.AllEntityQueryEnumerator<WhaleBrainComponent, TransformComponent>();
+        while (query.MoveNext(out var uid, out _, out _))
+        {
+            if (!IsLiveEntity(uid))
+                continue;
+
+            whale = uid;
+            return true;
+        }
+
+        return false;
+    }
+
+    protected List<EntityUid> GetWhaleHeads()
+    {
+        var whales = new List<EntityUid>();
+        var query = EntManager.AllEntityQueryEnumerator<WhaleBrainComponent, TransformComponent>();
+        while (query.MoveNext(out var uid, out _, out _))
+        {
+            if (IsLiveEntity(uid))
+                AddUnique(whales, uid);
+        }
+
+        return whales;
+    }
+
+    protected List<EntityUid> GetWhaleSegments()
+    {
+        var segments = new List<EntityUid>();
+        var query = EntManager.AllEntityQueryEnumerator<SpaceWhaleSegmentComponent, TransformComponent>();
+        while (query.MoveNext(out var uid, out _, out _))
+        {
+            if (IsLiveEntity(uid))
+                AddUnique(segments, uid);
+        }
+
+        return segments;
+    }
+
+    protected (int Heads, int Segments) QueueDeleteAllWhales()
+    {
+        var heads = GetWhaleHeads();
+        var segments = GetWhaleSegments();
+
+        foreach (var whale in heads)
+            EntManager.QueueDeleteEntity(whale);
+
+        foreach (var segment in segments)
+            EntManager.QueueDeleteEntity(segment);
+
+        Threat.SetCurrentWhale(null);
+        return (heads.Count, segments.Count);
+    }
+
+    protected bool IsLiveWhaleHead(EntityUid uid)
+    {
+        return IsLiveEntity(uid) && EntManager.HasComponent<WhaleBrainComponent>(uid);
+    }
+
+    protected bool IsLiveEntity(EntityUid uid)
+    {
+        return EntManager.EntityExists(uid)
+            && EntManager.TryGetComponent<MetaDataComponent>(uid, out var meta)
+            && meta.EntityLifeStage < EntityLifeStage.Terminating;
+    }
+
+    private static void AddUnique(List<EntityUid> entities, EntityUid uid)
+    {
+        if (!entities.Contains(uid))
+            entities.Add(uid);
+    }
 
     protected bool TryGetCoordinates(IConsoleShell shell, string[] args, int start, out EntityCoordinates coords)
     {
@@ -158,18 +252,18 @@ public abstract partial class SpaceWhaleCommandBase : IConsoleCommand
 public sealed partial class WhaleDespawnCommand : SpaceWhaleCommandBase
 {
     public override string Command => "whaledespawn";
-    public override string Description => "Удалить текущего космического кита.";
+    public override string Description => "Удалить всех космических китов и их сегменты.";
     public override void Execute(IConsoleShell shell, string argStr, string[] args)
     {
-        if (Whale is not { } whale)
+        var deleted = QueueDeleteAllWhales();
+        var total = deleted.Heads + deleted.Segments;
+        if (total == 0)
         {
             shell.WriteLine("Кит не найден.");
             return;
         }
 
-        EntManager.QueueDeleteEntity(whale);
-        Threat.SetCurrentWhale(null);
-        shell.WriteLine("Удаление кита поставлено в очередь.");
+        shell.WriteLine($"Удаление китов поставлено в очередь: голов {deleted.Heads}, сегментов {deleted.Segments}.");
     }
 }
 
@@ -185,6 +279,7 @@ public sealed partial class WhaleStatusCommand : SpaceWhaleCommandBase
         shell.WriteLine("=== Космический кит ===");
         shell.WriteLine($"Пробуждён: {FormatBool(state.IsAwakened)}");
         shell.WriteLine($"Угроза: {state.Threat:0.##} / {threatMax:0.##}");
+        shell.WriteLine($"Китов в мире: {GetWhaleHeads().Count}; сегментов: {GetWhaleSegments().Count}");
         shell.WriteLine($"Кит: {FormatEntity(Whale)}");
 
         if (Whale is not { } wid)
@@ -262,11 +357,30 @@ public sealed partial class WhaleThreatCommand : SpaceWhaleCommandBase
 public sealed partial class WhaleAwakenCommand : SpaceWhaleCommandBase
 {
     public override string Command => "whaleawaken";
-    public override string Description => "Пробудить кита около администратора.";
+    public override string Description => "Пробудить и создать кита около администратора.";
     public override void Execute(IConsoleShell shell, string argStr, string[] args)
     {
-        Threat.Awaken("админская команда", shell.Player?.AttachedEntity is { } ent ? EntManager.GetComponent<TransformComponent>(ent).Coordinates : null);
-        shell.WriteLine("Кит пробуждён.");
+        var coords = shell.Player?.AttachedEntity is { } ent
+            ? EntManager.GetComponent<TransformComponent>(ent).Coordinates
+            : (EntityCoordinates?) null;
+
+        Threat.Awaken("админская команда", coords);
+
+        if (TryGetWhale(out var existing))
+        {
+            shell.WriteLine($"Кит уже есть: {FormatEntity(existing)}.");
+            return;
+        }
+
+        if (!SpawnSystem.TrySpawn(coords, true))
+        {
+            shell.WriteLine("Кит пробуждён, но создать его не удалось.");
+            return;
+        }
+
+        shell.WriteLine(TryGetWhale(out var whale)
+            ? $"Кит пробуждён и создан: {FormatEntity(whale)}."
+            : "Кит пробуждён и создан.");
     }
 }
 
@@ -274,17 +388,14 @@ public sealed partial class WhaleAwakenCommand : SpaceWhaleCommandBase
 public sealed partial class WhaleCalmCommand : SpaceWhaleCommandBase
 {
     public override string Command => "whalecalm";
-    public override string Description => "Сбросить угрозу и удалить активного кита.";
+    public override string Description => "Сбросить угрозу и удалить всех китов.";
     public override void Execute(IConsoleShell shell, string argStr, string[] args)
     {
-        var whale = Whale;
-        if (whale != null)
-            EntManager.QueueDeleteEntity(whale.Value);
-
+        var deleted = QueueDeleteAllWhales();
         Threat.ResetAll("админская команда");
-        shell.WriteLine(whale == null
+        shell.WriteLine(deleted.Heads + deleted.Segments == 0
             ? "Состояние кита сброшено."
-            : "Состояние кита сброшено, активный кит поставлен на удаление.");
+            : $"Состояние кита сброшено, удаление поставлено в очередь: голов {deleted.Heads}, сегментов {deleted.Segments}.");
     }
 }
 
@@ -296,6 +407,12 @@ public sealed partial class WhaleSpawnCommand : SpaceWhaleCommandBase
     public override string Help => "whalespawn [x y]";
     public override void Execute(IConsoleShell shell, string argStr, string[] args)
     {
+        if (TryGetWhale(out var existing))
+        {
+            shell.WriteLine($"Кит уже существует: {FormatEntity(existing)}. Для пересоздания используйте whaledespawn.");
+            return;
+        }
+
         EntityCoordinates? coords = null;
         if (args.Length != 0 || shell.Player?.AttachedEntity is { })
         {
@@ -311,7 +428,9 @@ public sealed partial class WhaleSpawnCommand : SpaceWhaleCommandBase
         if (!SpawnSystem.TrySpawn(coords, true))
             shell.WriteLine("Не удалось создать кита.");
         else
-            shell.WriteLine("Кит создан.");
+            shell.WriteLine(TryGetWhale(out var whale)
+                ? $"Кит создан: {FormatEntity(whale)}."
+                : "Кит создан.");
     }
 }
 
