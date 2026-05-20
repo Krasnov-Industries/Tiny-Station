@@ -357,29 +357,25 @@ public sealed partial class WhaleThreatCommand : SpaceWhaleCommandBase
 public sealed partial class WhaleAwakenCommand : SpaceWhaleCommandBase
 {
     public override string Command => "whaleawaken";
-    public override string Description => "Пробудить и создать кита около администратора.";
+    public override string Description => "Пробудить событие и создать кита по штатной логике (в космосе у случайной станции). Для спавна возле админа — whalespawn.";
     public override void Execute(IConsoleShell shell, string argStr, string[] args)
     {
-        var coords = shell.Player?.AttachedEntity is { } ent
-            ? EntManager.GetComponent<TransformComponent>(ent).Coordinates
-            : (EntityCoordinates?) null;
-
-        Threat.Awaken("админская команда");
-
         if (TryGetWhale(out var existing))
         {
             shell.WriteLine($"Кит уже есть: {FormatEntity(existing)}.");
             return;
         }
 
-        if (!SpawnSystem.TrySpawn(coords, true))
+        Threat.Awaken("админская команда");
+
+        if (!SpawnSystem.TrySpawn(null, true))
         {
-            shell.WriteLine("Кит пробуждён, но создать его не удалось.");
+            shell.WriteLine("Кит пробуждён, но создать его не удалось (не найдено подходящих станций).");
             return;
         }
 
         shell.WriteLine(TryGetWhale(out var whale)
-            ? $"Кит пробуждён и создан: {FormatEntity(whale)}."
+            ? $"Кит пробуждён и создан у станции: {FormatEntity(whale)}."
             : "Кит пробуждён и создан.");
     }
 }
