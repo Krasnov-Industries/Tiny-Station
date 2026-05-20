@@ -1,9 +1,18 @@
-# Simple space leviathan pass:
+# Space Leviathan — Tiny-Station fork.
+#
+# Authorship:
+#   - Sprites: Goobstation (Leguia), CC-BY-SA-3.0.
+#     See Resources/Textures/_Goobstation/Mobs/SpaceWhale/leviathan.rsi/meta.json.
+#   - Behaviour, balance, brain/tail/threat/admin systems: written for
+#     Tiny-Station. See Content.Server/_Goobstation/SpaceWhale/ and LEGACY.md
+#     there for what was removed from the HTN-version and how to bring it back.
+#   - This yaml is ours.
+#
+# Краткая модель:
 #  - HP 3000
 #  - Bite + Roar (no phases, no Ram/TailSwipe/Retreat/PainLearning/RecentKills)
 #  - Wall-breaking through DamageOnCollide while the body keeps contact.
 #  - WhaleBrain (one tick): hunt visible mobs, moving grids, noise, old death points, or lurk.
-# See LEGACY.md for what got pulled out and how to bring it back.
 
 - type: entity
   id: SpaceLeviathanBase

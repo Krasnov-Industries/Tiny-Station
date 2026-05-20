@@ -3,6 +3,20 @@
 Этот файл — память о том, что у кита было раньше, и что можно вернуть когда понадобится.
 Бэкап рабочего кода: `~/.claude-work/artifacts/whale_simplify_<timestamp>/`.
 
+## Авторство
+
+- **Спрайты** (`Resources/Textures/_Goobstation/Mobs/SpaceWhale/leviathan.rsi`):
+  Goobstation, автор Leguia, CC-BY-SA-3.0. См. `meta.json` рядом со спрайтами.
+- **Звуки** (`Resources/Audio/_Goobstation/Ambience/SpaceWhale/*`):
+  Goobstation. Лицензии — в репозитории Goob.
+- **Весь код** в `Content.Server/_Goobstation/SpaceWhale/` и
+  `Content.Shared/_Goobstation/CCVar/CCVars.SpaceWhale.cs` написан для
+  Tiny-Station. От Goobstation/исходного форка взяты идея «космический
+  босс с хвостом» и общая архитектура; конкретная реализация (Brain,
+  Tail, Threat, Damage, Consume, Aura, Memory, Admin) — наша.
+- **YAML-прототипы** в `Resources/Prototypes/_Goobstation/.../SpaceWhale/`
+  и `Resources/Prototypes/_Goobstation/.../Leviathan/` — наши.
+
 ## Текущая модель (минимум)
 
 - **HP**: 3000
