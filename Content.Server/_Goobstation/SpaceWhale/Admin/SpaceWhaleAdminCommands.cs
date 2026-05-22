@@ -215,7 +215,7 @@ public abstract partial class SpaceWhaleCommandBase : IConsoleCommand
             WhaleBehavior.ConsumeTarget => "идёт проглотить цель",
             WhaleBehavior.AttackEntity => "атака неживой угрозы",
             WhaleBehavior.AttackMovingGrid => "атака движущегося грида",
-            WhaleBehavior.ExitBreach => "выход через пробой",
+            WhaleBehavior.ExitBreach => "выход со станции",
             WhaleBehavior.InvestigateNoise => "проверка шума",
             WhaleBehavior.FollowDeathScent => "идёт по запаху смерти",
             WhaleBehavior.ForcedMapHunt => "жёсткий поиск моба по карте",
@@ -234,7 +234,7 @@ public abstract partial class SpaceWhaleCommandBase : IConsoleCommand
             "consume-target" => "увидел то, что можно проглотить",
             "attack-entity" => "увидел турель или ядро ИИ",
             "moving-grid" => "нашёл движущийся грид с живыми",
-            "exit-breach" => "пытается выйти через пробой",
+            "exit-breach" => "пытается выйти со станции",
             "noise" => "услышал шум",
             "death-scent" => "нашёл запах смерти",
             "forced-map-hunt" => "5 минут без убийств, выбран ближайший моб",
@@ -369,7 +369,7 @@ public sealed partial class WhaleStatusCommand : SpaceWhaleCommandBase
             shell.WriteLine($"Жёсткий поиск: цель {FormatEntity(brain.ForcedHuntTarget)}; следующий через {Math.Max(0, (brain.NextForcedHuntAt - now).TotalSeconds):0.#}с; последнее убийство {(brain.LastKillAt == TimeSpan.Zero ? "нет" : $"{Math.Max(0, (now - brain.LastKillAt).TotalSeconds):0.#}с назад")}");
             shell.WriteLine($"Запахов смерти в памяти: {brain.DeathScents.Count}");
             shell.WriteLine($"Последняя активность: {FormatCoordinates(brain.LastActivityCoords)}");
-            shell.WriteLine($"Выход через пробой: {FormatCoordinates(brain.LastBreachCoords)}");
+            shell.WriteLine($"Выход со станции: {FormatCoordinates(brain.LastBreachCoords)}");
             shell.WriteLine($"Шум: {FormatCoordinates(brain.InvestigateCoords)}; сила {brain.ActiveNoiseIntensity:0.#}; ещё {Math.Max(0, (brain.InvestigateUntil - now).TotalSeconds):0.#}с");
             shell.WriteLine($"Активный запах смерти: {FormatCoordinates(brain.ActiveDeathScentCoords)} ещё {Math.Max(0, (brain.ActiveDeathScentUntil - now).TotalSeconds):0.#}с");
             shell.WriteLine($"Точка обхода: {FormatCoordinates(brain.LurkCoords)}");
@@ -656,7 +656,7 @@ public sealed partial class WhaleScentCommand : SpaceWhaleCommandBase
 public sealed partial class WhaleBreachCommand : SpaceWhaleCommandBase
 {
     public override string Command => "whalebreach";
-    public override string Description => "Задать точку выхода через пробой для текущего кита.";
+    public override string Description => "Задать резервную точку выхода со станции для текущего кита.";
     public override string Help => "whalebreach [x y]";
     public override void Execute(IConsoleShell shell, string argStr, string[] args)
     {
@@ -667,7 +667,7 @@ public sealed partial class WhaleBreachCommand : SpaceWhaleCommandBase
         }
 
         Brain.RememberBreach(whale, coords);
-        shell.WriteLine($"Точка выхода через пробой задана: {FormatCoordinates(coords)}.");
+        shell.WriteLine($"Резервная точка выхода со станции задана: {FormatCoordinates(coords)}.");
     }
 }
 

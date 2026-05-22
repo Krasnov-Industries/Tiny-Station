@@ -220,7 +220,7 @@ public sealed partial class WhaleBrainComponent : Component
     [DataField] public float DeathScentSpeed = 3.5f;
 
     /// <summary>
-    /// Скорость выхода со станции через запомненный пробой.
+    /// Скорость выхода со станции к вычисленной точке за границей грида.
     /// </summary>
     [DataField] public float ExitBreachSpeed = 4.5f;
 

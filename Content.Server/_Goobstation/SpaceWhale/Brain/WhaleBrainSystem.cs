@@ -29,9 +29,10 @@ namespace Content.Server._Goobstation.SpaceWhale.Brain;
 /// <summary>
 /// Простая модель охотника:
 ///   1. Живая видимая цель, с приоритетом на TopAggressor.
-///   2. Движущийся грид с живыми мобами.
-///   3. Выход через запомненный пробой, если кит оказался внутри станции.
-///   4. Недавний шум, старые точки смерти, брожение около последней активности.
+///   2. Еда/стационарные угрозы, если они видимы.
+///   3. Выход наружу, если кит оказался на гриде станции.
+///   4. Движущийся грид с живыми мобами.
+///   5. Недавний шум, старые точки смерти, брожение около последней активности.
 /// </summary>
 public sealed partial class WhaleBrainSystem : EntitySystem
 {
@@ -50,7 +51,7 @@ public sealed partial class WhaleBrainSystem : EntitySystem
     private const float MeleeRange = 3.5f;
     private const float RoarCooldown = 10f;
     private const float RoarTriggerRadius = 8f;
-    private const float ExitBreachMargin = 10f;
+    private const float StationExitMargin = 40f;
     private const float DeathScentMergeDistance = 3f;
     private const float ForcedHuntCloseReleaseRadius = 6f;
 
@@ -210,6 +211,12 @@ public sealed partial class WhaleBrainSystem : EntitySystem
             return new PickResult(attack, targetCoords, WhaleBehavior.AttackEntity);
         }
 
+        if (TryPickBreachExit(brain, xform, out var breach))
+        {
+            brain.LastPickReason = "exit-breach";
+            return new PickResult(null, breach, WhaleBehavior.ExitBreach);
+        }
+
         // Движущийся грид (шатл / спасательная капсула / прочая жизнь в космосе).
         // Глухой шатл без окон не пропускает свет, но движение его массы кит
         // ощущает — есть кого там пощупать.
@@ -218,12 +225,6 @@ public sealed partial class WhaleBrainSystem : EntitySystem
             RememberActivity(brain, gridCoords);
             brain.LastPickReason = "moving-grid";
             return new PickResult(null, gridCoords, WhaleBehavior.AttackMovingGrid);
-        }
-
-        if (TryPickBreachExit(brain, xform, out var breach))
-        {
-            brain.LastPickReason = "exit-breach";
-            return new PickResult(null, breach, WhaleBehavior.ExitBreach);
         }
 
         if (TryPickNoise(brain, xform, out var noise, out var noiseIntensity))
@@ -361,22 +362,32 @@ public sealed partial class WhaleBrainSystem : EntitySystem
     {
         coords = default;
 
-        if (!IsOnStationGrid(xform))
-            return false;
-
-        if (brain.LastBreachCoords is not { } breach || !breach.IsValid(EntityManager))
-            return false;
-
-        if (!TryGetDistance(xform.Coordinates, breach, out var distance))
-            return false;
-
-        if (distance <= brain.BreachExitArrivalRadius)
+        if (xform.GridUid is not { } stationGrid || !HasComp<StationMemberComponent>(stationGrid))
         {
             brain.LastBreachCoords = null;
             return false;
         }
 
-        coords = breach;
+        if (TryGetStationExitCoords(xform.Coordinates, stationGrid, out var exit) &&
+            TryGetDistance(xform.Coordinates, exit, out var distance) &&
+            distance > brain.BreachExitArrivalRadius)
+        {
+            coords = exit;
+            brain.LastBreachCoords = exit;
+            return true;
+        }
+
+        if (brain.LastBreachCoords is not { } fallback ||
+            !fallback.IsValid(EntityManager) ||
+            !IsOutsideStationGridBounds(fallback, stationGrid) ||
+            !TryGetDistance(xform.Coordinates, fallback, out var fallbackDistance) ||
+            fallbackDistance <= brain.BreachExitArrivalRadius)
+        {
+            brain.LastBreachCoords = null;
+            return false;
+        }
+
+        coords = fallback;
         return true;
     }
 
@@ -873,11 +884,6 @@ public sealed partial class WhaleBrainSystem : EntitySystem
         return false;
     }
 
-    private bool IsOnStationGrid(TransformComponent xform)
-    {
-        return xform.GridUid is { } grid && HasComp<StationMemberComponent>(grid);
-    }
-
     private bool SameMap(EntityCoordinates a, EntityCoordinates b)
     {
         if (!a.IsValid(EntityManager) || !b.IsValid(EntityManager))
@@ -1163,7 +1169,7 @@ public sealed partial class WhaleBrainSystem : EntitySystem
             direction = Vector2.UnitY;
 
         direction = Vector2.Normalize(direction);
-        var exitBounds = grid.LocalAABB.Enlarged(ExitBreachMargin);
+        var exitBounds = grid.LocalAABB.Enlarged(StationExitMargin);
         var distanceToEdge = GetRayBoxExitDistance(center, direction, exitBounds);
         if (distanceToEdge <= 0f || float.IsInfinity(distanceToEdge) || float.IsNaN(distanceToEdge))
             return false;
