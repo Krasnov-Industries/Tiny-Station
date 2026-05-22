@@ -71,11 +71,11 @@ public sealed partial class NoiseSourceSystem : EntitySystem
         if (!_cfg.GetCVar(CCVars.WhaleEnabled) || !_threat.State.IsAwakened || _threat.WasAwakenedThisTick())
             return;
 
+        var isHeavy = _tag.HasTag(gun, HeavyShipWeaponTag);
         var xform = Transform(gun);
-        if (xform.GridUid != null)
+        if (!isHeavy && xform.GridUid != null)
             return;
 
-        var isHeavy = _tag.HasTag(gun, HeavyShipWeaponTag);
         var threatAmount = isHeavy ? 8f : 0.2f;
         var noiseIntensity = isHeavy ? 20f : 1f;
 

@@ -7,6 +7,8 @@ using Content.Server._Goobstation.SpaceWhale.SpawnLogic;
 using Content.Server._Goobstation.SpaceWhale.Threat;
 using Content.Shared.Administration;
 using Content.Shared.CCVar;
+using Content.Shared.Damage;
+using Content.Shared.Damage.Systems;
 using Content.Shared.FixedPoint;
 using Robust.Server.Player;
 using Robust.Shared.Configuration;
@@ -32,6 +34,7 @@ public abstract partial class SpaceWhaleCommandBase : IConsoleCommand
     protected SpaceWhaleSpawnSystem SpawnSystem => EntManager.System<SpaceWhaleSpawnSystem>();
     protected WhaleAbilitySystem Ability => EntManager.System<WhaleAbilitySystem>();
     protected WhaleBrainSystem Brain => EntManager.System<WhaleBrainSystem>();
+    protected DamageableSystem Damageable => EntManager.System<DamageableSystem>();
 
     protected EntityUid? Whale => TryGetWhale(out var whale) ? whale : null;
 
@@ -121,6 +124,7 @@ public abstract partial class SpaceWhaleCommandBase : IConsoleCommand
     protected bool IsLiveEntity(EntityUid uid)
     {
         return EntManager.EntityExists(uid)
+            && !EntManager.IsQueuedForDeletion(uid)
             && EntManager.TryGetComponent<MetaDataComponent>(uid, out var meta)
             && meta.EntityLifeStage < EntityLifeStage.Terminating;
     }
@@ -138,23 +142,25 @@ public abstract partial class SpaceWhaleCommandBase : IConsoleCommand
 
         if (count == 0)
         {
-            if (shell.Player?.AttachedEntity is not { } attached)
+            if (shell.Player?.AttachedEntity is not { } attached ||
+                !EntManager.TryGetComponent<TransformComponent>(attached, out var attachedXform))
                 return false;
 
-            coords = EntManager.GetComponent<TransformComponent>(attached).Coordinates;
+            coords = attachedXform.Coordinates;
             return true;
         }
 
         if (count != 2 ||
             !float.TryParse(args[start], out var x) ||
             !float.TryParse(args[start + 1], out var y) ||
-            shell.Player?.AttachedEntity is not { } ent)
+            shell.Player?.AttachedEntity is not { } ent ||
+            !EntManager.TryGetComponent<TransformComponent>(ent, out var entXform))
         {
             return false;
         }
 
         var transform = EntManager.System<SharedTransformSystem>();
-        var map = transform.GetMapCoordinates(ent);
+        var map = transform.GetMapCoordinates(ent, entXform);
         coords = new EntityCoordinates(
             EntManager.System<SharedMapSystem>().GetMapOrInvalid(map.MapId),
             new Vector2(x, y));
@@ -163,11 +169,21 @@ public abstract partial class SpaceWhaleCommandBase : IConsoleCommand
 
     protected string FormatCoordinates(EntityCoordinates? coords)
     {
-        if (coords is not { } value || !value.IsValid(EntManager))
+        if (coords is not { } value)
             return "нет";
 
-        var map = EntManager.System<SharedTransformSystem>().ToMapCoordinates(value);
-        return $"{map.MapId}:{map.Position.X:0.#},{map.Position.Y:0.#}";
+        try
+        {
+            if (!value.IsValid(EntManager))
+                return "нет";
+
+            var map = EntManager.System<SharedTransformSystem>().ToMapCoordinates(value);
+            return $"{map.MapId}:{map.Position.X:0.#},{map.Position.Y:0.#}";
+        }
+        catch (Exception)
+        {
+            return "нет";
+        }
     }
 
     protected static string FormatBool(bool value)
@@ -177,9 +193,17 @@ public abstract partial class SpaceWhaleCommandBase : IConsoleCommand
 
     protected string FormatEntity(EntityUid? entity)
     {
-        return entity is { } uid && EntManager.EntityExists(uid)
-            ? EntManager.ToPrettyString(uid)
-            : "нет";
+        if (entity is not { } uid || !IsLiveEntity(uid))
+            return "нет";
+
+        try
+        {
+            return EntManager.ToPrettyString(uid);
+        }
+        catch (Exception)
+        {
+            return uid.ToString();
+        }
     }
 
     protected static string FormatBehavior(WhaleBehavior behavior)
@@ -240,6 +264,8 @@ public abstract partial class SpaceWhaleCommandBase : IConsoleCommand
         brain.NextLurkPick = TimeSpan.Zero;
         brain.ActiveDeathScentCoords = null;
         brain.ActiveDeathScentUntil = TimeSpan.Zero;
+        brain.LastKillAt = Timing.CurTime;
+        brain.NextForcedHuntAt = Timing.CurTime + TimeSpan.FromSeconds(brain.ForcedHuntNoKillDelay);
 
         if (clearDeathScents)
             brain.DeathScents.Clear();
@@ -268,6 +294,42 @@ public sealed partial class WhaleDespawnCommand : SpaceWhaleCommandBase
 }
 
 [AdminCommand(AdminFlags.Admin)]
+public sealed partial class WhaleKillCommand : SpaceWhaleCommandBase
+{
+    private static readonly DamageSpecifier KillDamage = new()
+    {
+        DamageDict =
+        {
+            ["Caustic"] = FixedPoint2.New(100000),
+        },
+    };
+
+    public override string Command => "whalekill";
+    public override string Description => "Убить всех космических китов через урон, чтобы сработал дроп.";
+    public override void Execute(IConsoleShell shell, string argStr, string[] args)
+    {
+        var whales = GetWhaleHeads();
+        if (whales.Count == 0)
+        {
+            shell.WriteLine("Кит не найден.");
+            return;
+        }
+
+        var killed = 0;
+        foreach (var whale in whales)
+        {
+            if (!IsLiveWhaleHead(whale))
+                continue;
+
+            if (Damageable.TryChangeDamage(whale, KillDamage, ignoreResistances: true, origin: whale))
+                killed++;
+        }
+
+        shell.WriteLine($"Киты убиты через урон: {killed}. Дроп должен появиться после обработки Destructible.");
+    }
+}
+
+[AdminCommand(AdminFlags.Admin)]
 public sealed partial class WhaleStatusCommand : SpaceWhaleCommandBase
 {
     public override string Command => "whalestatus";
@@ -279,10 +341,13 @@ public sealed partial class WhaleStatusCommand : SpaceWhaleCommandBase
         shell.WriteLine("=== Космический кит ===");
         shell.WriteLine($"Пробуждён: {FormatBool(state.IsAwakened)}");
         shell.WriteLine($"Угроза: {state.Threat:0.##} / {threatMax:0.##}");
-        shell.WriteLine($"Китов в мире: {GetWhaleHeads().Count}; сегментов: {GetWhaleSegments().Count}");
-        shell.WriteLine($"Кит: {FormatEntity(Whale)}");
+        var whales = GetWhaleHeads();
+        var segments = GetWhaleSegments();
+        TryGetWhale(out var wid);
+        shell.WriteLine($"Китов в мире: {whales.Count}; сегментов: {segments.Count}");
+        shell.WriteLine($"Кит: {FormatEntity(wid)}");
 
-        if (Whale is not { } wid)
+        if (wid == default)
             return;
 
         if (EntManager.TryGetComponent<WhaleMemoryComponent>(wid, out var memory))
@@ -437,14 +502,16 @@ public sealed partial class WhaleGotoCommand : SpaceWhaleCommandBase
     public override string Description => "Телепортироваться к текущему киту.";
     public override void Execute(IConsoleShell shell, string argStr, string[] args)
     {
-        if (Whale is not { } whale || shell.Player?.AttachedEntity is not { } ent)
+        if (Whale is not { } whale ||
+            shell.Player?.AttachedEntity is not { } ent ||
+            !EntManager.TryGetComponent<TransformComponent>(whale, out var whaleXform))
         {
             shell.WriteLine("Кит или тело администратора не найдены.");
             return;
         }
 
         var transform = EntManager.System<SharedTransformSystem>();
-        transform.SetCoordinates(ent, EntManager.GetComponent<TransformComponent>(whale).Coordinates);
+        transform.SetCoordinates(ent, whaleXform.Coordinates);
         transform.AttachToGridOrMap(ent);
         shell.WriteLine("Вы телепортированы к киту.");
     }
@@ -457,14 +524,16 @@ public sealed partial class WhaleBringCommand : SpaceWhaleCommandBase
     public override string Description => "Переместить текущего кита к администратору.";
     public override void Execute(IConsoleShell shell, string argStr, string[] args)
     {
-        if (Whale is not { } whale || shell.Player?.AttachedEntity is not { } ent)
+        if (Whale is not { } whale ||
+            shell.Player?.AttachedEntity is not { } ent ||
+            !EntManager.TryGetComponent<TransformComponent>(ent, out var entXform))
         {
             shell.WriteLine("Кит или тело администратора не найдены.");
             return;
         }
 
         var transform = EntManager.System<SharedTransformSystem>();
-        transform.SetCoordinates(whale, EntManager.GetComponent<TransformComponent>(ent).Coordinates);
+        transform.SetCoordinates(whale, entXform.Coordinates);
         transform.AttachToGridOrMap(whale);
 
         ClearBrainNavigation(whale);
@@ -610,7 +679,10 @@ public sealed partial class WhaleAggroCommand : SpaceWhaleCommandBase
     public override string Help => "whaleaggro <игрок|netEntity>";
     public override void Execute(IConsoleShell shell, string argStr, string[] args)
     {
-        if (Whale is not { } whale || args.Length != 1 || !TryResolveTarget(args[0], out var target))
+        if (Whale is not { } whale ||
+            args.Length != 1 ||
+            !TryResolveTarget(args[0], out var target) ||
+            !IsLiveEntity(target))
         {
             shell.WriteLine(Help);
             return;
@@ -623,7 +695,7 @@ public sealed partial class WhaleAggroCommand : SpaceWhaleCommandBase
             new WhaleDamageRecord { Time = Timing.CurTime, Amount = FixedPoint2.New(1) },
         ];
 
-        shell.WriteLine($"Главный раздражитель назначен: {EntManager.ToPrettyString(target)}");
+        shell.WriteLine($"Главный раздражитель назначен: {FormatEntity(target)}");
     }
 
     private bool TryResolveTarget(string value, out EntityUid target)

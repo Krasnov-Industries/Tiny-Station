@@ -1,10 +1,10 @@
 using Content.Server._Goobstation.SpaceWhale.Brain;
 using Content.Server._Goobstation.SpaceWhale.Threat;
 using Content.Shared.CCVar;
-using Content.Shared.Damage;
 using Content.Shared.Damage.Systems;
 using Content.Shared.Devour.Components;
 using Content.Shared.FixedPoint;
+using Content.Shared.Item;
 using Content.Shared.Mobs;
 using Content.Shared.Mobs.Components;
 using Content.Shared.Mobs.Systems;
@@ -16,31 +16,14 @@ using Robust.Shared.Timing;
 namespace Content.Server._Goobstation.SpaceWhale.Consume;
 
 /// <summary>
-/// Auto-eats nearby corpses (any MobState.Dead) and heals the whale.
+/// Auto-eats nearby corpses (any MobState.Dead); digestion heals the whale later.
 /// Eaten bodies get a WhaleEatenCorpseComponent so they can be cleaned up later.
 /// </summary>
 public sealed partial class WhaleConsumeSystem : EntitySystem
 {
-    private static readonly string[] HealedDamageTypes =
-    [
-        "Blunt",
-        "Slash",
-        "Piercing",
-        "Heat",
-        "Cold",
-        "Shock",
-        "Caustic",
-        "Poison",
-        "Radiation",
-        "Asphyxiation",
-        "Bloodloss",
-    ];
-
-    [Dependency] private IConfigurationManager _cfg = default!;
     [Dependency] private IGameTiming _timing = default!;
     [Dependency] private EntityLookupSystem _lookup = default!;
     [Dependency] private SharedContainerSystem _container = default!;
-    [Dependency] private DamageableSystem _damageable = default!;
     [Dependency] private MobStateSystem _mobState = default!;
     [Dependency] private WhaleThreatSystem _threat = default!;
     [Dependency] private WhaleBrainSystem _brain = default!;
@@ -64,7 +47,6 @@ public sealed partial class WhaleConsumeSystem : EntitySystem
     private void TryConsume(EntityUid whale, WhaleConsumerComponent consumer, DevourerComponent devourer, TransformComponent xform)
     {
         var ate = 0;
-        DamageSpecifier? healSpec = null;
 
         foreach (var candidate in _lookup.GetEntitiesInRange<MobStateComponent>(xform.Coordinates, consumer.SearchRadius))
         {
@@ -80,6 +62,10 @@ public sealed partial class WhaleConsumeSystem : EntitySystem
             if (HasComp<WhaleEatenCorpseComponent>(target))
                 continue;
 
+            // pAI and other living items are handled as items, not corpses.
+            if (HasComp<ItemComponent>(target))
+                continue;
+
             // Eat both dead and incapacitated (critical) — easy meal for the whale.
             if (!_mobState.IsIncapacitated(target, candidate.Comp))
                 continue;
@@ -89,6 +75,8 @@ public sealed partial class WhaleConsumeSystem : EntitySystem
             // Tag before inserting so it survives a later gib release.
             var tag = EnsureComp<WhaleEatenCorpseComponent>(target);
             tag.EatenAt = _timing.CurTime;
+            tag.EatenBy = whale;
+            tag.PreserveInStomach = false;
 
             if (!_container.Insert(target, devourer.Stomach))
             {
@@ -96,12 +84,6 @@ public sealed partial class WhaleConsumeSystem : EntitySystem
                 RemComp<WhaleEatenCorpseComponent>(target);
                 continue;
             }
-
-            // Универсальное лечение — снимаем `heal` единиц с каждого
-            // основного типа урона. Если у кита нет урона этого типа, ничего
-            // не происходит (TryChangeDamage не уходит ниже 0).
-            var heal = healSpec ??= CreateHealSpecifier(_cfg.GetCVar(CCVars.WhaleConsumeHeal));
-            _damageable.TryChangeDamage(whale, heal, true, origin: whale);
 
             ate++;
         }
@@ -114,6 +96,8 @@ public sealed partial class WhaleConsumeSystem : EntitySystem
 
             var tag = EnsureComp<WhaleEatenCorpseComponent>(target);
             tag.EatenAt = _timing.CurTime;
+            tag.EatenBy = whale;
+            tag.PreserveInStomach = true;
 
             if (!_container.Insert(target, devourer.Stomach))
             {
@@ -124,19 +108,28 @@ public sealed partial class WhaleConsumeSystem : EntitySystem
             ate++;
         }
 
+        foreach (var candidate in _lookup.GetEntitiesInRange<ItemComponent>(xform.Coordinates, consumer.SearchRadius))
+        {
+            var target = candidate.Owner;
+            if (target == whale ||
+                HasComp<PAIComponent>(target) ||
+                HasComp<WhaleEatenCorpseComponent>(target) ||
+                HasComp<WhaleSpawnedByComponent>(target) ||
+                HasComp<SpaceWhaleSegmentComponent>(target) ||
+                _container.IsEntityInContainer(target))
+            {
+                continue;
+            }
+
+            if (!_container.Insert(target, devourer.Stomach))
+                continue;
+
+            QueueDel(target);
+            ate++;
+        }
+
         if (ate > 0)
             _threat.LogWhale($"Consumed {ate} target(s)");
-    }
-
-    private static DamageSpecifier CreateHealSpecifier(float heal)
-    {
-        var spec = new DamageSpecifier();
-        var amount = FixedPoint2.New(-heal);
-
-        foreach (var type in HealedDamageTypes)
-            spec.DamageDict[type] = amount;
-
-        return spec;
     }
 }
 
@@ -148,6 +141,7 @@ public sealed partial class WhaleStomachCleanupSystem : EntitySystem
 {
     [Dependency] private IConfigurationManager _cfg = default!;
     [Dependency] private IGameTiming _timing = default!;
+    [Dependency] private DamageableSystem _damageable = default!;
 
     private TimeSpan _nextTick;
 
@@ -165,8 +159,17 @@ public sealed partial class WhaleStomachCleanupSystem : EntitySystem
         var query = EntityQueryEnumerator<WhaleEatenCorpseComponent>();
         while (query.MoveNext(out var uid, out var eaten))
         {
+            if (eaten.PreserveInStomach)
+                continue;
+
             if (now - eaten.EatenAt < maxAge)
                 continue;
+
+            if (eaten.EatenBy is { } whale && !TerminatingOrDeleted(whale))
+            {
+                var heal = FixedPoint2.New(-_cfg.GetCVar(CCVars.WhaleConsumeHeal));
+                _damageable.HealDistributed(whale, heal, origin: whale);
+            }
 
             QueueDel(uid);
         }

@@ -88,6 +88,7 @@
         damage: 3000
       behaviors:
       - !type:GibBehavior
+        recursive: false
       - !type:SpawnEntitiesBehavior
         spawn:
           LeviathanRib:

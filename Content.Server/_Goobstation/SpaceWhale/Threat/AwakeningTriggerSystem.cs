@@ -59,11 +59,11 @@ public sealed partial class AwakeningTriggerSystem : EntitySystem
         if (!_cfg.GetCVar(CCVars.WhaleEnabled))
             return;
 
-        var xform = Transform(gun.Owner);
-        if (xform.GridUid != null)
+        var isHeavyShipWeapon = _tag.HasTag(gun.Owner, HeavyShipWeaponTag);
+        if (!isHeavyShipWeapon && Transform(gun.Owner).GridUid != null)
             return;
 
-        if (!_threat.State.IsAwakened && _tag.HasTag(gun.Owner, HeavyShipWeaponTag))
+        if (!_threat.State.IsAwakened && isHeavyShipWeapon)
         {
             _threat.Awaken("ship weapon in space");
             return;

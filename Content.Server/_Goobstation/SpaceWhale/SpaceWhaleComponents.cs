@@ -132,6 +132,8 @@ public sealed partial class DamageOnCollideComponent : Component
 public sealed partial class WhaleEatenCorpseComponent : Component
 {
     [ViewVariables] public TimeSpan EatenAt;
+    [ViewVariables] public EntityUid? EatenBy;
+    [ViewVariables] public bool PreserveInStomach;
 }
 
 [RegisterComponent]

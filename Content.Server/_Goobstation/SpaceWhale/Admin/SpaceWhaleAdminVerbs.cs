@@ -29,12 +29,12 @@ public sealed partial class SpaceWhaleAdminVerbs : EntitySystem
         if (!TryComp<ActorComponent>(args.User, out var actor) || !_admin.HasAdminFlag(actor.PlayerSession, AdminFlags.Admin))
             return;
 
-        AddVerb(args, "Force Roar", () => _ability.TryRoar(ent.Owner, 0f));
-        AddVerb(args, "Heal Full", () => _damageable.TryChangeDamage(ent.Owner, new DamageSpecifier { DamageDict = { ["Blunt"] = FixedPoint2.New(-100000) } }, true));
-        AddVerb(args, "Damage 1000", () => _damageable.TryChangeDamage(ent.Owner, new DamageSpecifier { DamageDict = { ["Blunt"] = FixedPoint2.New(1000) } }, true));
-        AddVerb(args, "Toggle Aura", () => Toggle<WhaleAuraComponent>(ent.Owner));
-        AddVerb(args, "Toggle Memory", () => Toggle<WhaleMemoryComponent>(ent.Owner));
-        AddVerb(args, "Despawn", () => QueueDel(ent.Owner));
+        AddVerb(args, "Заставить рычать", () => _ability.TryRoar(ent.Owner, 0f));
+        AddVerb(args, "Полностью вылечить", () => _damageable.HealDistributed(ent.Owner, FixedPoint2.New(-100000), origin: ent.Owner));
+        AddVerb(args, "Нанести 1000 урона", () => _damageable.TryChangeDamage(ent.Owner, new DamageSpecifier { DamageDict = { ["Blunt"] = FixedPoint2.New(1000) } }, true));
+        AddVerb(args, "Переключить ауру", () => Toggle<WhaleAuraComponent>(ent.Owner));
+        AddVerb(args, "Переключить память", () => Toggle<WhaleMemoryComponent>(ent.Owner));
+        AddVerb(args, "Удалить", () => QueueDel(ent.Owner));
     }
 
     private void AddVerb(GetVerbsEvent<Verb> args, string text, Action act)

@@ -25,7 +25,13 @@ public sealed partial class SpaceWhaleSystem : EntitySystem
         // Devourer.OnGibContents only releases when StomachStorageWhitelist is set,
         // and may not fire at all since we don't have a BodyComponent. Empty manually.
         if (TryComp<DevourerComponent>(ent.Owner, out var devourer) && devourer.Stomach != null)
-            _container.EmptyContainer(devourer.Stomach);
+        {
+            foreach (var released in _container.EmptyContainer(devourer.Stomach))
+            {
+                if (TryComp<WhaleEatenCorpseComponent>(released, out var eaten) && eaten.PreserveInStomach)
+                    RemComp<WhaleEatenCorpseComponent>(released);
+            }
+        }
 
         _threat.ResetAll("whale death");
     }
