@@ -4,6 +4,7 @@
          xmlns:cc="clr-namespace:Content.Client.Administration.UI.CustomControls"
          xmlns:ui="clr-namespace:Content.Client.Lobby.UI"
          xmlns:profile="clr-namespace:Content.Client.Lobby.UI.ProfileEditorControls"
+         xmlns:bark="clr-namespace:Content.Client._SpaceDream.SpeechBarks.UI.CharacterEditor"
          HorizontalExpand="True">
         <!-- Left side -->
         <BoxContainer Orientation="Vertical" Margin="10 10 10 10" HorizontalExpand="True">
@@ -92,6 +93,9 @@
                                     <Control HorizontalExpand="True"/>
                                     <OptionButton Name="SpawnPriorityButton" HorizontalAlignment="Right" />
                                 </BoxContainer>
+                                <!-- SpaceDream added start - speech barks picker -->
+                                <bark:SpeechBarkPicker Name="SpeechBarkPicker" />
+                                <!-- SpaceDream added end -->
                             </BoxContainer>
                             <!-- Skin -->
                             <BoxContainer Margin="10" HorizontalExpand="True" Orientation="Vertical">

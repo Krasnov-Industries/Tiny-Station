@@ -218,6 +218,9 @@ namespace Content.Server.Database
             profile.EyeColor = appearance.EyeColor.ToHex();
             profile.SkinColor = appearance.SkinColor.ToHex();
             profile.SpawnPriority = (int) humanoid.SpawnPriority;
+            // SpaceDream added start - speech bark profile preference
+            profile.SpeechBark = humanoid.Voice?.Id;
+            // SpaceDream added end
             profile.OrganMarkings = JsonSerializer.SerializeToDocument(dataNode.ToJsonNode());
 
             // support for downgrades - at some point this should be removed

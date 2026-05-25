@@ -983,6 +983,10 @@ namespace Content.Server.Database.Migrations.Sqlite
                         .HasColumnType("INTEGER")
                         .HasColumnName("age");
 
+                    b.Property<string>("SpeechBark")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("speech_bark");
+
                     b.Property<string>("CharacterName")
                         .IsRequired()
                         .HasColumnType("TEXT")

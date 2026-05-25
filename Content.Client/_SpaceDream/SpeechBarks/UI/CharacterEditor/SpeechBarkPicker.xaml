@@ -1,0 +1,16 @@
+<BoxContainer xmlns="https://spacestation14.io"
+              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+              Orientation="Horizontal"
+              SeparationOverride="4"
+              HorizontalExpand="True">
+    <Label Text="{Loc 'speech-bark-picker-title'}"
+           VerticalAlignment="Center" />
+    <OptionButton Name="BarkDropdown"
+                  Filterable="True"
+                  HorizontalExpand="True"
+                  MinSize="300 0" />
+    <Button Name="PreviewButton"
+            Text="▶"
+            MinWidth="34"
+            ToolTip="{Loc 'speech-bark-picker-preview'}" />
+</BoxContainer>

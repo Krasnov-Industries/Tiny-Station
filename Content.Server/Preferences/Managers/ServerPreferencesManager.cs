@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Content.Server.Database;
+using Content.Shared._SpaceDream.SpeechBarks.Prototypes;
 using Content.Shared.Body;
 using Content.Shared.CCVar;
 using Content.Shared.Construction.Prototypes;
@@ -167,7 +168,7 @@ namespace Content.Server.Preferences.Managers
                 loadouts[role.RoleName] = loadout;
             }
 
-            return new HumanoidCharacterProfile(
+            var character = new HumanoidCharacterProfile(
                 profile.CharacterName,
                 profile.FlavorText,
                 species,
@@ -187,6 +188,13 @@ namespace Content.Server.Preferences.Managers
                 traits.ToHashSet(),
                 loadouts
             );
+
+            // SpaceDream added start - speech barks profile preference
+            if (!string.IsNullOrEmpty(profile.SpeechBark))
+                character = character.WithVoice(new ProtoId<BarkPrototype>(profile.SpeechBark));
+            // SpaceDream added end
+
+            return character;
         }
 
         private async void HandleSelectCharacterMessage(MsgSelectCharacter message)
