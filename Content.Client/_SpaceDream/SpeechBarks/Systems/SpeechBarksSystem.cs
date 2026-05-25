@@ -25,6 +25,11 @@ public sealed partial class SpeechBarksSystem : EntitySystem
     private const float PreviewVolumeBoost = 3f;
     private const float WhisperVolumeFade = 7f;
     private const float LowpassVolumeFade = 2f;
+    private static readonly float[] NeutralPitchSteps = [0f, 0f, 2f, -2f, 3f, -3f];
+    private static readonly float[] EmphaticPitchSteps = [0f, 2f, 4f, 5f, 7f, -2f];
+    private static readonly float[] QuestionPitchSteps = [0f, 2f, 4f, 5f, 7f];
+    private static readonly float[] TiredPitchSteps = [0f, -1f, -2f, -3f, -5f];
+    private static readonly float[] UnstablePitchSteps = [0f, 1f, -1f, 3f, -3f, 5f, -5f];
     private static readonly TimeSpan FinishedBarkLifetime = TimeSpan.FromSeconds(0.8);
 
     private readonly List<ActiveBark> _activeBarks = new();
@@ -101,18 +106,13 @@ public sealed partial class SpeechBarksSystem : EntitySystem
     public void PlayLocalPreview(BarkPrototype bark)
     {
         StopPreviewBarks();
-        var segment = new SpeechBarkPlaybackSegment(
-            Math.Clamp(bark.Pitch, 0.1f, 4f),
-            Math.Clamp(bark.PitchJitter, 0f, 1f),
-            Math.Clamp(bark.MinDelay, 0.025f, 0.75f),
-            Math.Clamp(bark.MaxDelay, bark.MinDelay, 1f),
-            0f,
-            10,
-            1f,
-            0f,
-            false);
+        var segments = SpeechBarkProsody.BuildPlaybackSegments(
+            SpeechBarkProsody.PreviewText,
+            bark,
+            Math.Min(Math.Max(24, bark.MaxBarks), 42),
+            SpeechBarkCondition.HealthyCondition);
 
-        StartBark(null, bark.Sound, [segment], false, 0f, true, true);
+        StartBark(null, bark.Sound, segments, false, 0f, true, true);
     }
 
     private void OnPlaySpeechBarks(PlaySpeechBarksEvent ev)
@@ -194,11 +194,12 @@ public sealed partial class SpeechBarksSystem : EntitySystem
                 Math.Clamp(segment.PitchJitter, 0f, 1f),
                 minDelay,
                 maxDelay,
-                Math.Clamp(segment.PitchRamp, -0.75f, 0.75f),
+                Math.Clamp(segment.PitchRamp, -4f, 4f),
                 segment.Count,
                 Math.Clamp(segment.VolumeMultiplier, 0f, 3f),
                 Math.Clamp(segment.PauseAfter, 0f, 0.75f),
-                segment.LowpassFilter);
+                segment.LowpassFilter,
+                segment.PitchStepStyle);
         }
 
         if (count == sanitized.Length)
@@ -209,11 +210,11 @@ public sealed partial class SpeechBarksSystem : EntitySystem
 
     private void PlayBark(ActiveBark bark, SpeechBarkPlaybackSegment segment)
     {
-        var pitch = _random.NextFloat(segment.Pitch - segment.PitchJitter, segment.Pitch + segment.PitchJitter);
+        var pitch = GetMusicalPitch(segment);
         if (segment.PitchRamp != 0f)
         {
             var progress = segment.Count <= 1 ? 1f : bark.Played / (float) (segment.Count - 1);
-            pitch += segment.PitchRamp * progress;
+            pitch *= SemitoneToPitch(segment.PitchRamp * progress);
         }
 
         var volumeGain = (bark.Preview ? Math.Max(_volume, 1f) : _volume) * segment.VolumeMultiplier;
@@ -250,6 +251,35 @@ public sealed partial class SpeechBarksSystem : EntitySystem
 
         if (stream != null)
             bark.Streams.Add(stream.Value.Entity);
+    }
+
+    private float GetMusicalPitch(SpeechBarkPlaybackSegment segment)
+    {
+        var steps = GetPitchSteps(segment.PitchStepStyle);
+        var semitone = steps[_random.Next(steps.Length)];
+        var pitch = segment.Pitch * SemitoneToPitch(semitone);
+
+        if (segment.PitchJitter > 0f)
+            pitch *= SemitoneToPitch(_random.NextFloat(-segment.PitchJitter, segment.PitchJitter) * 7f);
+
+        return pitch;
+    }
+
+    private static float[] GetPitchSteps(SpeechBarkPitchStepStyle style)
+    {
+        return style switch
+        {
+            SpeechBarkPitchStepStyle.Emphatic => EmphaticPitchSteps,
+            SpeechBarkPitchStepStyle.Question => QuestionPitchSteps,
+            SpeechBarkPitchStepStyle.Tired => TiredPitchSteps,
+            SpeechBarkPitchStepStyle.Unstable => UnstablePitchSteps,
+            _ => NeutralPitchSteps,
+        };
+    }
+
+    private static float SemitoneToPitch(float semitones)
+    {
+        return MathF.Pow(2f, semitones / 12f);
     }
 
     private void StopBarksFor(EntityUid source)

@@ -37,4 +37,15 @@ public readonly record struct SpeechBarkPlaybackSegment(
     int Count,
     float VolumeMultiplier,
     float PauseAfter,
-    bool LowpassFilter);
+    bool LowpassFilter,
+    SpeechBarkPitchStepStyle PitchStepStyle);
+
+[Serializable, NetSerializable]
+public enum SpeechBarkPitchStepStyle : byte
+{
+    Neutral,
+    Emphatic,
+    Question,
+    Tired,
+    Unstable,
+}
