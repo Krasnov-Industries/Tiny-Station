@@ -1,7 +1,6 @@
 using Content.Shared._SpaceDream.SpeechBarks.Components;
 using Content.Shared._SpaceDream.SpeechBarks.Prototypes;
 using Content.Shared.GameTicking;
-using Content.Shared.Humanoid;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Random;
 
@@ -19,20 +18,11 @@ public sealed partial class SpeechBarksProfileSystem : EntitySystem
         base.Initialize();
 
         SubscribeLocalEvent<PlayerSpawnCompleteEvent>(OnPlayerSpawnComplete);
-        SubscribeLocalEvent<SpeechBarksComponent, SexChangedEvent>(OnSexChanged);
     }
 
     private void OnPlayerSpawnComplete(PlayerSpawnCompleteEvent args)
     {
         AssignBark(args.Mob, args.Profile.Voice);
-    }
-
-    private void OnSexChanged(Entity<SpeechBarksComponent> ent, ref SexChangedEvent args)
-    {
-        if (ent.Comp.BarkPrototype != null && !ent.Comp.RandomlyAssigned)
-            return;
-
-        AssignRandomBark(ent.Owner);
     }
 
     private void AssignBark(EntityUid uid, ProtoId<BarkPrototype>? profileBark)

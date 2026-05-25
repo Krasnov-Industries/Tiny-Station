@@ -68,6 +68,8 @@ public sealed partial class SpeechBarksSystem : EntitySystem
                 continue;
             }
 
+            CleanupStoppedStreams(bark);
+
             if (bark.NextSound > _timing.CurTime)
                 continue;
 
@@ -120,18 +122,23 @@ public sealed partial class SpeechBarksSystem : EntitySystem
         if (!_enabled || _volume <= 0f || ev.Segments.Length == 0)
             return;
 
-        var source = GetEntity(ev.Source);
-        if (Transform(source).MapID == MapId.Nullspace)
+        if (!TryGetEntity(ev.Source, out var source) || source == null)
             return;
 
-        StopBarksFor(source);
-        StartBark(source, ev.Sound, ev.Segments, ev.IsWhisper, ev.MaxDistance, false, false);
+        var sourceUid = source.Value;
+        if (TerminatingOrDeleted(sourceUid) ||
+            !TryComp(sourceUid, out TransformComponent? xform) ||
+            xform.MapID == MapId.Nullspace)
+            return;
+
+        StopBarksFor(sourceUid);
+        StartBark(sourceUid, ev.Sound, ev.Segments, ev.IsWhisper, ev.MaxDistance, false, false);
     }
 
     private void OnInterruptSpeechBarks(InterruptSpeechBarksEvent ev)
     {
-        var source = GetEntity(ev.Source);
-        StopBarksFor(source);
+        if (TryGetEntity(ev.Source, out var source) && source != null)
+            StopBarksFor(source.Value);
     }
 
     private void StartBark(
@@ -165,6 +172,8 @@ public sealed partial class SpeechBarksSystem : EntitySystem
             Preview = preview,
         };
 
+        _activeBarks.Add(active);
+
         if (preview)
         {
             var segment = active.Segments[0];
@@ -172,8 +181,6 @@ public sealed partial class SpeechBarksSystem : EntitySystem
             active.Played = 1;
             active.NextSound = _timing.CurTime + TimeSpan.FromSeconds(_random.NextFloat(segment.MinDelay, segment.MaxDelay));
         }
-
-        _activeBarks.Add(active);
     }
 
     private SpeechBarkPlaybackSegment[] SanitizeSegments(SpeechBarkPlaybackSegment[] segments)
@@ -246,11 +253,17 @@ public sealed partial class SpeechBarksSystem : EntitySystem
         }
         else
         {
+            if (TerminatingOrDeleted(bark.Source.Value))
+                return;
+
             stream = _audio.PlayEntity(resolved, Filter.Local(), bark.Source.Value, false, audioParams);
         }
 
         if (stream != null)
+        {
             bark.Streams.Add(stream.Value.Entity);
+            EnforceStreamLimit();
+        }
     }
 
     private float GetMusicalPitch(SpeechBarkPlaybackSegment segment)
@@ -307,6 +320,41 @@ public sealed partial class SpeechBarksSystem : EntitySystem
             _audio.Stop(stream);
 
         _activeBarks.RemoveAt(index);
+    }
+
+    private void CleanupStoppedStreams(ActiveBark bark)
+    {
+        for (var i = bark.Streams.Count - 1; i >= 0; i--)
+        {
+            var stream = bark.Streams[i];
+            if (TerminatingOrDeleted(stream) || !_audio.IsPlaying(stream))
+                bark.Streams.RemoveAt(i);
+        }
+    }
+
+    private void EnforceStreamLimit()
+    {
+        if (_maxActiveStreams <= 0)
+            return;
+
+        var total = 0;
+        foreach (var bark in _activeBarks)
+        {
+            CleanupStoppedStreams(bark);
+            total += bark.Streams.Count;
+        }
+
+        for (var i = 0; total > _maxActiveStreams && i < _activeBarks.Count; i++)
+        {
+            var bark = _activeBarks[i];
+            while (total > _maxActiveStreams && bark.Streams.Count > 0)
+            {
+                var stream = bark.Streams[0];
+                _audio.Stop(stream);
+                bark.Streams.RemoveAt(0);
+                total--;
+            }
+        }
     }
 
     private sealed class ActiveBark

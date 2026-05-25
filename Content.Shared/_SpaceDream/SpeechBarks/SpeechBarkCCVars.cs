@@ -9,7 +9,10 @@ public sealed class SpeechBarkCCVars
         CVarDef.Create("speechbarks.enabled", true, CVar.SERVERONLY);
 
     public static readonly CVarDef<int> MaxBarksPerPhrase =
-        CVarDef.Create("speechbarks.max_barks_per_phrase", 96, CVar.SERVERONLY);
+        CVarDef.Create("speechbarks.max_barks_per_phrase", 64, CVar.SERVERONLY);
+
+    public static readonly CVarDef<float> MinInterval =
+        CVarDef.Create("speechbarks.min_interval", 0.12f, CVar.SERVERONLY);
 
     public static readonly CVarDef<float> DamageInterruptThreshold =
         CVarDef.Create("speechbarks.damage_interrupt_threshold", 15.0f, CVar.SERVERONLY);

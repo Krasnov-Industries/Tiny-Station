@@ -39,20 +39,17 @@ public static class SpeechBarkProsody
         if (builds.Count == 0 || desiredTotal <= 0f)
             return [];
 
-        var remainingCap = cap;
-        var remainingDesired = desiredTotal;
+        var totalBudget = Math.Min(cap, Math.Max(1, (int) MathF.Ceiling(desiredTotal)));
+        var counts = AllocateBarkCounts(builds, desiredTotal, totalBudget);
         var playbackSegments = new List<SpeechBarkPlaybackSegment>(builds.Count);
 
-        foreach (var build in builds)
+        for (var i = 0; i < builds.Count; i++)
         {
-            if (remainingCap <= 0 || remainingDesired <= 0f)
-                break;
+            var count = counts[i];
+            if (count <= 0)
+                continue;
 
-            var share = build.DesiredCount / remainingDesired * remainingCap;
-            var count = Math.Clamp((int) MathF.Round(share), 1, remainingCap);
-            remainingCap -= count;
-            remainingDesired -= build.DesiredCount;
-
+            var build = builds[i];
             var modifiers = build.Modifiers;
             var delayMultiplier = condition.DelayMultiplier * modifiers.DelayMultiplier;
             var minDelay = Math.Clamp(bark.MinDelay * delayMultiplier, 0.025f, 0.75f);
@@ -88,11 +85,12 @@ public static class SpeechBarkProsody
                 continue;
             }
 
-            if (IsEllipsis(text, i))
+            var ellipsisLength = GetEllipsisLength(text, i);
+            if (ellipsisLength > 0)
             {
                 builder.RegisterEllipsis();
                 AddTextSegment(segments, builder);
-                i += 3;
+                i += ellipsisLength;
                 continue;
             }
 
@@ -115,7 +113,7 @@ public static class SpeechBarkProsody
             while (i < text.Length &&
                    !char.IsWhiteSpace(text[i]) &&
                    !IsSegmentBreak(text[i]) &&
-                   !IsEllipsis(text, i))
+                   GetEllipsisLength(text, i) == 0)
             {
                 i++;
             }
@@ -158,12 +156,75 @@ public static class SpeechBarkProsody
         return character is ',' or ';' or ':' or '.' or '!' or '?';
     }
 
-    private static bool IsEllipsis(string text, int index)
+    private static int GetEllipsisLength(string text, int index)
     {
+        if (text[index] == '\u2026')
+            return 1;
+
         return index + 2 < text.Length &&
                text[index] == '.' &&
                text[index + 1] == '.' &&
-               text[index + 2] == '.';
+               text[index + 2] == '.'
+            ? 3
+            : 0;
+    }
+
+    private static int[] AllocateBarkCounts(List<SegmentBuildData> builds, float desiredTotal, int totalBudget)
+    {
+        var counts = new int[builds.Count];
+        if (builds.Count == 0 || desiredTotal <= 0f || totalBudget <= 0)
+            return counts;
+
+        if (totalBudget < builds.Count)
+        {
+            AllocateSparseBarkCounts(builds, desiredTotal, totalBudget, counts);
+            return counts;
+        }
+
+        var remaining = totalBudget - builds.Count;
+        for (var i = 0; i < counts.Length; i++)
+            counts[i] = 1;
+
+        if (remaining <= 0)
+            return counts;
+
+        var quotas = new List<SegmentQuota>(builds.Count);
+        var assignedExtra = 0;
+
+        for (var i = 0; i < builds.Count; i++)
+        {
+            var exact = builds[i].DesiredCount / desiredTotal * remaining;
+            var extra = Math.Max(0, (int) MathF.Floor(exact));
+            counts[i] += extra;
+            assignedExtra += extra;
+            quotas.Add(new SegmentQuota(i, exact - extra));
+        }
+
+        quotas.Sort((left, right) => right.Remainder.CompareTo(left.Remainder));
+
+        for (var i = 0; assignedExtra < remaining && i < quotas.Count; i++, assignedExtra++)
+            counts[quotas[i].Index]++;
+
+        return counts;
+    }
+
+    private static void AllocateSparseBarkCounts(
+        List<SegmentBuildData> builds,
+        float desiredTotal,
+        int totalBudget,
+        int[] counts)
+    {
+        var buildIndex = 0;
+        var cumulativeDesired = builds[0].DesiredCount;
+
+        for (var slot = 0; slot < totalBudget; slot++)
+        {
+            var target = (slot + 0.5f) * desiredTotal / totalBudget;
+            while (buildIndex + 1 < builds.Count && cumulativeDesired < target)
+                cumulativeDesired += builds[++buildIndex].DesiredCount;
+
+            counts[buildIndex]++;
+        }
     }
 
     private static BarkTokenStyle GetTokenStyle(string token)
@@ -328,6 +389,10 @@ public static class SpeechBarkProsody
         BarkTextSegment Segment,
         BarkProsodyModifiers Modifiers,
         int DesiredCount);
+
+    private readonly record struct SegmentQuota(
+        int Index,
+        float Remainder);
 
     private readonly record struct BarkTextSegment(
         int SpokenCharacters,
