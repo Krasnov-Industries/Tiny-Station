@@ -331,3 +331,6 @@ GEMINI.md
 !CLAUDE.md
 !.claude/skills/
 !.claude/skills/**
+
+# C# Dev Kit cache file
+*.lscache
