@@ -747,6 +747,8 @@ internal sealed partial class PowerMonitoringConsoleSystem : SharedPowerMonitori
         if (!Resolve(uid, ref device, ref nodeContainer, ref xform, false))
             return;
 
+        PruneInvalidCollectionChildren(device);
+
         // If the device is not attached to a network, exit
         var nodeName = device.SourceNode == string.Empty ? device.LoadNode : device.SourceNode;
 
@@ -764,6 +766,9 @@ internal sealed partial class PowerMonitoringConsoleSystem : SharedPowerMonitori
 
                 foreach ((var child, var childDevice) in device.ChildDevices)
                 {
+                    if (child == newMaster)
+                        continue;
+
                     newMasterDevice.ChildDevices.Add(child, childDevice);
 
                     childDevice.CollectionMaster = newMaster;
@@ -830,10 +835,22 @@ internal sealed partial class PowerMonitoringConsoleSystem : SharedPowerMonitori
         return true;
     }
 
+    private void PruneInvalidCollectionChildren(PowerMonitoringDeviceComponent device)
+    {
+        foreach (var child in device.ChildDevices.Keys.ToArray())
+        {
+            if (TryGetCollectionEntityData(child, out _, out _, out _))
+                continue;
+
+            device.ChildDevices.Remove(child);
+        }
+    }
+
     private void UpdateCollectionChildMetaData(EntityUid child, EntityUid master)
     {
-        var netEntity = GetNetEntity(child);
-        var xform = Transform(child);
+        if (!TryGetCollectionEntityData(child, out var netEntity, out var xform, out _) ||
+            !TryGetCollectionEntityData(master, out var masterNetEntity, out _, out _))
+            return;
 
         var query = AllEntityQuery<PowerMonitoringConsoleComponent, TransformComponent>();
         while (query.MoveNext(out var ent, out var entConsole, out var entXform))
@@ -844,7 +861,7 @@ internal sealed partial class PowerMonitoringConsoleSystem : SharedPowerMonitori
             if (!entConsole.PowerMonitoringDeviceMetaData.TryGetValue(netEntity, out var metaData))
                 continue;
 
-            metaData.CollectionMaster = GetNetEntity(master);
+            metaData.CollectionMaster = masterNetEntity;
             entConsole.PowerMonitoringDeviceMetaData[netEntity] = metaData;
 
             Dirty(ent, entConsole);
@@ -853,8 +870,8 @@ internal sealed partial class PowerMonitoringConsoleSystem : SharedPowerMonitori
 
     private void UpdateCollectionMasterMetaData(EntityUid master, int childCount)
     {
-        var netEntity = GetNetEntity(master);
-        var xform = Transform(master);
+        if (!TryGetCollectionEntityData(master, out var netEntity, out var xform, out var masterMetaData))
+            return;
 
         var query = AllEntityQuery<PowerMonitoringConsoleComponent, TransformComponent>();
         while (query.MoveNext(out var ent, out var entConsole, out var entXform))
@@ -867,13 +884,13 @@ internal sealed partial class PowerMonitoringConsoleSystem : SharedPowerMonitori
 
             if (childCount > 0)
             {
-                var name = MetaData(master).EntityPrototype?.Name ?? MetaData(master).EntityName;
+                var name = masterMetaData.EntityPrototype?.Name ?? masterMetaData.EntityName;
                 metaData.EntityName = Loc.GetString("power-monitoring-window-object-array", ("name", name), ("count", childCount + 1));
             }
 
             else
             {
-                metaData.EntityName = MetaData(master).EntityName;
+                metaData.EntityName = masterMetaData.EntityName;
             }
 
             metaData.CollectionMaster = null;
@@ -881,6 +898,28 @@ internal sealed partial class PowerMonitoringConsoleSystem : SharedPowerMonitori
 
             Dirty(ent, entConsole);
         }
+    }
+
+    private bool TryGetCollectionEntityData(
+        EntityUid uid,
+        out NetEntity netEntity,
+        out TransformComponent xform,
+        out MetaDataComponent metaData)
+    {
+        netEntity = NetEntity.Invalid;
+        xform = default!;
+        metaData = default!;
+
+        if (!TryComp(uid, out MetaDataComponent? resolvedMetaData) ||
+            TerminatingOrDeleted(uid, resolvedMetaData) ||
+            !TryComp(uid, out TransformComponent? resolvedXform) ||
+            !TryGetNetEntity(uid, out var nullableNetEntity, resolvedMetaData))
+            return false;
+
+        netEntity = nullableNetEntity.Value;
+        xform = resolvedXform;
+        metaData = resolvedMetaData;
+        return true;
     }
 
     private Dictionary<Vector2i, PowerCableChunk> RefreshPowerCableGrid(EntityUid gridUid, MapGridComponent grid)

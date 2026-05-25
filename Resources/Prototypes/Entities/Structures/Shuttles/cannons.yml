@@ -15,6 +15,9 @@
     selectedMode: SemiAuto
     availableModes:
       - SemiAuto
+  - type: Tag
+    tags:
+    - HeavyShipWeapon
   - type: Damageable
     damageModifierSet: Electronic
   - type: Injurable

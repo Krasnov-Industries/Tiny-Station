@@ -1,0 +1,120 @@
+# Лут с убитого космического кита (Space Leviathan).
+# Спрайты — заглушки из существующих RSI с тёмным тинтом под цвет тела кита.
+# Финальные спрайты будут нарисованы отдельно.
+
+# ----------------------------------------------------------------------------
+# Ребро левиафана — простой trophy item, без реагентов.
+# ----------------------------------------------------------------------------
+- type: entity
+  parent: BaseItem
+  id: LeviathanRib
+  name: leviathan rib
+  description: A huge curved bone from a space leviathan's tail plate. Dark, heavy, and still warm.
+  components:
+  - type: Sprite
+    sprite: Objects/Materials/materials.rsi
+    state: bones
+    color: "#3a1e55"
+  - type: Item
+    size: Normal
+  - type: StaticPrice
+    price: 250000
+
+# ----------------------------------------------------------------------------
+# Сердце левиафана — содержит Omnizine 100u.
+# ----------------------------------------------------------------------------
+- type: entity
+  parent: BaseItem
+  id: LeviathanHeart
+  name: leviathan heart
+  description: A huge pulsing organ from a cosmic predator. A concentrated reserve of life churns inside.
+  components:
+  - type: Sprite
+    sprite: Mobs/Species/Human/organs.rsi
+    state: heart-on
+    color: "#5a2a7a"
+  - type: Item
+    size: Normal
+  - type: SolutionContainerManager
+    solutions:
+      food:
+        maxVol: 100
+        reagents:
+        - ReagentId: Omnizine
+          Quantity: 100
+  - type: InjectableSolution
+    solution: food
+  - type: DrainableSolution
+    solution: food
+  - type: ExaminableSolution
+    solution: food
+  - type: Extractable
+    grindableSolutionName: food
+  - type: StaticPrice
+    price: 800000
+
+# ----------------------------------------------------------------------------
+# Желудок левиафана — содержит PolytrinicAcid 100u. Осторожно.
+# ----------------------------------------------------------------------------
+- type: entity
+  parent: BaseItem
+  id: LeviathanStomach
+  name: leviathan stomach
+  description: A sack of dense black flesh wrapped in veins. Concentrated polytrinic acid sloshes inside.
+  components:
+  - type: Sprite
+    sprite: Mobs/Species/Human/organs.rsi
+    state: stomach
+    color: "#4a1a3a"
+  - type: Item
+    size: Normal
+  - type: SolutionContainerManager
+    solutions:
+      food:
+        maxVol: 100
+        reagents:
+        - ReagentId: PolytrinicAcid
+          Quantity: 100
+  - type: InjectableSolution
+    solution: food
+  - type: DrainableSolution
+    solution: food
+  - type: ExaminableSolution
+    solution: food
+  - type: Extractable
+    grindableSolutionName: food
+  - type: StaticPrice
+    price: 800000
+
+# ----------------------------------------------------------------------------
+# Мозг левиафана — содержит Cognizine 100u.
+# ----------------------------------------------------------------------------
+- type: entity
+  parent: BaseItem
+  id: LeviathanBrain
+  name: leviathan brain
+  description: Dark brain tissue with deep folds. Faint violet sparks crawl across its surface.
+  components:
+  - type: Sprite
+    sprite: Mobs/Species/Human/organs.rsi
+    state: brain
+    color: "#4a2070"
+  - type: Item
+    size: Normal
+  - type: SolutionContainerManager
+    solutions:
+      food:
+        maxVol: 100
+        reagents:
+        - ReagentId: Cognizine
+          Quantity: 100
+  - type: InjectableSolution
+    solution: food
+  - type: DrainableSolution
+    solution: food
+  - type: ExaminableSolution
+    solution: food
+  - type: Extractable
+    grindableSolutionName: food
+  - type: StaticPrice
+    price: 1200000
