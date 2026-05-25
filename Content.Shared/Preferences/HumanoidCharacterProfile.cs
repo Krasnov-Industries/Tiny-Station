@@ -1,6 +1,7 @@
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Content.Shared._SpaceDream.SpeechBarks.Prototypes;
 using Content.Shared.CCVar;
 using Content.Shared.GameTicking;
 using Content.Shared.Humanoid;
@@ -101,6 +102,11 @@ namespace Content.Shared.Preferences
         [DataField]
         public SpawnPriorityPreference SpawnPriority { get; private set; } = SpawnPriorityPreference.None;
 
+        // SpaceDream added start - speech barks profile preference
+        [DataField("voice")]
+        public ProtoId<BarkPrototype>? Voice { get; private set; }
+        // SpaceDream added end
+
         /// <summary>
         /// <see cref="_jobPriorities"/>
         /// </summary>
@@ -183,6 +189,9 @@ namespace Content.Shared.Preferences
                 new HashSet<ProtoId<TraitPrototype>>(other.TraitPreferences),
                 new Dictionary<string, RoleLoadout>(other.Loadouts))
         {
+            // SpaceDream added start - preserve speech bark on profile copies
+            Voice = other.Voice;
+            // SpaceDream added end
         }
 
         /// <summary>
@@ -298,6 +307,12 @@ namespace Content.Shared.Preferences
             return new(this) { Species = species };
         }
 
+        // SpaceDream added start - speech barks profile preference
+        public HumanoidCharacterProfile WithVoice(ProtoId<BarkPrototype>? voice)
+        {
+            return new(this) { Voice = voice };
+        }
+        // SpaceDream added end
 
         public HumanoidCharacterProfile WithCharacterAppearance(HumanoidCharacterAppearance appearance)
         {
@@ -474,6 +489,9 @@ namespace Content.Shared.Preferences
             if (!_traitPreferences.SequenceEqual(other._traitPreferences)) return false;
             if (!Loadouts.SequenceEqual(other.Loadouts)) return false;
             if (FlavorText != other.FlavorText) return false;
+            // SpaceDream added start - speech barks profile preference
+            if (Voice != other.Voice) return false;
+            // SpaceDream added end
             return Appearance.Equals(other.Appearance);
         }
 
@@ -572,6 +590,12 @@ namespace Content.Shared.Preferences
                 _ => SpawnPriorityPreference.None // Invalid enum values.
             };
 
+            // SpaceDream added start - validate speech bark profile preference
+            var voice = Voice;
+            if (voice != null && !prototypeManager.HasIndex(voice))
+                voice = null;
+            // SpaceDream added end
+
             var priorities = new Dictionary<ProtoId<JobPrototype>, JobPriority>(JobPriorities
                 .Where(p => prototypeManager.TryIndex<JobPrototype>(p.Key, out var job) && job.SetPreference && p.Value switch
                 {
@@ -608,6 +632,9 @@ namespace Content.Shared.Preferences
             Gender = gender;
             Appearance = appearance;
             SpawnPriority = spawnPriority;
+            // SpaceDream added start - speech barks profile preference
+            Voice = voice;
+            // SpaceDream added end
 
             _jobPriorities.Clear();
 
@@ -729,6 +756,9 @@ namespace Content.Shared.Preferences
             hashCode.Add(Appearance);
             hashCode.Add((int)SpawnPriority);
             hashCode.Add((int)PreferenceUnavailable);
+            // SpaceDream added start - speech barks profile preference
+            hashCode.Add(Voice);
+            // SpaceDream added end
             return hashCode.ToHashCode();
         }
 

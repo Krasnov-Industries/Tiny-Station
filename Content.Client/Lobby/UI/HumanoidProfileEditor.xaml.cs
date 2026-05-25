@@ -2,6 +2,7 @@ using Content.Client.Humanoid;
 using Content.Client.Message;
 using Content.Client.Players.PlayTimeTracking;
 using Content.Client.Sprite;
+using Content.Shared._SpaceDream.SpeechBarks.Prototypes;
 using Content.Shared.CCVar;
 using Content.Shared.GameTicking;
 using Content.Shared.Humanoid;
@@ -245,6 +246,10 @@ namespace Content.Client.Lobby.UI
 
             #endregion Eyes
 
+            // SpaceDream added start - speech barks picker
+            SpeechBarkPicker.OnBarkSelected += SetSpeechBark;
+            // SpaceDream added end
+
             #endregion Appearance
 
             #region Jobs
@@ -376,6 +381,9 @@ namespace Content.Client.Lobby.UI
             UpdateEyePickers();
             UpdateSaveButton();
             UpdateMarkings();
+            // SpaceDream added start - speech barks picker
+            UpdateSpeechBarkControls();
+            // SpaceDream added end
 
             RefreshAntags();
             RefreshJobs();
@@ -426,6 +434,22 @@ namespace Content.Client.Lobby.UI
             SaveButton.Disabled = Profile is null || !IsDirty;
             ResetButton.Disabled = Profile is null || !IsDirty;
         }
+
+        // SpaceDream added start - speech barks picker
+        private void SetSpeechBark(ProtoId<BarkPrototype>? bark)
+        {
+            if (Profile is null)
+                return;
+
+            Profile = Profile.WithVoice(bark);
+            SetDirty();
+        }
+
+        private void UpdateSpeechBarkControls()
+        {
+            SpeechBarkPicker.SetProfile(Profile);
+        }
+        // SpaceDream added end
 
         private void SetPreviewRotation(Direction direction)
         {
