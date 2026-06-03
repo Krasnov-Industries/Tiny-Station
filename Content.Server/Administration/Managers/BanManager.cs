@@ -122,6 +122,11 @@ public sealed partial class BanManager : IBanManager, IPostInjectInit
     #region Server Bans
     public async void CreateServerBan(CreateServerBanInfo banInfo)
     {
+        // Tinystation added start - rank hierarchy: only ban someone strictly below your rank
+        if (!await CheckBanHierarchyAsync(banInfo))
+            return;
+        // Tinystation added end
+
         var (banDef, expires) = await CreateBanDef(banInfo, BanType.Server, null);
 
         await _db.AddBanAsync(banDef);
@@ -224,6 +229,11 @@ public sealed partial class BanManager : IBanManager, IPostInjectInit
 
     public async void CreateRoleBan(CreateRoleBanInfo banInfo)
     {
+        // Tinystation added start - rank hierarchy: only ban someone strictly below your rank
+        if (!await CheckBanHierarchyAsync(banInfo))
+            return;
+        // Tinystation added end
+
         ImmutableArray<BanRoleDef> roleDefs =
         [
             .. ToBanRoleDef(banInfo.JobPrototypes),
