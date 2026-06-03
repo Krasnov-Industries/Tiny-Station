@@ -1,0 +1,86 @@
+{
+  "ranks": [
+    {
+      "name": "Стажёр",
+      "flags": [
+        "ADMIN",
+        "ADMINCHAT",
+        "ADMINHELP",
+        "ADMINWHO",
+        "LOGS",
+        "VIEWNOTES"
+      ]
+    },
+    {
+      "name": "Админ",
+      "flags": [
+        "ADMIN",
+        "ADMINCHAT",
+        "ADMINHELP",
+        "ADMINWHO",
+        "BAN",
+        "EDITNOTES",
+        "FUN",
+        "LOGS",
+        "MASSBAN",
+        "MODERATOR",
+        "NAMECOLOR",
+        "ROUND",
+        "SPAWN",
+        "VIEWNOTES"
+      ]
+    },
+    {
+      "name": "Гейм-мастер",
+      "flags": [
+        "ADMIN",
+        "ADMINCHAT",
+        "ADMINHELP",
+        "ADMINWHO",
+        "BAN",
+        "DEBUG",
+        "EDITNOTES",
+        "FUN",
+        "LOGS",
+        "MAPPING",
+        "MASSBAN",
+        "MODERATOR",
+        "NAMECOLOR",
+        "QUERY",
+        "ROUND",
+        "SERVER",
+        "SPAWN",
+        "VAREDIT",
+        "VIEWNOTES"
+      ]
+    },
+    {
+      "name": "Основатель",
+      "flags": [
+        "ADMIN",
+        "ADMINCHAT",
+        "ADMINHELP",
+        "ADMINWHO",
+        "BAN",
+        "DEBUG",
+        "EDITNOTES",
+        "FUN",
+        "HOST",
+        "LOGS",
+        "MAPPING",
+        "MASSBAN",
+        "MODERATOR",
+        "NAMECOLOR",
+        "PERMISSIONS",
+        "PII",
+        "QUERY",
+        "ROUND",
+        "SERVER",
+        "SPAWN",
+        "STEALTH",
+        "VAREDIT",
+        "VIEWNOTES"
+      ]
+    }
+  ]
+}
