@@ -73,3 +73,26 @@
     sprite: Objects/Fun/Instruments/kalimba.rsi
   - type: Item
     size: Small
+
+- type: entity
+  parent: BaseKeyedInstrument
+  id: midi_player_w
+  name: MIDI-плеер "Colorfly-NT"
+  description: Портативный MIDI-плеер "Colorfly-NT" Услыш всю палитру звуков.
+  components:
+  - type: Instrument
+    allowPercussion: true
+    allowProgramChange: true
+  - type: Sprite
+    sprite: _Tinystation/Objects/midi_player_w.rsi
+    state: icon
+    scale: 0.5, 0.5
+  - type: Item
+    size: Small
+    storedRotation: -90
+  - type: Clothing
+    quickEquip: false
+    slots:
+    - neck
+  - type: ActivatableUI
+    inHandsOnly: false
