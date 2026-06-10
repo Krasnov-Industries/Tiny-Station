@@ -166,3 +166,9 @@
   storage:
     back:
     - BagpipeInstrument
+
+- type: loadout
+  id: MidiPlayer
+  storage:
+    back:
+    - midi_player_w

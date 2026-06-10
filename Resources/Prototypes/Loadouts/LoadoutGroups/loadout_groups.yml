@@ -679,6 +679,7 @@
   - PanFlute
   - Ocarina
   - Bagpipe
+  - MidiPlayer
 
 #- type: loadoutGroup
 #  id: MusicianJobTrinkets
