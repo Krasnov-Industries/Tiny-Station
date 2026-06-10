@@ -1,0 +1,9 @@
+- type: entity
+  parent: ClothingNeckBase
+  id: ClothingNeckCloakKnight
+  name: knight cloak
+  description: A heavy ceremonial cloak fit for a wandering knight.
+  components:
+  - type: Sprite
+    sprite: _Tinystation/Clothing/Neck/Cloaks/knight_cloak.rsi
+

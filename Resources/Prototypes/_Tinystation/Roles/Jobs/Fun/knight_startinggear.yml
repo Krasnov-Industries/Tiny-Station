@@ -7,6 +7,7 @@
     outerClothing: ClothingOuterSuitKnight
     back: ClothingBackpackDuffelKnightFilled
     head: ClothingHeadHelmetKnight
+    neck: ClothingNeckCloakKnight
     eyes: ClothingEyesGlassesSunglasses
     gloves: ClothingHandsGlovesFingerless
     shoes: ClothingShoesBootsKnight
