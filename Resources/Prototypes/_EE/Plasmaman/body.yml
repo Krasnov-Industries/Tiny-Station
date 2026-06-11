@@ -117,7 +117,6 @@
       - ReagentId: Plasma
         Quantity: 600
   - type: Butcherable
-    butcheringType: Spike
     spawned:
     - id: SheetPlasma1
       amount: 8
