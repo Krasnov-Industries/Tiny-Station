@@ -37,6 +37,8 @@
       collection: Hew
     Growl:
       collection: FelinidGrowls
+    Wiwi:
+      collection: FelinidWiwis
     Gasp:
       collection: MaleGasp
     DefaultDeathgasp:
@@ -81,6 +83,8 @@
       collection: Hew
     Growl:
       collection: FelinidGrowls
+    Wiwi:
+      collection: FelinidWiwis
     Gasp:
       collection: FemaleGasp
     DefaultDeathgasp:

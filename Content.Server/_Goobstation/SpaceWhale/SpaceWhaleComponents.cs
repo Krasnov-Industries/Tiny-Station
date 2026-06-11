@@ -255,6 +255,13 @@ public sealed partial class WhaleBrainComponent : Component
 
     [ViewVariables] public EntityUid? ForcedHuntTarget;
 
+    /// <summary>
+    /// True when <see cref="ForcedHuntTarget"/> was set by incoming damage rather
+    /// than the periodic no-kill hunt. Retaliation keeps chasing until the target
+    /// is actually visible.
+    /// </summary>
+    [ViewVariables] public bool ForcedHuntFromDamage;
+
     [ViewVariables] public TimeSpan LastKillAt;
 
     [ViewVariables] public TimeSpan NextForcedHuntAt;

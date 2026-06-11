@@ -1,6 +1,7 @@
 using Content.Server._Goobstation.SpaceWhale.Threat;
 using Content.Shared.Damage.Systems;
 using Content.Shared.FixedPoint;
+using Content.Shared.Item;
 using Robust.Shared.Timing;
 using Robust.Shared.Utility;
 
@@ -42,9 +43,56 @@ public sealed partial class WhaleMemorySystem : EntitySystem
         if (args.Origin == null || args.Damage.GetTotal() <= 0)
             return;
 
-        var history = ent.Comp.DamageHistory.GetOrNew(args.Origin.Value);
+        if (!TryResolveDamageOrigin(ent.Owner, args.Origin.Value, out var origin))
+            return;
+
+        var history = ent.Comp.DamageHistory.GetOrNew(origin);
         history.Add(new WhaleDamageRecord { Time = _timing.CurTime, Amount = args.Damage.GetTotal() });
+
+        // Goobstation edit start - force the leviathan to chase whoever damaged any body segment
+        ent.Comp.TopAggressor = origin;
+        if (TryComp<WhaleBrainComponent>(ent.Owner, out var brain))
+        {
+            brain.ForcedHuntTarget = origin;
+            brain.ForcedHuntFromDamage = true;
+            brain.NextForcedHuntAt = _timing.CurTime;
+            brain.CurrentTarget = origin;
+        }
+        // Goobstation edit end
     }
+
+    // Goobstation edit start - hitscan damage reports the gun, not the shooter
+    private bool TryResolveDamageOrigin(EntityUid whale, EntityUid rawOrigin, out EntityUid origin)
+    {
+        origin = rawOrigin;
+        if (Deleted(origin))
+            return false;
+
+        for (var i = 0; i < 8 && HasComp<ItemComponent>(origin); i++)
+        {
+            var xform = Transform(origin);
+            if (!xform.ParentUid.IsValid() ||
+                xform.ParentUid == origin ||
+                Deleted(xform.ParentUid))
+            {
+                break;
+            }
+
+            origin = xform.ParentUid;
+        }
+
+        if (origin == whale ||
+            Deleted(origin) ||
+            HasComp<ItemComponent>(origin) ||
+            HasComp<WhaleSpawnedByComponent>(origin) ||
+            HasComp<SpaceWhaleSegmentComponent>(origin))
+        {
+            return false;
+        }
+
+        return true;
+    }
+    // Goobstation edit end
 
     private void UpdateTopAggressor(EntityUid uid, WhaleMemoryComponent comp)
     {

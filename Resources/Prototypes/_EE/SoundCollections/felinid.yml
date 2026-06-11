@@ -19,6 +19,15 @@
   - /Audio/_EE/Voice/Felinid/cat_growl1.ogg
 
 - type: soundCollection
+  id: FelinidWiwis
+  files:
+  - /Audio/_EE/Voice/Felinid/felinid_wiwi1.ogg
+  - /Audio/_EE/Voice/Felinid/felinid_wiwi2.ogg
+  - /Audio/_EE/Voice/Felinid/felinid_wiwi3.ogg
+  - /Audio/_EE/Voice/Felinid/felinid_wiwi4.ogg
+  - /Audio/_EE/Voice/Felinid/felinid_wiwi5.ogg
+
+- type: soundCollection
   id: FelinidScreams
   files:
   - /Audio/_EE/Voice/Felinid/cat_scream1.ogg

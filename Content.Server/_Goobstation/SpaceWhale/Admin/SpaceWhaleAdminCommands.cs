@@ -255,6 +255,7 @@ public abstract partial class SpaceWhaleCommandBase : IConsoleCommand
         brain.CurrentBehavior = WhaleBehavior.Idle;
         brain.LastPickReason = "admin-clear";
         brain.ForcedHuntTarget = null;
+        brain.ForcedHuntFromDamage = false;
         brain.LastActivityCoords = null;
         brain.LastBreachCoords = null;
         brain.InvestigateCoords = null;

@@ -96,11 +96,20 @@ public sealed partial class MarkingsViewModel
     /// <param name="skinColor">The new skin color</param>
     public void SetOrganSkinColor(Color skinColor)
     {
+        // Tinystation edit start - keep skin-colored organ markings synced until manually recolored
+        var changedLayers = new HashSet<(ProtoId<OrganCategoryPrototype>, HumanoidVisualLayers)>();
         foreach (var (organ, data) in _organProfileData)
         {
+            SyncSkinColoredMarkings(organ, data, skinColor, changedLayers);
             _organProfileData[organ] = data with { SkinColor = skinColor };
         }
         OrganProfileDataChanged?.Invoke(false);
+
+        foreach (var (organ, layer) in changedLayers)
+        {
+            MarkingsChanged?.Invoke(organ, layer);
+        }
+        // Tinystation edit end
     }
 
     /// <summary>

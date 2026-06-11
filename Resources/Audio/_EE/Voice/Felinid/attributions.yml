@@ -22,3 +22,8 @@
   license: "CC0-1.0"
   copyright: "Original sound by https://freesound.org/people/Zabuhailo/ - fade in and out, converted to ogg."
   source: "https://freesound.org/people/Zabuhailo/sounds/146968/"
+
+- files: ["felinid_wiwi1.ogg", "felinid_wiwi2.ogg", "felinid_wiwi3.ogg", "felinid_wiwi4.ogg", "felinid_wiwi5.ogg"]
+  license: "Custom"
+  copyright: "Provided for Tiny-Station by poopirka as Felinid wiwi voice sounds."
+  source: "https://github.com/Tiny-Station/Tiny-Station"

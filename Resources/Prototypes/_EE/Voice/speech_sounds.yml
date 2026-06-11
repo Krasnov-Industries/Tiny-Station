@@ -1,0 +1,9 @@
+- type: speechSounds
+  id: Felinid
+  variation: 0.125
+  saySound:
+    collection: FelinidMeows
+  askSound:
+    collection: FelinidMeows
+  exclaimSound:
+    collection: FelinidMeows

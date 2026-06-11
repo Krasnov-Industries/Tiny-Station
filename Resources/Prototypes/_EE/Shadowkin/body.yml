@@ -228,6 +228,13 @@
   - type: Speech
     speechSounds: Alto
     allowedEmotes: [ 'Mars', 'Wurble' ]
+  - type: EyeDamageOnFlashing
+    flashDurationMultiplier: 1.65
+    blurChance: 0.75
+    blurAmount: 1.75
+    maxBlur: 5
+    blurDecayDelay: 14
+    blurDecayPerSecond: 0.08
   - type: ShadowkinAbility
   - type: Tag
     tags:

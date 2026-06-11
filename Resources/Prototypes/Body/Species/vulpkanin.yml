@@ -159,6 +159,15 @@
     speechSounds: Vulpkanin
     speechVerb: Vulpkanin
     allowedEmotes: [ 'Bark', 'Snarl', 'Whine', 'Howl', 'Growl' ]
+  # Tinystation added start - temporary blurry vision from flashes for sensitive eyes
+  - type: EyeDamageOnFlashing
+    flashDurationMultiplier: 1.35
+    blurChance: 0.55
+    blurAmount: 1.15
+    maxBlur: 3.5
+    blurDecayDelay: 12
+    blurDecayPerSecond: 0.1
+  # Tinystation added end
   - type: TypingIndicator
     proto: vulpkanin
   - type: Vocal

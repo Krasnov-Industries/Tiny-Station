@@ -177,7 +177,7 @@ public sealed partial class WhaleBrainSystem : EntitySystem
         if (TryPickForcedMapMob(whale, brain, xform, out var forcedTarget, out var forcedCoords))
         {
             RememberActivity(brain, forcedCoords);
-            brain.LastPickReason = "forced-map-hunt";
+            brain.LastPickReason = brain.ForcedHuntFromDamage ? "forced-damage-hunt" : "forced-map-hunt";
             brain.LastVisibleMobs = 0;
             brain.LastInRangeMobs = 0;
             return new PickResult(forcedTarget, forcedCoords, WhaleBehavior.ForcedMapHunt);
@@ -275,11 +275,12 @@ public sealed partial class WhaleBrainSystem : EntitySystem
 
         if (brain.ForcedHuntTarget is { } existing)
         {
-            if (IsValidWhaleMobTarget(whale, existing) &&
+            // Goobstation edit start - damage retaliation may force non-mob attack targets too
+            if (IsValidForcedHuntTarget(whale, existing) &&
                 TryComp(existing, out TransformComponent? existingXform) &&
                 TryGetDistance(xform.Coordinates, existingXform.Coordinates, out var existingDistance))
             {
-                if (!CanReleaseForcedHunt(whale, brain, existing, existingDistance))
+                if (!CanReleaseForcedHunt(whale, brain, existing, existingDistance, brain.ForcedHuntFromDamage))
                 {
                     target = existing;
                     coords = existingXform.Coordinates;
@@ -287,13 +288,16 @@ public sealed partial class WhaleBrainSystem : EntitySystem
                 }
 
                 brain.ForcedHuntTarget = null;
+                brain.ForcedHuntFromDamage = false;
                 brain.NextForcedHuntAt = now + TimeSpan.FromSeconds(brain.ForcedHuntNoKillDelay);
                 brain.LastPickReason = "forced-map-hunt-release";
                 return false;
             }
 
             brain.ForcedHuntTarget = null;
+            brain.ForcedHuntFromDamage = false;
         }
+        // Goobstation edit end
 
         if (!TryFindNearestMapMob(whale, xform, out target, out coords, out var distance))
         {
@@ -302,7 +306,8 @@ public sealed partial class WhaleBrainSystem : EntitySystem
             return false;
         }
 
-        if (CanReleaseForcedHunt(whale, brain, target, distance))
+        brain.ForcedHuntFromDamage = false;
+        if (CanReleaseForcedHunt(whale, brain, target, distance, false))
         {
             brain.NextForcedHuntAt = now + TimeSpan.FromSeconds(brain.ForcedHuntNoKillDelay);
             brain.LastPickReason = "forced-map-hunt-release";
@@ -313,13 +318,23 @@ public sealed partial class WhaleBrainSystem : EntitySystem
         return true;
     }
 
-    private bool CanReleaseForcedHunt(EntityUid whale, WhaleBrainComponent brain, EntityUid target, float distance)
+    private bool CanReleaseForcedHunt(EntityUid whale, WhaleBrainComponent brain, EntityUid target, float distance, bool fromDamage)
     {
         if (distance > brain.ForcedHuntReleaseRadius)
             return false;
 
-        return distance <= ForcedHuntCloseReleaseRadius || HasLineOfSight(whale, target, brain.SightRadius);
+        var hasLineOfSight = HasLineOfSight(whale, target, brain.SightRadius);
+        return fromDamage
+            ? hasLineOfSight
+            : distance <= ForcedHuntCloseReleaseRadius || hasLineOfSight;
     }
+
+    // Goobstation edit start - allow retaliation against the source of incoming damage
+    private bool IsValidForcedHuntTarget(EntityUid whale, EntityUid target)
+    {
+        return IsValidWhaleMobTarget(whale, target) || IsValidWhaleAttackTarget(whale, target);
+    }
+    // Goobstation edit end
 
     private bool TryFindNearestMapMob(
         EntityUid whale,
@@ -861,7 +876,10 @@ public sealed partial class WhaleBrainSystem : EntitySystem
     {
         return behavior switch
         {
-            WhaleBehavior.HuntMob or WhaleBehavior.ForcedMapHunt => IsValidWhaleMobTarget(whale, target),
+            // Goobstation edit start - forced retaliation can target turrets and other attack entities
+            WhaleBehavior.HuntMob => IsValidWhaleMobTarget(whale, target),
+            WhaleBehavior.ForcedMapHunt => IsValidForcedHuntTarget(whale, target),
+            // Goobstation edit end
             WhaleBehavior.AttackEntity => IsValidWhaleAttackTarget(whale, target),
             _ => false,
         };
@@ -1037,6 +1055,7 @@ public sealed partial class WhaleBrainSystem : EntitySystem
         brain.LastKillAt = now;
         brain.NextForcedHuntAt = now + TimeSpan.FromSeconds(brain.ForcedHuntNoKillDelay);
         brain.ForcedHuntTarget = null;
+        brain.ForcedHuntFromDamage = false;
     }
 
     public void RememberActivity(EntityUid whale, EntityCoordinates coords, WhaleBrainComponent? brain = null)
