@@ -1548,13 +1548,3 @@
   - type: Clothing
     sprite: Clothing/Head/Hats/mitre_clown.rsi
 
-- type: entity
-  parent: ClothingHeadBase
-  id: ClothingHeadHatFurina
-  name: Furina hat
-  description: A dramatic blue-and-white hat fit for a star of the stage.
-  components:
-  - type: Sprite
-    sprite: Clothing/Head/Hats/furina.rsi
-  - type: Clothing
-    sprite: Clothing/Head/Hats/furina.rsi

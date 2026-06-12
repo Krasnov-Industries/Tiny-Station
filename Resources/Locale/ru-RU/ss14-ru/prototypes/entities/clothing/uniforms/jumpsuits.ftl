@@ -222,5 +222,3 @@ ent-ClothingUniformJumpsuitCasualGreen = повседневный зелёный
 ent-ClothingUniformJumpsuitFamilyGuy = семейный наряд
     .desc = Напоминает о времени, когда вы сделали что-то смешное.
 
-ent-ClothingUniformJumpsuitFurina = костюм Фурины
-    .desc = Яркий сценический костюм в театральной сине-белой палитре.

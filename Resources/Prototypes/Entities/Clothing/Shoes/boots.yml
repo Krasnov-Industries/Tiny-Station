@@ -250,13 +250,3 @@
   - type: Clothing
     sprite: Clothing/Shoes/Boots/cowboybootsfancy.rsi
 
-- type: entity
-  parent: ClothingShoesBaseButcherable
-  id: ClothingShoesBootsFurina
-  name: Furina boots
-  description: Stylish stage boots made for dramatic entrances.
-  components:
-  - type: Sprite
-    sprite: Clothing/Shoes/Boots/furina.rsi
-  - type: Clothing
-    sprite: Clothing/Shoes/Boots/furina.rsi

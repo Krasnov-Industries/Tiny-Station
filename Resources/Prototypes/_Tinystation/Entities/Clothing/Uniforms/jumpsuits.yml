@@ -8,3 +8,14 @@
     sprite: _Tinystation/Clothing/Uniforms/Jumpsuit/holy_knight.rsi
   - type: Clothing
     sprite: _Tinystation/Clothing/Uniforms/Jumpsuit/holy_knight.rsi
+
+- type: entity
+  parent: ClothingUniformBase
+  id: ClothingUniformJumpsuitFurina
+  name: Furina costume
+  description: A flamboyant performance costume with a theatrical blue-and-white palette.
+  components:
+  - type: Sprite
+    sprite: _Tinystation/Clothing/Uniforms/Jumpsuit/furina.rsi
+  - type: Clothing
+    sprite: _Tinystation/Clothing/Uniforms/Jumpsuit/furina.rsi

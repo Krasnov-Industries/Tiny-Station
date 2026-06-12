@@ -1,0 +1,10 @@
+- type: entity
+  parent: ClothingHeadBase
+  id: ClothingHeadHatFurina
+  name: Furina hat
+  description: A dramatic blue-and-white hat fit for a star of the stage.
+  components:
+  - type: Sprite
+    sprite: _Tinystation/Clothing/Head/Hats/furina.rsi
+  - type: Clothing
+    sprite: _Tinystation/Clothing/Head/Hats/furina.rsi
