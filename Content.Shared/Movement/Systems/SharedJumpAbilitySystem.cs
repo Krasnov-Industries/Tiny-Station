@@ -1,6 +1,7 @@
 using Content.Shared.Actions;
 using Content.Shared.Actions.Components;
 using Content.Shared.Cloning.Events;
+using Content.Shared.Damage.Systems;
 using Content.Shared.Gravity;
 using Content.Shared.Movement.Components;
 using Content.Shared.Popups;
@@ -8,6 +9,8 @@ using Content.Shared.Standing;
 using Content.Shared.Stunnable;
 using Content.Shared.Throwing;
 using Robust.Shared.Audio.Systems;
+using Robust.Shared.Network;
+using Robust.Shared.Random;
 using Robust.Shared.Physics.Events;
 
 namespace Content.Shared.Movement.Systems;
@@ -21,6 +24,9 @@ public sealed partial class SharedJumpAbilitySystem : EntitySystem
     [Dependency] private SharedStunSystem _stun = default!;
     [Dependency] private StandingStateSystem _standing = default!;
     [Dependency] private SharedPopupSystem _popup = default!;
+    [Dependency] private DamageableSystem _damageable = default!;
+    [Dependency] private IRobustRandom _random = default!;
+    [Dependency] private INetManager _net = default!;
 
     public override void Initialize()
     {
@@ -91,7 +97,21 @@ public sealed partial class SharedJumpAbilitySystem : EntitySystem
             Dirty(entity.Owner, leaperComp);
         }
 
+        TryBreakNeckOnJump(entity, args.Performer);
+
         args.Handled = true;
+    }
+
+    private void TryBreakNeckOnJump(Entity<JumpAbilityComponent> entity, EntityUid performer)
+    {
+        if (!_net.IsServer || entity.Comp.NeckBreakChance <= 0f || !_random.Prob(entity.Comp.NeckBreakChance))
+            return;
+
+        _damageable.TryChangeDamage(performer, entity.Comp.NeckBreakDamage, ignoreResistances: true, origin: performer);
+        _stun.TryKnockdown(performer, entity.Comp.NeckBreakKnockdown, force: true);
+
+        if (entity.Comp.NeckBreakPopup != null)
+            _popup.PopupEntity(Loc.GetString(entity.Comp.NeckBreakPopup.Value, ("performer", performer)), performer, PopupType.LargeCaution);
     }
 
     private void OnClone(Entity<JumpAbilityComponent> ent, ref CloningEvent args)
@@ -108,6 +128,10 @@ public sealed partial class SharedJumpAbilitySystem : EntitySystem
         targetComp.CollideKnockdown = ent.Comp.CollideKnockdown;
         targetComp.JumpSound = ent.Comp.JumpSound;
         targetComp.JumpFailedPopup = ent.Comp.JumpFailedPopup;
+        targetComp.NeckBreakChance = ent.Comp.NeckBreakChance;
+        targetComp.NeckBreakDamage = ent.Comp.NeckBreakDamage;
+        targetComp.NeckBreakKnockdown = ent.Comp.NeckBreakKnockdown;
+        targetComp.NeckBreakPopup = ent.Comp.NeckBreakPopup;
         AddComp(args.CloneUid, targetComp, true);
     }
 }

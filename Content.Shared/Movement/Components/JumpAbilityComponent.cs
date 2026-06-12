@@ -1,4 +1,5 @@
 using Content.Shared.Actions;
+using Content.Shared.Damage;
 using Content.Shared.Movement.Systems;
 using Robust.Shared.Audio;
 using Robust.Shared.GameStates;
@@ -61,6 +62,36 @@ public sealed partial class JumpAbilityComponent : Component
     /// </summary>
     [DataField, AutoNetworkedField]
     public LocId? JumpFailedPopup = "jump-ability-failure";
+
+    /// <summary>
+    /// Chance that a successful jump/somersault snaps the performer's neck.
+    /// </summary>
+    [DataField, AutoNetworkedField]
+    public float NeckBreakChance = 0.05f;
+
+    /// <summary>
+    /// Damage dealt when the performer botches the jump and snaps their neck.
+    /// </summary>
+    [DataField, AutoNetworkedField]
+    public DamageSpecifier NeckBreakDamage = new()
+    {
+        DamageDict = new()
+        {
+            { "Blunt", 200.0 },
+        },
+    };
+
+    /// <summary>
+    /// Knockdown time applied on a neck-breaking jump failure.
+    /// </summary>
+    [DataField, AutoNetworkedField]
+    public TimeSpan NeckBreakKnockdown = TimeSpan.FromSeconds(5);
+
+    /// <summary>
+    /// Popup shown when the jump snaps the performer's neck.
+    /// </summary>
+    [DataField, AutoNetworkedField]
+    public LocId? NeckBreakPopup = "jump-ability-neck-break";
 }
 
 public sealed partial class GravityJumpEvent : InstantActionEvent;
