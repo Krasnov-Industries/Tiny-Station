@@ -9,3 +9,14 @@
   - type: Clothing
     sprite: _Tinystation/Clothing/Shoes/Boots/knight_boots.rsi
   - type: Matchbox
+
+- type: entity
+  parent: ClothingShoesBaseButcherable
+  id: ClothingShoesBootsFurina
+  name: Furina boots
+  description: Stylish stage boots made for dramatic entrances.
+  components:
+  - type: Sprite
+    sprite: _Tinystation/Clothing/Shoes/Boots/furina.rsi
+  - type: Clothing
+    sprite: _Tinystation/Clothing/Shoes/Boots/furina.rsi

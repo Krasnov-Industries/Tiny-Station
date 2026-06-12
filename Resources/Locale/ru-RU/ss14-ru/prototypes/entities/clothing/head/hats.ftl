@@ -182,5 +182,3 @@ ent-ClothingHeadHatFedoraPress = федора прессы
 ent-ClothingHeadHatMitreClown = митра Хонкоматери
     .desc = Прихожанам трудно разглядеть банановую кожуру на полу, когда они смотрят на вашу великолепную шляпу.
 
-ent-ClothingHeadHatFurina = шляпа Фурины
-    .desc = Драматичная сине-белая шляпа, достойная звезды сцены.
