@@ -38,3 +38,6 @@ ent-ClothingShoesBootsCowboyWhite = белые ковбойские ботинк
     .desc = { ent-ClothingShoesBootsCowboyBrown.desc }
 ent-ClothingShoesBootsCowboyFancy = модные ковбойские ботинки
     .desc = { ent-ClothingShoesBootsCowboyBrown.desc }
+
+ent-ClothingShoesBootsFurina = ботинки Фурины
+    .desc = Стильные сценические ботинки для эффектных выходов.

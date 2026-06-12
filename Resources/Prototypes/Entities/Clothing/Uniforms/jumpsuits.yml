@@ -1359,3 +1359,14 @@
     sprite: Clothing/Uniforms/Jumpsuit/familiar_garbs.rsi
   - type: Clothing
     sprite: Clothing/Uniforms/Jumpsuit/familiar_garbs.rsi
+
+- type: entity
+  parent: ClothingUniformBase
+  id: ClothingUniformJumpsuitFurina
+  name: Furina costume
+  description: A flamboyant performance costume with a theatrical blue-and-white palette.
+  components:
+  - type: Sprite
+    sprite: Clothing/Uniforms/Jumpsuit/furina.rsi
+  - type: Clothing
+    sprite: Clothing/Uniforms/Jumpsuit/furina.rsi

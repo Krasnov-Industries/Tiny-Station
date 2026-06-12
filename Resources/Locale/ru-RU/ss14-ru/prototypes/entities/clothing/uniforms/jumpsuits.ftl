@@ -221,3 +221,6 @@ ent-ClothingUniformJumpsuitCasualGreen = повседневный зелёный
     .desc = Свободная потёртая зелёная рубашка с серыми штанами — идеальный вариант для тех, кто хочет расслабиться.
 ent-ClothingUniformJumpsuitFamilyGuy = семейный наряд
     .desc = Напоминает о времени, когда вы сделали что-то смешное.
+
+ent-ClothingUniformJumpsuitFurina = костюм Фурины
+    .desc = Яркий сценический костюм в театральной сине-белой палитре.
