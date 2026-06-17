@@ -7,6 +7,7 @@ using Content.Server.GameTicking;
 using Content.Server.GameTicking.Presets;
 using Content.Server.GameTicking.Rules.Components;
 using Content.Server.Mind;
+using Content.Server.Preferences.Managers;
 using Content.Server.Roles;
 using Content.Server.RoundEnd;
 using Content.Server.Shuttles.Components;
@@ -21,6 +22,7 @@ using Content.Shared.NPC.Prototypes;
 using Content.Shared.NPC.Systems;
 using Content.Shared.NukeOps;
 using Content.Shared.Pinpointer;
+using Content.Shared.Preferences;
 using Content.Shared.Roles.Components;
 using Content.Shared.Station.Components;
 using Robust.Server.GameObjects;
@@ -64,6 +66,7 @@ public sealed class NukeOpsTest : GameTest
         var factionSys = server.System<NpcFactionSystem>();
         var roundEndSys = server.System<RoundEndSystem>();
         var damageSys = server.System<DamageableSystem>();
+        var prefMan = server.ResolveDependency<IServerPreferencesManager>();
 
         server.CfgMan.SetCVar(CCVars.GridFill, true);
 
@@ -75,6 +78,16 @@ public sealed class NukeOpsTest : GameTest
         // Add several dummy players
         var dummies = await pair.Server.AddDummySessions(3);
         await pair.RunTicksSync(5);
+
+        // The commander spawns with oxygen internals. Keep the test deterministic by ensuring the
+        // selected profile can breathe oxygen; otherwise random species like slimepeople make the
+        // breathing check flaky even when the nukie outpost atmosphere is fine.
+        var prefs = prefMan.GetPreferences(client.User!.Value);
+        var profile = (HumanoidCharacterProfile) prefs.Characters[0];
+        await server.WaitPost(() => prefMan.SetProfile(
+            client.User.Value,
+            0,
+            profile.WithSpecies(HumanoidCharacterProfile.DefaultSpecies)).Wait());
 
         // Opt into the nukies role.
         await pair.SetAntagPreference("NukeopsCommander", true);
