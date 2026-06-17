@@ -29,22 +29,19 @@ nano-task-ui-heading-high-priority-tasks =
     { $amount ->
         [zero] Нет задач высокого приоритета
         [one] 1 задача высокого приоритета
-        [few] { $amount } задачи высокого приоритета
-       *[other] { $amount } задач высокого приоритета
+       *[other] Задач высокого приоритета: {$amount}
     }
 nano-task-ui-heading-medium-priority-tasks =
     { $amount ->
         [zero] Нет задач среднего приоритета
         [one] 1 задача среднего приоритета
-        [few] { $amount } задачи среднего приоритета
-       *[other] { $amount } задач среднего приоритета
+       *[other] Задач среднего приоритета: {$amount}
     }
 nano-task-ui-heading-low-priority-tasks =
     { $amount ->
         [zero] Нет задач низкого приоритета
         [one] 1 задача низкого приоритета
-        [few] { $amount } задачи низкого приоритета
-       *[other] { $amount } задач низкого приоритета
+       *[other] Задач низкого приоритета: {$amount}
     }
 nano-task-ui-done = Готово
 nano-task-ui-revert-done = Отмена

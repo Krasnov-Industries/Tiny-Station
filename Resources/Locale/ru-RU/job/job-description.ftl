@@ -48,7 +48,7 @@ job-description-visitor = Наслаждайтесь своим визитом �
 job-description-warden = Патрулируйте отдел безопасности, следите за тем, чтобы никто не воровал из оружейной, и чтобы все заключённые были оформлены и выпущены по окончании срока.
 job-description-zookeeper = Устройте весёлое шоу с милыми животными и космическими карпами, чтобы все члены экипажа могли ими полюбоваться.
 
-job-description-centcommoff = Act as an ambassador to the newest state-of-the-art space station in Nanotrasen's fleet.
+job-description-centcommoff = Выступайте послом на новейшей, по последнему слову техники, космической станции флота NanoTrasen.
 
 job-description-technical-assistant = Изучите основы управления энергоустановками, научитесь чинить отсеки станции.
 

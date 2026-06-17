@@ -22,7 +22,7 @@ store-caregory-spellbook-utility = Вспомогательные заклина
 store-caregory-spellbook-equipment = Волшебное снаряжение
 store-caregory-spellbook-events = Заклинания событий
 
-store-category-nukie-delivery = Offers
+store-category-nukie-delivery = Предложения
 
 store-category-objective = Цель
 

@@ -7,10 +7,9 @@ catchable-component-success-others =
        *[neuter] поймали
     } { $item }!
 catchable-component-fail-self = Вы не поймали { $item }!
-catchable-component-fail-others =
-    { CAPITALIZE($catcher) } не { GENDER($catcher) ->
-        [male] поймал
-        [female] поймала
-        [epicene] поймало
-       *[neuter] поймали
-    } { $item }!
+catchable-component-fail-others = { CAPITALIZE($catcher) } не { GENDER($catcher) ->
+    [male] поймал
+    [female] поймала
+    [epicene] поймало
+    *[neuter] поймали
+} { $item }!

@@ -13,14 +13,13 @@ air-alarm-ui-window-resync-devices-label = Ресинхр
 air-alarm-ui-window-mode-label = Режим
 air-alarm-ui-window-mode-select-locked-label = [bold][color=red] Ошибка выбора режима! [/color][/bold]
 air-alarm-ui-window-auto-mode-label = Авто-режим
--air-alarm-state-name =
-    { $state ->
-        [normal] Нормально
-        [warning] Предупреждение
-        [danger] Опасно
-        [emagged] Взломано
-       *[invalid] Невалидно
-    }
+-air-alarm-state-name = { $state ->
+    [normal] Нормально
+    [warning] Предупреждение
+    [danger] Опасность
+    [emagged] Взломано
+   *[invalid] Недопустимо
+}
 air-alarm-ui-window-listing-title = {$address} : {-air-alarm-state-name(state:$state)}
 air-alarm-ui-window-pressure = { $pressure } кПа
 air-alarm-ui-window-pressure-indicator = Давление: [color={ $color }]{ $pressure } кПа[/color]

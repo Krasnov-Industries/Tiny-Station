@@ -47,8 +47,7 @@ network-configurator-examine-mode-list = [color=green]Список[/color]
 network-configurator-examine-current-mode = Текущий режим: { $mode }
 network-configurator-examine-switch-modes = Нажмите { $key } чтобы переключить режим
 # item status
-network-configurator-item-status-label =
-    Режим: { $mode }
+network-configurator-item-status-label = Режим: { $mode }
     Переключить: { $keybinding }
 # command
 cmd-clearnetworklinkoverlays-desc = Очистить все наложения сетевых соединений.

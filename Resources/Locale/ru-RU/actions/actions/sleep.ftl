@@ -1,6 +1,6 @@
 action-name-wake = Разбудить
 
-sleep-onomatopoeia = Zzz...
+sleep-onomatopoeia = Хррррр...
 sleep-examined = [color=lightblue]{CAPITALIZE(SUBJECT($target))} {CONJUGATE-BE($target)} спит.[/color]
 
 wake-other-success = Вы встряхиваете {THE($target)}, пробуждая его.

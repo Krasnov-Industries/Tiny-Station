@@ -1,94 +1,94 @@
 entity-condition-guidebook-total-damage =
     { $max ->
-        [2147483648] it has at least {NATURALFIXED($min, 2)} total damage
+        [2147483648] суммарный урон не менее {NATURALFIXED($min, 2)}
         *[other] { $min ->
-                    [0] it has at most {NATURALFIXED($max, 2)} total damage
-                    *[other] it has between {NATURALFIXED($min, 2)} and {NATURALFIXED($max, 2)} total damage
+                    [0] суммарный урон не более {NATURALFIXED($max, 2)}
+                    *[other] суммарный урон от {NATURALFIXED($min, 2)} до {NATURALFIXED($max, 2)}
                  }
     }
 
 entity-condition-guidebook-type-damage =
     { $max ->
-        [2147483648] it has at least {NATURALFIXED($min, 2)} of {$type} damage
+        [2147483648] урон типа {$type} не менее {NATURALFIXED($min, 2)}
         *[other] { $min ->
-                    [0] it has at most {NATURALFIXED($max, 2)} of {$type} damage
-                    *[other] it has between {NATURALFIXED($min, 2)} and {NATURALFIXED($max, 2)} of {$type} damage
+                    [0] урон типа {$type} не более {NATURALFIXED($max, 2)}
+                    *[other] урон типа {$type} от {NATURALFIXED($min, 2)} до {NATURALFIXED($max, 2)}
                  }
     }
 
 entity-condition-guidebook-group-damage =
     { $max ->
-        [2147483648] it has at least {NATURALFIXED($min, 2)} of {$type} damage.
+        [2147483648] урон группы {$type} не менее {NATURALFIXED($min, 2)}.
         *[other] { $min ->
-                    [0] it has at most {NATURALFIXED($max, 2)} of {$type} damage.
-                    *[other] it has between {NATURALFIXED($min, 2)} and {NATURALFIXED($max, 2)} of {$type} damage
+                    [0] урон группы {$type} не более {NATURALFIXED($max, 2)}.
+                    *[other] урон группы {$type} от {NATURALFIXED($min, 2)} до {NATURALFIXED($max, 2)}
                  }
     }
 
 entity-condition-guidebook-total-hunger =
     { $max ->
-        [2147483648] the target has at least {NATURALFIXED($min, 2)} total hunger
+        [2147483648] у цели суммарный голод не менее {NATURALFIXED($min, 2)}
         *[other] { $min ->
-                    [0] the target has at most {NATURALFIXED($max, 2)} total hunger
-                    *[other] the target has between {NATURALFIXED($min, 2)} and {NATURALFIXED($max, 2)} total hunger
+                    [0] у цели суммарный голод не более {NATURALFIXED($max, 2)}
+                    *[other] у цели суммарный голод от {NATURALFIXED($min, 2)} до {NATURALFIXED($max, 2)}
                  }
     }
 
 entity-condition-guidebook-reagent-threshold =
     { $max ->
-        [2147483648] there's at least {NATURALFIXED($min, 2)}u of {$reagent}
+        [2147483648] имеется не менее {NATURALFIXED($min, 2)}ед. {$reagent}
         *[other] { $min ->
-                    [0] there's at most {NATURALFIXED($max, 2)}u of {$reagent}
-                    *[other] there's between {NATURALFIXED($min, 2)}u and {NATURALFIXED($max, 2)}u of {$reagent}
+                    [0] имеется не более {NATURALFIXED($max, 2)}ед. {$reagent}
+                    *[other] имеется от {NATURALFIXED($min, 2)}ед. до {NATURALFIXED($max, 2)}ед. {$reagent}
                  }
     }
 
 entity-condition-guidebook-mob-state-condition =
-    the mob is { $state }
+    существо в состоянии { $state }
 
 entity-condition-guidebook-job-condition =
-    the target's job is { $job }
+    должность цели — { $job }
 
 entity-condition-guidebook-solution-temperature =
-    the solution's temperature is { $max ->
-            [2147483648] at least {NATURALFIXED($min, 2)}k
+    температура раствора { $max ->
+            [2147483648] не менее {NATURALFIXED($min, 2)}K
             *[other] { $min ->
-                        [0] at most {NATURALFIXED($max, 2)}k
-                        *[other] between {NATURALFIXED($min, 2)}k and {NATURALFIXED($max, 2)}k
+                        [0] не более {NATURALFIXED($max, 2)}K
+                        *[other] от {NATURALFIXED($min, 2)}K до {NATURALFIXED($max, 2)}K
                      }
     }
 
 entity-condition-guidebook-body-temperature =
-    the body's temperature is { $max ->
-            [2147483648] at least {NATURALFIXED($min, 2)}k
+    температура тела { $max ->
+            [2147483648] не менее {NATURALFIXED($min, 2)}K
             *[other] { $min ->
-                        [0] at most {NATURALFIXED($max, 2)}k
-                        *[other] between {NATURALFIXED($min, 2)}k and {NATURALFIXED($max, 2)}k
+                        [0] не более {NATURALFIXED($max, 2)}K
+                        *[other] от {NATURALFIXED($min, 2)}K до {NATURALFIXED($max, 2)}K
                      }
     }
 
 entity-condition-guidebook-organ-type =
-    the metabolizing organ { $shouldhave ->
-                                [true] is
-                                *[false] is not
-                           } {INDEFINITE($name)} {$name} organ
+    метаболизирующий орган { $shouldhave ->
+                                [true] является
+                                *[false] не является
+                           } органом «{$name}»
 
 entity-condition-guidebook-has-tag =
-    the target { $invert ->
-                 [true] does not have
-                 *[false] has
-                } the tag {$tag}
+    у цели { $invert ->
+                 [true] нет тега
+                 *[false] есть тег
+                } {$tag}
 
-entity-condition-guidebook-this-reagent = this reagent
+entity-condition-guidebook-this-reagent = этот реагент
 
 entity-condition-guidebook-breathing =
-    the metabolizer is { $isBreathing ->
-                [true] breathing normally
-                *[false] suffocating
+    метаболизатор { $isBreathing ->
+                [true] дышит нормально
+                *[false] задыхается
                }
 
 entity-condition-guidebook-internals =
-    the metabolizer is { $usingInternals ->
-                [true] using internals
-                *[false] breathing atmospheric air
+    метаболизатор { $usingInternals ->
+                [true] использует внутренние баллоны
+                *[false] дышит атмосферным воздухом
                }

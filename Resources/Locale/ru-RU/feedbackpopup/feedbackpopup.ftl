@@ -14,9 +14,9 @@ command-description-feedback-show = Opens the feedback popup window for the give
 
 command-description-openfeedbackpopup = Opens the feedback popup window.
 
-feedbackpopup-command-error-invalid-proto = Invalid feedback popup prototype.
+feedbackpopup-command-error-invalid-proto = Недопустимый прототип всплывающего отзыва.
 
-feedbackpopup-command-error-popup-send-fail = Failed to send popup! There probably isn't a mind attached to the given entity.
+feedbackpopup-command-error-popup-send-fail = Не удалось отправить всплывающее окно! Вероятно, к указанной сущности не привязан разум.
 
 feedbackpopup-command-hint-playerUid = <playerUid>
 

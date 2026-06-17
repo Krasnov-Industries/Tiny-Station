@@ -20,15 +20,14 @@ salvage-magnet-resources =
         [OreBananium] Бананиум
        *[other] { $resource }
     }
-salvage-magnet-resources-count =
-    { $count ->
-        [1] (Мало)
-        [2] (Средне)
-        [3] (Средне)
-        [4] (Много)
-        [5] (Много)
-       *[other] (Изобилие)
-    }
+salvage-magnet-resources-count = {$count ->
+    [1] (Бедно)
+    [2] (Умеренно)
+    [3] (Умеренно)
+    [4] (Богато)
+    [5] (Богато)
+    *[other] (Невероятно)
+}
 # Debris
 salvage-magnet-debris-ChunkDebris = Космический обломок
 # Asteroids

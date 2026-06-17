@@ -53,7 +53,7 @@ cryo-pod-window-low-pressure-warning = Опасно низкое давлени�
 
 cryo-pod-window-product-name = Nanotrasen CRPX-229
 
-cryo-pod-window-product-subtitle = Cryogenic Restoration Pod
+cryo-pod-window-product-subtitle = Криогенная капсула восстановления
 
 cryo-pod-window-status = Статус:
 

@@ -46,7 +46,7 @@ station-ai-core-taking-damage = Ваше ядро ИИ получает физи
 
 # Ghost role
 
-station-ai-ghost-role-description = Serve the station crew as its ever watchful AI.
+station-ai-ghost-role-description = Служите экипажу станции как её вечно бдительный ИИ.
 
 # Radial actions
 

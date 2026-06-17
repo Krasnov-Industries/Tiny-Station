@@ -239,6 +239,6 @@ reagent-desc-the-sun-also-rises = Крепкий коктейль, смешан�
 reagent-name-whiskey-sour = виски сауэр
 reagent-desc-whiskey-sour = Что за секретный ингредиент? Яйца. Это яйца.
 reagent-name-zombiecocktail = Зомби
-reagent-desc-zombiecocktail = It gets in your head. Your he-eyeh-ead.
+reagent-desc-zombiecocktail = Оно лезет тебе в голову. В твою го-о-олову.
 reagent-name-bacchus-blessing = благословение бахуса
 reagent-desc-bacchus-blessing = Вы не думали, что жидкость может быть настолько отвратительной. Вы уверены в этом?...

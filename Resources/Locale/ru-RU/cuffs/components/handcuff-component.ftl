@@ -23,13 +23,7 @@ handcuff-component-cuff-self-observer-success-message =
     } { REFLEXIVE($target) } себя.
 handcuff-component-cuff-other-success-message = Вы успешно заковали { $otherName }.
 handcuff-component-cuff-self-success-message = Вы заковали себя.
-handcuff-component-cuff-by-other-success-message =
-    { $otherName } { GENDER($otherName) ->
-        [male] заковал
-        [female] заковала
-        [epicene] заковали
-       *[neuter] заковало
-    } вас!
+handcuff-component-cuff-by-other-success-message = Вас сковал(а) {$otherName}!
 handcuff-component-cuff-interrupt-message = Вам помешали заковать { $targetName }!
 handcuff-component-cuff-interrupt-self-message = Вам помешали заковать себя.
 handcuff-component-cuff-interrupt-other-message = Вы помешали { $otherName } заковать вас!

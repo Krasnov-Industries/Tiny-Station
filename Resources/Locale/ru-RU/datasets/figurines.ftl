@@ -13,7 +13,7 @@ figurines-greytider-2 = Ой-ой, кто потерял свою дубинку
 figurines-greytider-3 = Робаст.
 figurines-greytider-4 = Я не я без тулбокса.
 figurines-greytider-5 = Грейтайд по всей станции!
-figurines-greytider-6 = Viva la revolution.
+figurines-greytider-6 = Вива ля революция.
 figurines-clown-1 = Хонк!
 figurines-clown-2 = Банан!
 figurines-clown-3 = Мыло!
@@ -37,8 +37,8 @@ figurines-mime-6 = ...........?
 figurines-mime-7 = !!!
 figurines-mime-8 = ....!
 figurines-mime-9 = ???
-figurines-musician-1 = Never gonna give you up!
-figurines-musician-2 = Never gonna let you down!
+figurines-musician-1 = Никогда тебя не брошу!
+figurines-musician-2 = Никогда не подведу!
 figurines-musician-3 = Музыка это исскуство.
 figurines-musician-4 = Спасибо, я буду тут всю ночь.
 figurines-musician-5 = Я — человек-оркестр.
@@ -69,13 +69,13 @@ figurines-warden-6 = Ты будешь сидеть очень долго, пр�
 figurines-detective-1 = Убийца был дворецкий.
 figurines-detective-2 = Мне нужно немного виски после этого.
 figurines-detective-3 = Хамелеонные волокна? Как сюда попал хамелеон?
-figurines-detective-4 = Go go gadget!
+figurines-detective-4 = Вперёд, гаджет!
 figurines-detective-5 = Конечно я проверил логи дверей!
 figurines-security-1 = Я тут закон!
 figurines-security-2 = Вы нарушили статью 1984.
 figurines-security-3 = Всякий раз, как мне становится скучно, я использую клоуна в качестве мишени.
 figurines-security-4 = У тебя есть два права: молчать и поплакать об этом.
-figurines-security-5 = Harmbaton? It sure as hell harms!
+figurines-security-5 = Хармбатон? Чёрт возьми, он и правда калечит!
 figurines-security-6 = Космической закон? Никогда о таком не слышал.
 figurines-security-7 = Случайный обыск. Сумку.
 figurines-security-8 = Люблю пончики.
@@ -97,13 +97,13 @@ figurines-salvage-2 = Мы потерялись. Кто-то взял ГСП?
 figurines-salvage-3 = У кого-то есть кислород?
 figurines-salvage-4 = Я нашёл кроваво-красный скафандр и энерго меч!
 figurines-salvage-5 = Медведи? В космосе?
-figurines-salvage-6 = Crusher? I barely know her!
+figurines-salvage-6 = Крашер? Да я с ней едва знаком!
 figurines-qm-1 = Кто украл шаттл?
 figurines-qm-2 = Я не буду одобрять оружие.
 figurines-qm-3 = Я не покупал эти пушки!
 figurines-qm-4 = Один ящик с игрушками для товарища клоуна!
 figurines-qm-5 = Пора потратить все деньги на лотерею.
-figurines-qm-6 = Viva La Cargonia!
+figurines-qm-6 = Вива ля Каргония!
 figurines-qm-7 = Заполните форму.
 figurines-qm-8 = Куда пропали все деньги?
 figurines-qm-9 = 99% азартных игроков бросают прямо перед тем, как сорвать куш!
@@ -125,7 +125,7 @@ figurines-atmostech-2 = Я сожгу тебя в камере сгорания.
 figurines-atmostech-3 = Фрезон...
 figurines-atmostech-4 = Тритий...
 figurines-atmostech-5 = Слава Атмосии!
-figurines-atmostech-6 = Distro? That's short for disposal.
+figurines-atmostech-6 = Дистро? Это сокращение от «утилизация».
 figurines-atmostech-7 = ТЭГ: Термо-энергия? Где?
 figurines-rd-1 = Взорвать всех боргов!
 figurines-rd-2 = Арсенал третьего уровня? Ни за что.
@@ -233,16 +233,16 @@ figurines-wizard-2 = Настоящие волшебники поддержив�
 figurines-wizard-3 = Skidaddle skadoodle!
 figurines-wizard-4 = ФАЙРБОЛЛ!
 figurines-space-dragon-1 = Рыба поглотит станцию.
-figurines-space-dragon-2 = Dragon de- Actually, nevermind.
-figurines-space-dragon-3 = Crew is delicious.
-figurines-space-dragon-4 = Don't you dare make sushi.
-figurines-space-dragon-5 = This station ain't big enough for the two of us.
-figurines-queen-1 = Our domain must grow.
-figurines-queen-2 = The hive hungers.
-figurines-queen-3 = We consume all.
-figurines-queen-4 = We are the apex.
-figurines-queen-5 = You're just biomass.
-figurines-queen-6 = We must evolve.
+figurines-space-dragon-2 = Дракон де-… А, неважно.
+figurines-space-dragon-3 = Экипаж — это вкусно.
+figurines-space-dragon-4 = Не смей делать суши.
+figurines-space-dragon-5 = Эта станция слишком мала для нас двоих.
+figurines-queen-1 = Наши владения должны расти.
+figurines-queen-2 = Улей голоден.
+figurines-queen-3 = Мы поглощаем всё.
+figurines-queen-4 = Мы — вершина.
+figurines-queen-5 = Вы всего лишь биомасса.
+figurines-queen-6 = Мы должны эволюционировать.
 
 # figurines-queen
 
@@ -293,11 +293,11 @@ figurines-AI-7 = { law-nutimov-4 }
 
 # Antagonists
 
-figurines-atmostech-8 = Does anyone else hear glass cracking?
+figurines-atmostech-8 = Кто-нибудь ещё слышит, как трескается стекло?
 
-figurines-atmostech-9 = I promise this burn chamber is totally safe and will NOT explode.
+figurines-atmostech-9 = Обещаю, эта камера сгорания абсолютно безопасна и НЕ взорвётся.
 
-figurines-boxer-6 = I only make special appearances these days.
+figurines-boxer-6 = В наши дни я выхожу только на особые выступления.
 
 figurines-cargotech-10 = Запрос на маску клоуна? Хорошо, только найду оружие...
 

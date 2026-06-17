@@ -26,8 +26,7 @@ cmd-banlist-help = Использование: banlist <name or user ID>
 cmd-banlist-empty = Нет активных банов у пользователя { $user }
 cmd-banlist-hint = <name/user ID>
 cmd-ban_exemption_update-desc = Установить исключение на типы банов игрока.
-cmd-ban_exemption_update-help =
-    Использование: ban_exemption_update <player> <flag> [<flag> [...]]
+cmd-ban_exemption_update-help = Использование: ban_exemption_update <player> <flag> [<flag> [...]]
     Укажите несколько флагов, чтобы дать игроку исключение из нескольких типов банов.
     Чтобы удалить все исключения, выполните эту команду и укажите единственным флагом "None".
 cmd-ban_exemption_update-nargs = Ожидается хотя бы 2 аргумента
@@ -69,7 +68,7 @@ ban-panel-permanent = Навсегда
 ban-panel-ip-hwid-tooltip = Оставьте пустым и установите флажок ниже, чтобы использовать данные последнего подключения
 ban-panel-severity = Тяжесть:
 # Ban string
-server-ban-string = { $admin } created a { $severity } severity server ban that expires { $expires } for [{ $name }, { $ip }, { $hwid }], with reason: { $reason }
+server-ban-string = {$admin} выдал серверный бан со степенью «{$severity}», истекающий {$expires}, для [{$name}, {$ip}, {$hwid}], причина: {$reason}
 ban-panel-erase = Стереть сообщения в чате и игрока из раунда
 server-ban-string-never = никогда
 server-ban-string-no-pii = { $admin } установил серверный бан { $severity } тяжести, который истечёт { $expires } у { $name } с причиной: { $reason }

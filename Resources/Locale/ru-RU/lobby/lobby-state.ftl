@@ -10,25 +10,25 @@ lobby-state-player-status-ready = Готов
 lobby-state-player-status-observer = Наблюдатель
 lobby-state-player-status-round-not-started = Раунд ещё не начался
 lobby-state-player-status-round-time =
-    Время раунда: { $hours } { $hours ->
-        [one] час
-        [few] часа
-       *[other] часов
-    } и { $minutes } { $minutes ->
-        [one] минута
-        [few] минуты
-       *[other] минут
+    Время раунда: {$hours} {$hours ->
+    [one]час
+    [few]часа
+    *[other]часов
+    } {$minutes} {$minutes ->
+    [one]минута
+    [few]минуты
+    *[other]минут
     }
 lobby-state-song-text = Играет: [color=white]{ $songTitle }[/color], исполнитель [color=white]{ $songArtist }[/color]
 lobby-state-song-no-song-text = В лобби не играет песня.
 lobby-state-song-unknown-title = [color=dimgray]Неизвестное название[/color]
 lobby-state-song-unknown-artist = [color=dimgray]Неизвестный исполнитель[/color]
 lobby-state-playtime-comment-normal =
-    Сегодня вы провели в игре { $hours } { $hours ->
-        [1] час
-        [few] часа
-       *[other] часов
-    }. Не забывайте отдыхать!
+    Сегодня вы провели в игре {$hours} {$hours ->
+    [one]час
+    [few]часа
+    *[other]часов
+    }. Не забывайте делать перерывы!
 lobby-state-playtime-comment-concerning = Сегодня вы наиграли { $hours } часов. Пожалуйста, отдохните.
 lobby-state-playtime-comment-grasstouchless = { $hours } часов. Подумайте о выходе из игры, чтобы заняться своими делами.
 lobby-state-playtime-comment-selfdestructive = { $hours } часов. Серьёзно?

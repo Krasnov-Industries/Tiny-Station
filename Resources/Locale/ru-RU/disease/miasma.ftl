@@ -5,18 +5,8 @@ perishable-3 = [color=red]{ CAPITALIZE(OBJECT($target)) } тело выгляд�
 perishable-1-nonmob = [color=green]{ CAPITALIZE(SUBJECT($target)) } выглядит ещё свежо.[/color]
 perishable-2-nonmob = [color=orangered]{ CAPITALIZE(SUBJECT($target)) } выглядит не особо свежо.[/color]
 perishable-3-nonmob = [color=red]{ CAPITALIZE(SUBJECT($target)) } выглядит не особо свежо.[/color]
-rotting-rotting = [color=orange]{ CAPITALIZE(SUBJECT($target)) } { GENDER($target) ->
-        [male] гниёт
-        [female] гниёт
-        [epicene] гниют
-       *[neuter] гниёт
-    }![/color]
-rotting-bloated = [color=orangered]{ CAPITALIZE(SUBJECT($target)) } { GENDER($target) ->
-        [male] вздулся
-        [female] вздулась
-        [epicene] вздулись
-       *[neuter] вздулось
-    }![/color]
+rotting-rotting = [color=orange]Труп { POSS-ADJ($target) } гниёт![/color]
+rotting-bloated = [color=orangered]Труп { POSS-ADJ($target) } раздулся![/color]
 rotting-extremely-bloated = [color=red]{ CAPITALIZE(SUBJECT($target)) } сильно { GENDER($target) ->
         [male] вздулся
         [female] вздулась

@@ -5,10 +5,9 @@ ninja-cell-downgrade = Костюм примет только такую бат�
 ninja-cell-too-large = Этот источник питания не помещается в костюм ниндзя!
 ninja-download-fail = Сервер не содержит исследовательские данные...
 ninja-research-steal-fail = Никакие новые технологии не были украдены...
-ninja-research-steal-success =
-    Вы украли { $count } { $count ->
-        [one] новую технологию
-        [few] новые технологии
-       *[other] новых технологий
-    } из { $server }.
+ninja-research-steal-success = Вы украли { $count } { $count ->
+    [one] новую технологию
+    [few] новые технологии
+    *[other] новых технологий
+} из { $server }.
 ninja-criminal-records-hack-announcement = ОШИБКА: В криминальных записях обнаружена [ИЗМЕНЕНО] ошибка #*;"
