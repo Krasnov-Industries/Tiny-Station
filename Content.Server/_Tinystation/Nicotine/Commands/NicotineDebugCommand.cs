@@ -29,9 +29,9 @@ public sealed partial class NicotineDebugCommand : IConsoleCommand
         }
 
         var amount = 1f;
-        if (args.Length >= 3 && !float.TryParse(args[2], out amount))
+        if (args.Length >= 3 && (!float.TryParse(args[2], out amount) || !float.IsFinite(amount)))
         {
-            shell.WriteLine("Failed to parse amount.");
+            shell.WriteLine("Invalid amount.");
             return;
         }
 

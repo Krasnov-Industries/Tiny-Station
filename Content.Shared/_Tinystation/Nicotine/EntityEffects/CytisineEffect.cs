@@ -6,13 +6,13 @@ namespace Content.Shared._Tinystation.Nicotine.EntityEffects;
 public sealed partial class CytisineEffect : EntityEffectBase<CytisineEffect>
 {
     /// <summary>
-    ///     Cure progress gained per 1u metabolized.
+    ///     Cure progress gained per default metabolism tick.
     /// </summary>
     [DataField]
     public float CurePerUnit = 1f;
 
     /// <summary>
-    ///     How many seconds of withdrawal suppression 1u provides.
+    ///     How many seconds of withdrawal suppression one default metabolism tick provides.
     /// </summary>
     [DataField]
     public float SuppressionSecondsPerUnit = 120f;

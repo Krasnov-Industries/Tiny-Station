@@ -25,6 +25,7 @@ public sealed partial class NicotineSystem : EntitySystem
     [Dependency] private StatusEffectsSystem _status = default!;
     [Dependency] private MovementModStatusSystem _movement = default!;
     [Dependency] private SharedStaminaSystem _stamina = default!;
+    [Dependency] private SharedSolutionContainerSystem _solution = default!;
 
     private static readonly EntProtoId NicotineSpeed = "StatusEffectNicotineSpeed";
     private static readonly EntProtoId NicotineStamina = "StatusEffectNicotineStamina";
@@ -70,6 +71,9 @@ public sealed partial class NicotineSystem : EntitySystem
 
         if (ent.Comp.NextPopupTime == default)
             ent.Comp.NextPopupTime = now + TimeSpan.FromMinutes(15);
+
+        ent.Comp.LastKnownBloodNicotine = GetBloodNicotine(ent.Owner);
+        Dirty(ent);
     }
 
     private void OnNicotineEffect(Entity<MetaDataComponent> ent, ref EntityEffectEvent<NicotineEffect> args)
@@ -105,12 +109,30 @@ public sealed partial class NicotineSystem : EntitySystem
             return;
         }
 
+        var now = _timing.CurTime;
         var nicotine = args.Solution.Comp.Solution.GetTotalPrototypeQuantity(NicotineReagent).Float();
         if (nicotine > addiction.LastKnownBloodNicotine + BloodNicotineIncreaseEpsilon)
-            ResetWithdrawalTimer(ent.Owner, addiction, _timing.CurTime);
+        {
+            var stage = GetWithdrawalStage(addiction, now);
+            ResetWithdrawalTimer(ent.Owner, addiction, now);
+
+            if (stage >= NicotineWithdrawalStage.Craving)
+                _popup.PopupEntity(Loc.GetString("nicotine-addiction-relieved"), ent.Owner, ent.Owner, PopupType.Small);
+        }
 
         addiction.LastKnownBloodNicotine = nicotine;
         Dirty(ent.Owner, addiction);
+    }
+
+    private float GetBloodNicotine(EntityUid uid)
+    {
+        if (!TryComp<BloodstreamComponent>(uid, out var bloodstream))
+            return 0f;
+
+        if (!_solution.ResolveSolution(uid, bloodstream.BloodSolutionName, ref bloodstream.BloodSolution, out var bloodSolution))
+            return 0f;
+
+        return bloodSolution.GetTotalPrototypeQuantity(NicotineReagent).Float();
     }
 
     private void ResetWithdrawalTimer(EntityUid uid, NicotineAddictionComponent addiction, TimeSpan now)
@@ -171,6 +193,7 @@ public sealed partial class NicotineSystem : EntitySystem
             addiction.LastNicotineTime = now;
             addiction.HasReceivedNicotine = true;
             addiction.NextPopupTime = now + TimeSpan.FromMinutes(12);
+            addiction.LastKnownBloodNicotine = GetBloodNicotine(uid);
             Dirty(uid, addiction);
             _popup.PopupEntity(Loc.GetString("nicotine-addiction-developed"), uid, uid, PopupType.MediumCaution);
             return;
@@ -339,7 +362,12 @@ public sealed partial class NicotineSystem : EntitySystem
                 return true;
 
             case "suppress":
-                var suppressed = EnsureComp<NicotineAddictionComponent>(uid);
+                if (!TryComp<NicotineAddictionComponent>(uid, out var suppressed))
+                {
+                    message = "Никотиновой зависимости нет. Подавлять нечего.";
+                    return true;
+                }
+
                 var suppressMinutes = MathF.Max(1f, amount);
                 suppressed.WithdrawalSuppressedUntil = now + TimeSpan.FromMinutes(suppressMinutes);
                 suppressed.NextPopupTime = suppressed.WithdrawalSuppressedUntil;
@@ -349,7 +377,12 @@ public sealed partial class NicotineSystem : EntitySystem
                 return true;
 
             case "cure":
-                var addiction = EnsureComp<NicotineAddictionComponent>(uid);
+                if (!TryComp<NicotineAddictionComponent>(uid, out var addiction))
+                {
+                    message = "Никотиновой зависимости нет. Лечить нечего.";
+                    return true;
+                }
+
                 addiction.CureProgress += amount;
                 if (addiction.CureProgress >= CureThreshold)
                 {
