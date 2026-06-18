@@ -39,8 +39,8 @@ public sealed partial class NicotineSystem : EntitySystem
     private static readonly TimeSpan CravingDelay = TimeSpan.FromMinutes(15);
     private static readonly TimeSpan MildWithdrawalDelay = TimeSpan.FromMinutes(25);
     private static readonly TimeSpan SevereWithdrawalDelay = TimeSpan.FromMinutes(40);
-    private static readonly TimeSpan NicotineBuffDuration = TimeSpan.FromSeconds(45);
-    private static readonly TimeSpan NicotineStaminaDuration = TimeSpan.FromMinutes(2);
+    private static readonly TimeSpan NicotineBuffDuration = TimeSpan.FromMinutes(1);
+    private static readonly TimeSpan NicotineStaminaDuration = TimeSpan.FromMinutes(3);
     private static readonly TimeSpan DrowsinessRemoveTime = TimeSpan.FromSeconds(2);
 
     private float _accumulator;
@@ -156,7 +156,7 @@ public sealed partial class NicotineSystem : EntitySystem
     private void ApplyNicotineBuff(EntityUid uid)
     {
         if (HasComp<MovementSpeedModifierComponent>(uid))
-            _movement.TryUpdateMovementSpeedModDuration(uid, NicotineSpeed, NicotineBuffDuration, 1.03f, 1.03f);
+            _movement.TryUpdateMovementSpeedModDuration(uid, NicotineSpeed, NicotineBuffDuration, 1.06f, 1.06f);
 
         if (HasComp<StaminaComponent>(uid))
             _status.TrySetStatusEffectDuration(uid, NicotineStamina, NicotineStaminaDuration);

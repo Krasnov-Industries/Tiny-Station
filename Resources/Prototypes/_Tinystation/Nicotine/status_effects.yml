@@ -9,7 +9,7 @@
   name: nicotine stamina stimulation
   components:
   - type: StaminaModifierStatusEffect
-    modifier: 1.10
+    modifier: 1.15
 
 - type: entity
   parent: StatusEffectSlowdown

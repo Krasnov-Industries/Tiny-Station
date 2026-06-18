@@ -4,15 +4,15 @@ trait-smoker-desc = У вас уже есть никотиновая завис�
 reagent-name-cytisine = цитизин
 reagent-desc-cytisine = Препарат для подавления симптомов никотиновой ломки и постепенного лечения зависимости.
 
-nicotine-addiction-relieved = Вам становится спокойнее.
-nicotine-addiction-developed = Вы чувствуете, что вам всё чаще хочется курить.
-nicotine-addiction-cured = Тяга к никотину наконец отступает.
+nicotine-addiction-relieved = Стало спокойнее.
+nicotine-addiction-developed = Хочется курить чаще.
+nicotine-addiction-cured = Тяга отступает.
 
-nicotine-withdrawal-craving = Вам хочется закурить.
-nicotine-withdrawal-mild = Без никотина вы чувствуете раздражение и слабость.
-nicotine-withdrawal-severe = Никотиновая ломка сильно мешает сосредоточиться.
+nicotine-withdrawal-craving = Хочется курить.
+nicotine-withdrawal-mild = Раздражение. Слабость.
+nicotine-withdrawal-severe = Сильная ломка.
 
-cytisine-withdrawal-suppressed = Симптомы никотиновой ломки ослабевают.
+cytisine-withdrawal-suppressed = Ломка слабеет.
 
 nicotine-effect-guidebook = Даёт слабую стимуляцию, немного снижает сонливость и может развить зависимость при частом употреблении.
 cytisine-effect-guidebook = Подавляет никотиновую ломку и постепенно лечит зависимость.
