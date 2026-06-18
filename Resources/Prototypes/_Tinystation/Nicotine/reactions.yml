@@ -1,0 +1,11 @@
+- type: reaction
+  id: Cytisine
+  reactants:
+    Nicotine:
+      amount: 1
+    Dylovene:
+      amount: 1
+    Sugar:
+      amount: 1
+  products:
+    Cytisine: 3
