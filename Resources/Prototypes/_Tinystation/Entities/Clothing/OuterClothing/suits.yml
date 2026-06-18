@@ -5,9 +5,9 @@
   description: Heavy reinforced armor suit blessed with holy resilience. Protects the righteous in battle.
   components:
   - type: Sprite
-    sprite: _Tinystation/Clothing/OuterClothing/Sutis/knight_suit.rsi
+    sprite: _Tinystation/Clothing/OuterClothing/Suits/knight_suit.rsi
   - type: Clothing
-    sprite: _Tinystation/Clothing/OuterClothing/Sutis/knight_suit.rsi
+    sprite: _Tinystation/Clothing/OuterClothing/Suits/knight_suit.rsi
   - type: PressureProtection
     highPressureMultiplier: 0.02
     lowPressureMultiplier: 1000
