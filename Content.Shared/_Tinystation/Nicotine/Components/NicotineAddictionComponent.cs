@@ -26,4 +26,12 @@ public sealed partial class NicotineAddictionComponent : Component
 
     [DataField]
     public bool HasReceivedNicotine;
+
+    /// <summary>
+    ///     Last observed nicotine amount in the bloodstream solution.
+    ///     Used to reset withdrawal as soon as smoked/injected nicotine enters blood,
+    ///     without waiting for the next metabolism tick.
+    /// </summary>
+    [DataField]
+    public float LastKnownBloodNicotine;
 }

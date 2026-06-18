@@ -1,6 +1,8 @@
 using Content.Shared._Tinystation.Nicotine.EntityEffects;
 using Content.Server.Popups;
 using Content.Shared._Tinystation.Nicotine.Components;
+using Content.Shared.Body.Components;
+using Content.Shared.Chemistry.EntitySystems;
 using Content.Shared.Damage.Components;
 using Content.Shared.Damage.Events;
 using Content.Shared.Damage.Systems;
@@ -35,6 +37,9 @@ public sealed partial class NicotineSystem : EntitySystem
     private const float ExposureDecayPerMinute = 1f / 18f;
     private const float CureThreshold = 30f;
     private const float NicotineCurePenalty = 2f;
+    private const float BloodNicotineIncreaseEpsilon = 0.01f;
+
+    private const string NicotineReagent = "Nicotine";
 
     private static readonly TimeSpan CravingDelay = TimeSpan.FromMinutes(15);
     private static readonly TimeSpan MildWithdrawalDelay = TimeSpan.FromMinutes(25);
@@ -53,6 +58,7 @@ public sealed partial class NicotineSystem : EntitySystem
         SubscribeLocalEvent<MetaDataComponent, EntityEffectEvent<CytisineEffect>>(OnCytisineEffect);
         SubscribeLocalEvent<NicotineAddictionComponent, ComponentStartup>(OnAddictionStartup);
         SubscribeLocalEvent<NicotineAddictionComponent, RefreshStaminaCritThresholdEvent>(OnRefreshStaminaThreshold);
+        SubscribeLocalEvent<BloodstreamComponent, SolutionChangedEvent>(OnBloodstreamSolutionChanged);
     }
 
     private void OnAddictionStartup(Entity<NicotineAddictionComponent> ent, ref ComponentStartup args)
@@ -78,14 +84,9 @@ public sealed partial class NicotineSystem : EntitySystem
         {
             var stage = GetWithdrawalStage(addiction, now);
 
-            addiction.LastNicotineTime = now;
-            addiction.HasReceivedNicotine = true;
-            addiction.WithdrawalSuppressedUntil = now;
-            addiction.NextPopupTime = now + TimeSpan.FromMinutes(8);
+            ResetWithdrawalTimer(ent.Owner, addiction, now);
             addiction.CureProgress = MathF.Max(0f, addiction.CureProgress - NicotineCurePenalty * args.Scale);
             Dirty(ent.Owner, addiction);
-
-            ClearWithdrawal(ent.Owner);
 
             if (stage >= NicotineWithdrawalStage.Craving)
                 _popup.PopupEntity(Loc.GetString("nicotine-addiction-relieved"), ent.Owner, ent.Owner, PopupType.Small);
@@ -94,6 +95,31 @@ public sealed partial class NicotineSystem : EntitySystem
         }
 
         AddExposure(ent.Owner, args.Effect.ExposurePerUnit * args.Scale, now);
+    }
+
+    private void OnBloodstreamSolutionChanged(Entity<BloodstreamComponent> ent, ref SolutionChangedEvent args)
+    {
+        if (args.Solution.Comp.Id != ent.Comp.BloodSolutionName ||
+            !TryComp<NicotineAddictionComponent>(ent.Owner, out var addiction))
+        {
+            return;
+        }
+
+        var nicotine = args.Solution.Comp.Solution.GetTotalPrototypeQuantity(NicotineReagent).Float();
+        if (nicotine > addiction.LastKnownBloodNicotine + BloodNicotineIncreaseEpsilon)
+            ResetWithdrawalTimer(ent.Owner, addiction, _timing.CurTime);
+
+        addiction.LastKnownBloodNicotine = nicotine;
+        Dirty(ent.Owner, addiction);
+    }
+
+    private void ResetWithdrawalTimer(EntityUid uid, NicotineAddictionComponent addiction, TimeSpan now)
+    {
+        addiction.LastNicotineTime = now;
+        addiction.HasReceivedNicotine = true;
+        addiction.WithdrawalSuppressedUntil = now;
+        addiction.NextPopupTime = now + TimeSpan.FromMinutes(8);
+        ClearWithdrawal(uid);
     }
 
     private void OnCytisineEffect(Entity<MetaDataComponent> ent, ref EntityEffectEvent<CytisineEffect> args)
@@ -283,33 +309,33 @@ public sealed partial class NicotineSystem : EntitySystem
                 RemComp<NicotineAddictionComponent>(uid);
                 RemComp<NicotineExposureComponent>(uid);
                 ClearWithdrawal(uid);
-                message = "Nicotine addiction and exposure cleared.";
+                message = "Никотиновая зависимость и привыкание очищены.";
                 return true;
 
             case "exposure":
                 AddExposure(uid, amount, now);
-                message = $"Added {amount:0.##} nicotine exposure.";
+                message = $"Добавлено привыкание к никотину: {amount:0.##}.";
                 return true;
 
             case "addicted":
             case "none":
                 SetDebugStage(uid, now, TimeSpan.Zero);
-                message = "Nicotine addiction set with no withdrawal.";
+                message = "Никотиновая зависимость выставлена без ломки.";
                 return true;
 
             case "craving":
                 SetDebugStage(uid, now, CravingDelay + TimeSpan.FromMinutes(1));
-                message = "Nicotine withdrawal set to craving.";
+                message = "Никотиновая ломка выставлена: тяга.";
                 return true;
 
             case "mild":
                 SetDebugStage(uid, now, MildWithdrawalDelay + TimeSpan.FromMinutes(1));
-                message = "Nicotine withdrawal set to mild.";
+                message = "Никотиновая ломка выставлена: средняя.";
                 return true;
 
             case "severe":
                 SetDebugStage(uid, now, SevereWithdrawalDelay + TimeSpan.FromMinutes(1));
-                message = "Nicotine withdrawal set to severe.";
+                message = "Никотиновая ломка выставлена: сильная.";
                 return true;
 
             case "suppress":
@@ -319,7 +345,7 @@ public sealed partial class NicotineSystem : EntitySystem
                 suppressed.NextPopupTime = suppressed.WithdrawalSuppressedUntil;
                 Dirty(uid, suppressed);
                 ClearWithdrawal(uid);
-                message = $"Nicotine withdrawal suppressed for {suppressMinutes:0.##} minutes.";
+                message = $"Никотиновая ломка подавлена на {suppressMinutes:0.##} мин.";
                 return true;
 
             case "cure":
@@ -329,16 +355,16 @@ public sealed partial class NicotineSystem : EntitySystem
                 {
                     RemComp<NicotineAddictionComponent>(uid);
                     ClearWithdrawal(uid);
-                    message = "Nicotine addiction cured.";
+                    message = "Никотиновая зависимость вылечена.";
                     return true;
                 }
 
                 Dirty(uid, addiction);
-                message = $"Added {amount:0.##} cure progress. Current progress: {addiction.CureProgress:0.##}/{CureThreshold:0.##}.";
+                message = $"Добавлено лечение: {amount:0.##}. Сейчас: {addiction.CureProgress:0.##}/{CureThreshold:0.##}.";
                 return true;
 
             default:
-                message = "Unknown mode. Use: status, clear, exposure, addicted, craving, mild, severe, suppress, cure.";
+                message = "Неизвестный режим. Используй: status, clear, exposure, addicted, craving, mild, severe, suppress, cure.";
                 return false;
         }
     }
@@ -348,23 +374,35 @@ public sealed partial class NicotineSystem : EntitySystem
         if (!TryComp<NicotineAddictionComponent>(uid, out var addiction))
         {
             if (TryComp<NicotineExposureComponent>(uid, out var exposure))
-                return $"Not addicted. Exposure: {exposure.Exposure:0.##}/{AddictionThreshold:0.##}.";
+                return $"Зависимости нет. Привыкание: {exposure.Exposure:0.##}/{AddictionThreshold:0.##}.";
 
-            return "Not addicted. No nicotine exposure.";
+            return "Зависимости нет. Привыкания к никотину нет.";
         }
 
         var stage = GetWithdrawalStage(addiction, now);
         var sinceNicotine = now - addiction.LastNicotineTime;
         var nextStage = GetNextWithdrawalStage(stage);
         var nextStageText = nextStage is null
-            ? "No next stage."
-            : $"Next: {nextStage.Value} in {FormatTime(GetTimeUntilNextStage(addiction, now, nextStage.Value))}.";
+            ? "Следующей стадии нет."
+            : $"Следующая стадия: {FormatStage(nextStage.Value)} через {FormatTime(GetTimeUntilNextStage(addiction, now, nextStage.Value))}.";
 
         var suppressedText = addiction.WithdrawalSuppressedUntil > now
-            ? $" Suppressed for {FormatTime(addiction.WithdrawalSuppressedUntil - now)}."
+            ? $" Ломка подавлена ещё {FormatTime(addiction.WithdrawalSuppressedUntil - now)}."
             : string.Empty;
 
-        return $"Stage: {stage}. Time without nicotine: {FormatTime(sinceNicotine)}. {nextStageText}{suppressedText} Cure: {addiction.CureProgress:0.##}/{CureThreshold:0.##}.";
+        return $"Стадия: {FormatStage(stage)}. Без никотина: {FormatTime(sinceNicotine)}. {nextStageText}{suppressedText} Лечение: {addiction.CureProgress:0.##}/{CureThreshold:0.##}.";
+    }
+
+    private static string FormatStage(NicotineWithdrawalStage stage)
+    {
+        return stage switch
+        {
+            NicotineWithdrawalStage.None => "нет ломки",
+            NicotineWithdrawalStage.Craving => "тяга",
+            NicotineWithdrawalStage.Mild => "средняя ломка",
+            NicotineWithdrawalStage.Severe => "сильная ломка",
+            _ => stage.ToString()
+        };
     }
 
     private static NicotineWithdrawalStage? GetNextWithdrawalStage(NicotineWithdrawalStage stage)
