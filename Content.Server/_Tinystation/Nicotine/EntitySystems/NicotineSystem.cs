@@ -1,4 +1,4 @@
-using Content.Server._Tinystation.Nicotine.EntityEffects;
+using Content.Shared._Tinystation.Nicotine.EntityEffects;
 using Content.Server.Popups;
 using Content.Shared._Tinystation.Nicotine.Components;
 using Content.Shared.Damage.Components;

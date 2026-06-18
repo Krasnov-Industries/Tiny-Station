@@ -1,7 +1,7 @@
 using Content.Shared.EntityEffects;
 using Robust.Shared.Prototypes;
 
-namespace Content.Server._Tinystation.Nicotine.EntityEffects;
+namespace Content.Shared._Tinystation.Nicotine.EntityEffects;
 
 public sealed partial class CytisineEffect : EntityEffectBase<CytisineEffect>
 {
