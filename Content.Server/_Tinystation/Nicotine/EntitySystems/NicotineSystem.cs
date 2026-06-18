@@ -237,7 +237,7 @@ public sealed partial class NicotineSystem : EntitySystem
             return;
         }
 
-        var speed = stage == NicotineWithdrawalStage.Severe ? 0.97f : 0.98f;
+        var speed = stage == NicotineWithdrawalStage.Severe ? 0.85f : 0.92f;
         var duration = TimeSpan.FromSeconds(UpdateInterval + 5);
 
         if (HasComp<MovementSpeedModifierComponent>(uid))
@@ -246,8 +246,8 @@ public sealed partial class NicotineSystem : EntitySystem
         if (HasComp<StaminaComponent>(uid))
             _stamina.RefreshStaminaCritThreshold(uid);
 
-        if (stage == NicotineWithdrawalStage.Severe && _random.Prob(0.15f))
-            _status.TryUpdateStatusEffectDuration(uid, Drowsiness, TimeSpan.FromSeconds(8));
+        if (stage == NicotineWithdrawalStage.Severe && _random.Prob(0.30f))
+            _status.TryUpdateStatusEffectDuration(uid, Drowsiness, TimeSpan.FromSeconds(12));
     }
 
     private void ClearWithdrawal(EntityUid uid)
@@ -263,9 +263,9 @@ public sealed partial class NicotineSystem : EntitySystem
         var stage = GetWithdrawalStage(ent.Comp, _timing.CurTime);
 
         if (stage == NicotineWithdrawalStage.Mild)
-            args.ThresholdValue *= 0.95f;
+            args.ThresholdValue *= 0.80f;
         else if (stage == NicotineWithdrawalStage.Severe)
-            args.ThresholdValue *= 0.90f;
+            args.ThresholdValue *= 0.60f;
     }
 
     public bool TryRunDebugCommand(EntityUid uid, string mode, float amount, out string message)
