@@ -12,7 +12,7 @@ public sealed partial class NicotineDebugCommand : IConsoleCommand
 
     public string Command => "nicotinedebug";
     public string Description => "Sets nicotine addiction debug state on an entity.";
-    public string Help => "Usage: nicotinedebug <target> <clear|exposure|addicted|craving|mild|severe|suppress|cure> [amount]";
+    public string Help => "Usage: nicotinedebug <target> <status|clear|exposure|addicted|craving|mild|severe|suppress|cure> [amount]";
 
     public void Execute(IConsoleShell shell, string argStr, string[] args)
     {
@@ -48,7 +48,7 @@ public sealed partial class NicotineDebugCommand : IConsoleCommand
         if (args.Length == 2)
         {
             return CompletionResult.FromHintOptions(
-                new[] { "clear", "exposure", "addicted", "craving", "mild", "severe", "suppress", "cure" },
+                new[] { "status", "clear", "exposure", "addicted", "craving", "mild", "severe", "suppress", "cure" },
                 "debug mode");
         }
 

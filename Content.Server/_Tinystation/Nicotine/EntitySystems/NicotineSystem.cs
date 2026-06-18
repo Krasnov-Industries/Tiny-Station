@@ -274,6 +274,10 @@ public sealed partial class NicotineSystem : EntitySystem
 
         switch (mode.ToLowerInvariant())
         {
+            case "status":
+                message = GetDebugStatus(uid, now);
+                return true;
+
             case "clear":
             case "reset":
                 RemComp<NicotineAddictionComponent>(uid);
@@ -334,9 +338,72 @@ public sealed partial class NicotineSystem : EntitySystem
                 return true;
 
             default:
-                message = "Unknown mode. Use: clear, exposure, addicted, craving, mild, severe, suppress, cure.";
+                message = "Unknown mode. Use: status, clear, exposure, addicted, craving, mild, severe, suppress, cure.";
                 return false;
         }
+    }
+
+    private string GetDebugStatus(EntityUid uid, TimeSpan now)
+    {
+        if (!TryComp<NicotineAddictionComponent>(uid, out var addiction))
+        {
+            if (TryComp<NicotineExposureComponent>(uid, out var exposure))
+                return $"Not addicted. Exposure: {exposure.Exposure:0.##}/{AddictionThreshold:0.##}.";
+
+            return "Not addicted. No nicotine exposure.";
+        }
+
+        var stage = GetWithdrawalStage(addiction, now);
+        var sinceNicotine = now - addiction.LastNicotineTime;
+        var nextStage = GetNextWithdrawalStage(stage);
+        var nextStageText = nextStage is null
+            ? "No next stage."
+            : $"Next: {nextStage.Value} in {FormatTime(GetTimeUntilNextStage(addiction, now, nextStage.Value))}.";
+
+        var suppressedText = addiction.WithdrawalSuppressedUntil > now
+            ? $" Suppressed for {FormatTime(addiction.WithdrawalSuppressedUntil - now)}."
+            : string.Empty;
+
+        return $"Stage: {stage}. Time without nicotine: {FormatTime(sinceNicotine)}. {nextStageText}{suppressedText} Cure: {addiction.CureProgress:0.##}/{CureThreshold:0.##}.";
+    }
+
+    private static NicotineWithdrawalStage? GetNextWithdrawalStage(NicotineWithdrawalStage stage)
+    {
+        return stage switch
+        {
+            NicotineWithdrawalStage.None => NicotineWithdrawalStage.Craving,
+            NicotineWithdrawalStage.Craving => NicotineWithdrawalStage.Mild,
+            NicotineWithdrawalStage.Mild => NicotineWithdrawalStage.Severe,
+            _ => null
+        };
+    }
+
+    private static TimeSpan GetTimeUntilNextStage(NicotineAddictionComponent addiction, TimeSpan now, NicotineWithdrawalStage nextStage)
+    {
+        var delay = nextStage switch
+        {
+            NicotineWithdrawalStage.Craving => CravingDelay,
+            NicotineWithdrawalStage.Mild => MildWithdrawalDelay,
+            NicotineWithdrawalStage.Severe => SevereWithdrawalDelay,
+            _ => TimeSpan.Zero
+        };
+
+        var remaining = addiction.LastNicotineTime + delay - now;
+        return remaining > TimeSpan.Zero ? remaining : TimeSpan.Zero;
+    }
+
+    private static string FormatTime(TimeSpan time)
+    {
+        if (time < TimeSpan.Zero)
+            time = TimeSpan.Zero;
+
+        if (time.TotalHours >= 1)
+            return $"{(int) time.TotalHours}h {time.Minutes}m {time.Seconds}s";
+
+        if (time.TotalMinutes >= 1)
+            return $"{time.Minutes}m {time.Seconds}s";
+
+        return $"{time.Seconds}s";
     }
 
     private void SetDebugStage(EntityUid uid, TimeSpan now, TimeSpan sinceNicotine)
