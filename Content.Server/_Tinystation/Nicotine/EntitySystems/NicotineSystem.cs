@@ -268,6 +268,89 @@ public sealed partial class NicotineSystem : EntitySystem
             args.ThresholdValue *= 0.90f;
     }
 
+    public bool TryRunDebugCommand(EntityUid uid, string mode, float amount, out string message)
+    {
+        var now = _timing.CurTime;
+
+        switch (mode.ToLowerInvariant())
+        {
+            case "clear":
+            case "reset":
+                RemComp<NicotineAddictionComponent>(uid);
+                RemComp<NicotineExposureComponent>(uid);
+                ClearWithdrawal(uid);
+                message = "Nicotine addiction and exposure cleared.";
+                return true;
+
+            case "exposure":
+                AddExposure(uid, amount, now);
+                message = $"Added {amount:0.##} nicotine exposure.";
+                return true;
+
+            case "addicted":
+            case "none":
+                SetDebugStage(uid, now, TimeSpan.Zero);
+                message = "Nicotine addiction set with no withdrawal.";
+                return true;
+
+            case "craving":
+                SetDebugStage(uid, now, CravingDelay + TimeSpan.FromMinutes(1));
+                message = "Nicotine withdrawal set to craving.";
+                return true;
+
+            case "mild":
+                SetDebugStage(uid, now, MildWithdrawalDelay + TimeSpan.FromMinutes(1));
+                message = "Nicotine withdrawal set to mild.";
+                return true;
+
+            case "severe":
+                SetDebugStage(uid, now, SevereWithdrawalDelay + TimeSpan.FromMinutes(1));
+                message = "Nicotine withdrawal set to severe.";
+                return true;
+
+            case "suppress":
+                var suppressed = EnsureComp<NicotineAddictionComponent>(uid);
+                var suppressMinutes = MathF.Max(1f, amount);
+                suppressed.WithdrawalSuppressedUntil = now + TimeSpan.FromMinutes(suppressMinutes);
+                suppressed.NextPopupTime = suppressed.WithdrawalSuppressedUntil;
+                Dirty(uid, suppressed);
+                ClearWithdrawal(uid);
+                message = $"Nicotine withdrawal suppressed for {suppressMinutes:0.##} minutes.";
+                return true;
+
+            case "cure":
+                var addiction = EnsureComp<NicotineAddictionComponent>(uid);
+                addiction.CureProgress += amount;
+                if (addiction.CureProgress >= CureThreshold)
+                {
+                    RemComp<NicotineAddictionComponent>(uid);
+                    ClearWithdrawal(uid);
+                    message = "Nicotine addiction cured.";
+                    return true;
+                }
+
+                Dirty(uid, addiction);
+                message = $"Added {amount:0.##} cure progress. Current progress: {addiction.CureProgress:0.##}/{CureThreshold:0.##}.";
+                return true;
+
+            default:
+                message = "Unknown mode. Use: clear, exposure, addicted, craving, mild, severe, suppress, cure.";
+                return false;
+        }
+    }
+
+    private void SetDebugStage(EntityUid uid, TimeSpan now, TimeSpan sinceNicotine)
+    {
+        RemComp<NicotineExposureComponent>(uid);
+
+        var addiction = EnsureComp<NicotineAddictionComponent>(uid);
+        addiction.LastNicotineTime = now - sinceNicotine;
+        addiction.HasReceivedNicotine = true;
+        addiction.WithdrawalSuppressedUntil = TimeSpan.Zero;
+        addiction.NextPopupTime = now;
+        Dirty(uid, addiction);
+    }
+
     private enum NicotineWithdrawalStage : byte
     {
         None,
