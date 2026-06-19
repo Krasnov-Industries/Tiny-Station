@@ -16,7 +16,7 @@ accent-knight-words-5 = друг
 accent-knight-words-replace-5 = побратим
 
 # Lay on Hands
-knight-lay-on-hands-popup = Вы направляете святую энергию на {THE($target)}, исцляя раны!
+knight-lay-on-hands-popup = Вы направляете святую энергию на {THE($target)}, исцеляя раны!
 knight-lay-on-hands-popup-others = {THE($user)} направляет святую энергию на {THE($target)}!
 knight-lay-on-hands-fail = Вы не можете исцелить то, что не имеет жизни.
 
