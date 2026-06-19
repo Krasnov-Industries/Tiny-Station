@@ -242,6 +242,10 @@
   plantMetabolism:
   - !type:PlantAdjustHealth
     amount: -5
+  metabolisms:
+    Bloodstream:
+      effects:
+      - !type:NicotineEffect
 
 # TODO: Replace these nonstandardized effects with generic brain damage
 - type: reagent

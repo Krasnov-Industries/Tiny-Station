@@ -1,0 +1,12 @@
+- type: reagent
+  id: Cytisine
+  name: reagent-name-cytisine
+  desc: reagent-desc-cytisine
+  group: Medicine
+  physicalDesc: reagent-physical-desc-soothing
+  flavor: medicine
+  color: "#b8d8a8"
+  metabolisms:
+    Bloodstream:
+      effects:
+      - !type:CytisineEffect
