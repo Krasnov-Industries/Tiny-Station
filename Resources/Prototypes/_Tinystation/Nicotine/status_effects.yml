@@ -1,0 +1,17 @@
+- type: entity
+  parent: StatusEffectSpeed
+  id: StatusEffectNicotineSpeed
+  name: nicotine stimulation
+
+- type: entity
+  parent: StaminaModifierStatusEffect
+  id: StatusEffectNicotineStamina
+  name: nicotine stamina stimulation
+  components:
+  - type: StaminaModifierStatusEffect
+    modifier: 1.15
+
+- type: entity
+  parent: StatusEffectSlowdown
+  id: StatusEffectNicotineWithdrawalSpeed
+  name: nicotine withdrawal slowdown
