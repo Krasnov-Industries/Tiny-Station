@@ -1,4 +1,4 @@
-# immune to everything except physical and heat damage; vulnerable to holy damage because they're undead, but not as vulnerable as a ghost or demon would be
+# Рыцарь почти не получает не-физический урон; физический и жар проходят, дробящий дополнительно смягчается. Святой урон сейчас обнулён коэффициентом Holy: 0.0.
 - type: damageModifierSet
   id: Knight
   coefficients:
