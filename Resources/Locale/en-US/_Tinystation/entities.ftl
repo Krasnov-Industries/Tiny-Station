@@ -1,6 +1,12 @@
 ent-PlushieRpWorm = RP worm
     .desc = Just an ordinary RP worm...
 
+ent-MobKnight = knight
+    .desc = A noble warrior bound by honor and steel. Holy water restores their strength.
+
+ent-MobKnightCloset = closet knight
+    .desc = A knight from a bygone era, discovered in an unlikely place. Restore your honor or conquer the station!
+
 ent-ClothingNeckCloakKnight = knight cloak
     .desc = A heavy ceremonial cloak fit for a wandering knight.
 
