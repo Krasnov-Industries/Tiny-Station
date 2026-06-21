@@ -34,7 +34,6 @@
   id: BrigmedicGear
   equipment:
     gloves: ClothingHandsGlovesNitrile
-    eyes: ClothingEyesHudMedical
     id: BrigmedicPDA
     ears: ClothingHeadsetBrigmedic
     pocket1: WeaponDisabler
@@ -55,7 +54,7 @@
     outerClothing: ClothingOuterCoatAMG
     jumpsuit: ClothingUniformJumpsuitBrigmedic
     back: ClothingBackpackBrigmedic
-    eyes: ClothingEyesHudMedical
+    eyes: ClothingEyesHudMedSec
     ears: ClothingHeadsetBrigmedic
     id: BrigmedicPDA
     belt: ClothingBeltMedicalFilled

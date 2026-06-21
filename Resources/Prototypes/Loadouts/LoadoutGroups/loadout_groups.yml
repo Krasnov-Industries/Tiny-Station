@@ -1186,6 +1186,15 @@
   - BrigmedicBeret
 
 - type: loadoutGroup
+  id: BrigmedicEyes
+  name: loadout-group-brigmedic-eyes
+  loadouts:
+  - BrigmedicMedSecHud
+  - Glasses
+  - GlassesJamjar
+  - GlassesJensen
+
+- type: loadoutGroup
   id: BrigmedicJumpsuit
   name: loadout-group-brigmedic-jumpsuit
   loadouts:
@@ -1203,6 +1212,8 @@
 - type: loadoutGroup
   id: BrigmedicOuterClothing
   name: loadout-group-brigmedic-outerclothing
+  minLimit: 0
+  defaultSelected: 1
   loadouts:
   - BrigmedicCoat
 
