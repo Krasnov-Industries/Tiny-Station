@@ -159,6 +159,7 @@ loadout-group-warden-jumpsuit = Warden jumpsuit
 loadout-group-warden-outerclothing = Warden outer clothing
 
 loadout-group-brigmedic-head = Brigmedic head
+loadout-group-brigmedic-eyes = Brigmedic eyes
 loadout-group-brigmedic-jumpsuit = Brigmedic uniform
 loadout-group-brigmedic-backpack = Brigmedic backpack
 loadout-group-brigmedic-outerclothing = Brigmedic outer clothing

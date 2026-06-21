@@ -413,9 +413,12 @@
   id: JobBrigmedic
   groups:
   - BrigmedicHead
+  - MedicalMask
+  - BrigmedicEyes
   - BrigmedicJumpsuit
   - BrigmedicBackpack
   - BrigmedicOuterClothing
+  - GroupTankHarness
   - BrigmedicShoes
   - BrigmedicBelt
   - SurvivalSecurity

@@ -15,6 +15,7 @@ loadout-group-senior-researcher-shoes = Ведущий учёный, обувь
 loadout-group-senior-researcher-gloves = Ведущий учёный, перчатки
 # Security
 loadout-group-brigmedic-head = Бригмедик, голова
+loadout-group-brigmedic-eyes = Бригмедик, глаза
 loadout-group-brigmedic-jumpsuit = Бригмедик, комбинезон
 loadout-group-brigmedic-clothing = Бригмедик, верхняя одежда
 loadout-group-brigmedic-backpack = Бригмедик, рюкзак
