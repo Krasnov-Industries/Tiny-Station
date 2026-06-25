@@ -1,8 +1,8 @@
-# Knight Weapons
+# Рыцарское оружие
 
-## Knight's Claymore
-# A holy greatsword blessed for the righteous.
-# Only entities with BibleUserComponent can pick it up or equip it.
+## Рыцарский клеймор
+# Священный двуручный меч для праведников.
+# Поднять или экипировать его могут только сущности с BibleUserComponent.
 
 - type: entity
   parent: [ BaseSword, BaseMinorContraband ]

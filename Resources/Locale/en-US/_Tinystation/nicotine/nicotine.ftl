@@ -1,5 +1,5 @@
 trait-smoker-name = Smoker
-trait-smoker-desc = You already have nicotine addiction, but this trait gives no starting cigarettes.
+trait-smoker-desc = You already have a nicotine addiction, but this trait gives no starting cigarettes.
 
 reagent-name-cytisine = cytisine
 reagent-desc-cytisine = A drug that suppresses nicotine withdrawal symptoms and gradually treats addiction.
