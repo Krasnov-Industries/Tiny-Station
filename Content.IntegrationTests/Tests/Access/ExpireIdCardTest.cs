@@ -41,8 +41,7 @@ namespace Content.IntegrationTests.Tests.Access
             EntityUid ent = default;
             ExpireIdCardComponent expireComp = default!;
             AccessComponent accessComp = default!;
-            var expirationTimeInSeconds = 2.0f;
-            var expireTime = TimeSpan.FromSeconds(expirationTimeInSeconds);
+            var expireTime = SGameTiming.CurTime + TimeSpan.FromSeconds(2.0f);
 
             await Pair.Server.WaitPost(() =>
             {
