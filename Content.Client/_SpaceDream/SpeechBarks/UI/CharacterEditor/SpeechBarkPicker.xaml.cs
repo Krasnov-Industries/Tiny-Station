@@ -39,7 +39,7 @@ public sealed partial class SpeechBarkPicker : BoxContainer
     {
         _updating = true;
 
-        if (profile?.Voice == null)
+        if (profile?.BarkVoice == null)
         {
             BarkDropdown.SelectId(AutoBarkId);
             PreviewButton.Disabled = _barks.Count == 0;
@@ -47,7 +47,7 @@ public sealed partial class SpeechBarkPicker : BoxContainer
             return;
         }
 
-        var index = _barks.FindIndex(bark => bark.ID == profile.Voice.Value.Id);
+        var index = _barks.FindIndex(bark => bark.ID == profile.BarkVoice.Value.Id);
         if (index < 0)
         {
             BarkDropdown.SelectId(AutoBarkId);

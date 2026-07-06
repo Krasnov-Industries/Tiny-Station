@@ -15,7 +15,7 @@ public sealed partial class AwakeningTriggerSystem : EntitySystem
 {
     [Dependency] private IConfigurationManager _cfg = default!;
     [Dependency] private IGameTiming _timing = default!;
-    [Dependency] private IMapManager _mapManager = default!;
+    [Dependency] private SharedMapSystem _map = default!;
     [Dependency] private TagSystem _tag = default!;
     [Dependency] private WhaleThreatSystem _threat = default!;
     [Dependency] private NoiseSourceSystem _noise = default!;
@@ -99,6 +99,6 @@ public sealed partial class AwakeningTriggerSystem : EntitySystem
 
     private bool HasGridAt(MapCoordinates coords)
     {
-        return _mapManager.TryFindGridAt(coords, out _, out _);
+        return _map.TryFindGridAt(coords, out _, out _);
     }
 }

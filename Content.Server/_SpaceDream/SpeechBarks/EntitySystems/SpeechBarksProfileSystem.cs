@@ -22,7 +22,7 @@ public sealed partial class SpeechBarksProfileSystem : EntitySystem
 
     private void OnPlayerSpawnComplete(PlayerSpawnCompleteEvent args)
     {
-        AssignBark(args.Mob, args.Profile.Voice);
+        AssignBark(args.Mob, args.Profile.BarkVoice);
     }
 
     private void AssignBark(EntityUid uid, ProtoId<BarkPrototype>? profileBark)
