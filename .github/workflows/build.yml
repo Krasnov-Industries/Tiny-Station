@@ -1,0 +1,75 @@
+name: Build Debug
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Cache NuGet
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', '**/Directory.Packages.props') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
+
+      - name: Initialize
+        run: python RUN_THIS.py
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build Packaging
+        run: dotnet build Content.Packaging --configuration Debug --no-restore
+
+      - name: Package Server
+        run: dotnet run --project Content.Packaging server --platform linux-x64
+
+      - name: Package Client
+        run: dotnet run --project Content.Packaging client --no-wipe-release
+
+      - name: Show build output
+        run: |
+          echo "=== Searching release directories ==="
+          find . -type d -name "release"
+          echo "=== Top level directories ==="
+          find . -maxdepth 2 -type d
+
+      - name: Upload everything useful
+        uses: actions/upload-artifact@v4
+        with:
+          name: TinyStation-Debug
+          retention-days: 7
+          path: |
+            release/**
+            Content.Client/bin/**
+            Content.Server/bin/**
+            Content.Packaging/bin/**
