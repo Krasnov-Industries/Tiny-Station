@@ -74,6 +74,3 @@ marking-VoxTailDocked-vox_tail_docked = Вокс, Хвост (Рудимента
 marking-VoxTailDocked = Вокс, Хвост (Рудиментарный)
 marking-VoxTailSplit-vox_tail_split = Вокс, Хвост (Разделённый)
 marking-VoxTailSplit = Вокс, Хвост (Разделённый)
-
-marking-TattooVoxNightlingHead-tattoo_nightling_head = Вокс, Голова, Татуировка (Найтлинг)
-

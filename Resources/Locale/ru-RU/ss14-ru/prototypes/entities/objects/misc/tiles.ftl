@@ -229,8 +229,7 @@ ent-FloorTileItemAstroIronsand = астро-железный песок
 ent-FloorTileItemAstroIronsandBorderless = безграничный астро-железный песок
     .desc = Фальшивый красный песок. Импортирован с фальшивого Марса.
 
-ent-FloorTileItemBase = { ent-BaseItem }
-    .desc = Может послужить неплохим метательным оружием.
+
 
 ent-FloorTileItemDarkHorizontalSlatsBordered = тёмная горизонтальная реечная плитка с бордюром
     .desc = { ent-FloorTileItemDark.desc }

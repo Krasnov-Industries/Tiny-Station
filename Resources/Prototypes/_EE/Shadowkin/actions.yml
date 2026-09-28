@@ -5,10 +5,12 @@
   description: Leave a shadow at this spot. You can teleport back to it later.
   components:
   - type: Action
-    icon:
-      sprite: _EE/Shadowkin/Interface/Actions/shadowkin_icons.rsi
-      state: shadeskip
     useDelay: 60
+  - type: Sprite
+    sprite: _EE/Shadowkin/Interface/Actions/shadowkin_icons.rsi
+    layers:
+    - state: shadeskip
+      map: ["enum.ActionVisuals.Icon"]
   - type: InstantAction
     event: !type:PlaceShadowAnchorEvent
 
@@ -19,8 +21,10 @@
   description: Instantly teleport to your shadow.
   components:
   - type: Action
-    icon:
-      sprite: _EE/Shadowkin/Interface/Actions/shadowkin_icons.rsi
-      state: darkswap
+  - type: Sprite
+    sprite: _EE/Shadowkin/Interface/Actions/shadowkin_icons.rsi
+    layers:
+    - state: darkswap
+      map: ["enum.ActionVisuals.Icon"]
   - type: InstantAction
     event: !type:RecallShadowAnchorEvent

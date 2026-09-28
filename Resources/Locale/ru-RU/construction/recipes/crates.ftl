@@ -4,6 +4,3 @@ construction-recipe-box-cardboard = маленькая картонная кор
 construction-recipe-box-tote = контейнер печатных плат
 
 construction-recipe-box-cardboard-small = маленькая картонная коробка
-
-construction-recipe-crate-freezer = холодильник-ящик
-

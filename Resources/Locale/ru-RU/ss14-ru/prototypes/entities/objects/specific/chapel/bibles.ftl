@@ -19,8 +19,7 @@ ent-BibleHonk = радость хонкоматери
 ent-BibleRatvar = скрижаль Ратвара
     .desc = Святая реликвия Заводного Культа, благословлённая Заводной Справедливостью, Ратваром.
 
-ent-Bible = космическая библия
-    .desc = Новая межзвёздная версия 2340.
+
 
 ent-EvilLightEffect = { ent-HolyLightEffect }
     .desc = { ent-HolyLightEffect.desc }

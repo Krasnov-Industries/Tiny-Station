@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Content.IntegrationTests.Fixtures;
 using Content.Server.Body.Systems;
-using Content.Server.Station.Systems;
+using Content.Shared.Station.Systems;
 using Content.Shared.Humanoid;
 using Content.Shared.Inventory;
 using Content.Shared.Preferences;

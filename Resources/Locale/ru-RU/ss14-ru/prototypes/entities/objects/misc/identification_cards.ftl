@@ -136,8 +136,7 @@ ent-UniversalIDCard = универсальная ID-карта
     .desc = ID-карта, которая позволит вам осуществить свои самые сокровенные желания.
     .suffix = Админ
 
-ent-IDCardStandard = идентификационная карта
-    .desc = Карта, необходимая для доступа к различным областям станции.
+
 
 ent-NinjaIDCard = ID-карта ниндзя
     .desc = { ent-IDCardStandard.desc }

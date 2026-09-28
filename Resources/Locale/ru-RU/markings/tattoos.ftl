@@ -44,6 +44,3 @@ marking-TattooEyeshadowVoxLarge-tattoo_eyeshadow_Large = Тени для век 
 marking-TattooEyeshadowVoxLarge = Тени для век (Большие)
 marking-TattooVoxTailRing-tattoo_vox_tail_ring = Кольцо для хвоста
 marking-TattooVoxTailRing = Кольцо на хвосте
-
-marking-TattooHiveChest-tattoo_hive_chest = Татуировка, спина (Улей)
-

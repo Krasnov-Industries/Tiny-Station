@@ -27,7 +27,7 @@
   parent: BasePlasmamanEnviroGear
   storage:
     back:
-    - BoxMime
+    - BoxSurvival
 
 - type: startingGear
   id: PlasmamanSurvivalExtendedGear

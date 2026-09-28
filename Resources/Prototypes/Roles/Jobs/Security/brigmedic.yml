@@ -10,7 +10,6 @@
     - !type:DepartmentTimeRequirement
       department: Medical
       time: 5h
-  weight: 5
   startingGear: BrigmedicGear
   icon: "JobIconBrigmedic"
   supervisors: job-supervisors-hos

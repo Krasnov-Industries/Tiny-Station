@@ -1,5 +1,4 @@
-﻿ent-BaseWhistle = свисток
-    .desc = Кто-то забыл выключить чайник?
+﻿
 ent-Whistle = { ent-BaseWhistle }
     .desc = { ent-BaseWhistle.desc }
 ent-SecurityWhistle = { ent-BaseWhistle }

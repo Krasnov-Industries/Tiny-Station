@@ -76,7 +76,3 @@ ent-PlayerSyndicateAssaultBorgDerelict = { ent-SyndicateAssaultBorgChassisDereli
 ent-PlayerBorgSyndicateDerelictGhostRole = { ent-PlayerSyndicateAssaultBorgDerelict }
     .suffix = Роль призрака
     .desc = { ent-PlayerSyndicateAssaultBorgDerelict.desc }
-
-ent-AiHeld = { "" }
-    .desc = Компоненты добавляются/удаляются из сущности, которая помещается в ядро ИИ.
-

@@ -1,0 +1,6 @@
+# Complete names retained for the fork's syndicate agents and derelict borgs.
+- type: localizedDataset
+  id: NamesDeathCommando
+  values:
+    prefix: names-death-commando-dataset-
+    count: 158

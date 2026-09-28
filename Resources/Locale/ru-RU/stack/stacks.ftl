@@ -391,11 +391,7 @@ stack-ironsand-concrete-smooth = гладкий бетонный пол из ж�
 
 stack-ironsand-concrete-tile = железопесчаная бетонная плитка
 
-stack-steel = { $amount ->
-    [1] лист
-    [few] листа
-    *[other] листов
-} стали
+
 
 stack-steel-horizontal-slats-tile-bordered = стальная горизонтальная реечная плитка с бордюром
 

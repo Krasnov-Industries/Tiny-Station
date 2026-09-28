@@ -6,3 +6,10 @@
   defaultSkinTone: "#c0967f"
   dollPrototype: AppearanceFelinid
   skinColoration: HumanToned
+  defaultSoundsBySex:
+  - MaleFelinid
+  - FemaleFelinid
+  - MaleFelinid
+  voices:
+  - MaleFelinid
+  - FemaleFelinid

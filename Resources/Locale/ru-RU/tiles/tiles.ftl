@@ -175,7 +175,7 @@ tiles-ironsand-tile = плитка из железного песка
 
 tiles-rcd-plating = РСУ покрытие
 
-tiles-space = космос
+
 
 tiles-steel-floor-horizontal-slats-bordered = стальная горизонтальная реечная плитка с бордюром
 

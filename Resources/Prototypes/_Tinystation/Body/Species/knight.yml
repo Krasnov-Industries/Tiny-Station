@@ -107,10 +107,7 @@
     allowedEmotes: [Pray]
   - type: ZombieImmune
   - type: Vocal
-    sounds:
-      Male: Knight
-      Female: Knight
-      Unsexed: Knight
+    emoteSounds: Knight
   - type: KnightAccent
   - type: BibleUser
   - type: KnightLayOnHands

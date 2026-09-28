@@ -17,7 +17,7 @@ using Content.Shared.Random.Helpers;
 using Content.Shared.StatusEffectNew;
 using Content.Shared.Stunnable;
 using Content.Shared.Tag;
-using Content.Shared.Timing;
+using Content.Shared.Timing.Systems;
 using Content.Shared.Traits.Assorted;
 using Content.Shared.Weapons.Melee.Events;
 using Robust.Shared.Audio;
@@ -192,7 +192,8 @@ public abstract partial class SharedFlashSystem : EntitySystem
         {
             _appearance.SetData(ent.Owner, FlashVisuals.Burnt, true); // TODO: Reset if charges are refilled.
             _tag.AddTag(ent.Owner, TrashTag);
-            _popup.PopupClient(Loc.GetString("flash-component-becomes-empty"), user);
+            if (user != null)
+                _popup.PopupEntity(Loc.GetString("flash-component-becomes-empty"), user.Value, user);
         }
 
         return true;

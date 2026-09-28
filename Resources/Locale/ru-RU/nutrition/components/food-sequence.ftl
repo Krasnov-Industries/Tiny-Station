@@ -163,7 +163,7 @@ food-sequence-taco-gen = тако с { $content }
 
 food-sequence-skewer-gen = шашлык с { $content }
 
-food-sequence-no-space = Вы не можете положить больше!
+
 
 # GENERAL
 

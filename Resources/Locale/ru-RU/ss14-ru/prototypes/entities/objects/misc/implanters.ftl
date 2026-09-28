@@ -72,8 +72,7 @@ ent-DeathRattleImplanterCentcomm = имплантер "предсмертный 
     .desc = { ent-BaseImplantOnlyImplanter.desc }
     .suffix = Предсмертный хрип Центком
 
-ent-BaseImplanter = имплантер
-    .desc = { ent-BaseItem.desc }
+
 
 ent-VoiceMaskImplanter = имплантер "Голосовая маска"
     .desc = { ent-BaseImplantOnlyImplanterSyndi.desc }

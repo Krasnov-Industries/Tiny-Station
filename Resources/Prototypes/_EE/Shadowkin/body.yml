@@ -190,7 +190,7 @@
       types:
         Slash: 5
   - type: Temperature
-    specificHeat: 46
+    specificHeat: 3285.7143 # Keep 46/42 of the new humanoid heat capacity.
   - type: TemperatureDamage
     heatDamageThreshold: 330
     coldDamageThreshold: 195
@@ -220,10 +220,7 @@
         Slash: -0.07
         Piercing: -0.07
   - type: Vocal
-    sounds:
-      Male: UnisexShadowkin
-      Female: UnisexShadowkin
-      Unsexed: UnisexShadowkin
+    emoteSounds: UnisexShadowkin
   # Сохраняем speechSounds: Alto из BaseSpeciesMob, иначе бип-блип в чате пропадает
   - type: Speech
     speechSounds: Alto

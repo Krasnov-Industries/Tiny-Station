@@ -101,10 +101,7 @@
     speechVerb: Felinid
     allowedEmotes: [ 'CatMeow', 'CatHisses', 'Growl', 'Wiwi' ]
   - type: Vocal
-    sounds:
-      Male: MaleFelinid
-      Female: FemaleFelinid
-      Unsexed: MaleFelinid
+    emoteSounds: MaleFelinid
   - type: Damageable
     damageModifierSet: Felinid
   - type: MeleeWeapon
@@ -116,8 +113,8 @@
         Piercing: 2
         Slash: 3
   - type: Temperature
-    currentTemperature: 310.15
-    specificHeat: 43
+    temperature: 310.15
+    specificHeat: 3071.4286 # Keep 43/42 of the new humanoid heat capacity.
   - type: TemperatureDamage
     heatDamageThreshold: 320
     coldDamageThreshold: 250
@@ -127,7 +124,7 @@
     heatDamage:
       types:
         Heat: 1.8
-  - type: TemperatureProtection
+  - type: DirectionalTemperatureProtection
     heatingCoefficient: 1.1
     coolingCoefficient: 0.7
   - type: PassiveDamage

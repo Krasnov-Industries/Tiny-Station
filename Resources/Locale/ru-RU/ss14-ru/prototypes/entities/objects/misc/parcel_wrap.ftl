@@ -11,8 +11,7 @@ ent-ParcelWrapTrash = обёрточная бумага
 ent-BaseWrappedParcel = { ent-BasePaperLabelable }
     .desc = { ent-BasePaperLabelable.desc }
 
-ent-ParcelWrap = обёрточная бумага
-    .desc = Бумага, которой упаковывают вещи для транспортировки.
+
 
 ent-WrappedParcelHumanoid = завернутая посылка
     .desc = Что-то завёрнутое в бумагу. Подозрительно гуманоидной формы.

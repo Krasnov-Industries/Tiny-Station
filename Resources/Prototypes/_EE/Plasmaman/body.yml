@@ -121,9 +121,9 @@
     - id: SheetPlasma1
       amount: 8
   - type: Temperature
-    currentTemperature: 270.15
-    specificHeat: 46
-    atmosTemperatureTransferEfficiency: 0.02
+    temperature: 270.15
+    specificHeat: 3285.7143 # Keep 46/42 of the new humanoid heat capacity.
+    thermalConductivity: 30 # Keep 20% of the default atmospheric heat transfer.
   - type: TemperatureSpeed
     thresholds:
       1: 1.0

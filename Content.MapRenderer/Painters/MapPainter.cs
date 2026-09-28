@@ -9,6 +9,7 @@ using Content.Client.Markers;
 using Content.IntegrationTests;
 using Content.IntegrationTests.Pair;
 using Content.Server.GameTicking;
+using Content.Server.Mind;
 using Robust.Client.GameObjects;
 using Robust.Server.GameObjects;
 using Robust.Server.Player;
@@ -172,7 +173,7 @@ namespace Content.MapRenderer.Painters
 
                 if (_map is RenderMapPrototype)
                 {
-                    var mapId = sEntityManager.System<GameTicker>().DefaultMap;
+                    var mapId = sEntityManager.System<ServerGameTicker>().DefaultMap;
                     _grids = mapSys.GetAllGrids(mapId).ToArray();
                 }
 
@@ -234,6 +235,9 @@ namespace Content.MapRenderer.Painters
             if (_pair == null)
                 throw new InvalidOperationException("Instance not initialized!");
 
+            // Tinystation added start - detach minds before the render world's maps are destroyed
+            await _pair.Server.WaitPost(() => _pair.Server.System<MindSystem>().WipeAllMinds());
+            // Tinystation added end
             await _pair.CleanReturnAsync();
         }
 

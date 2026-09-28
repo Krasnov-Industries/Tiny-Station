@@ -30,7 +30,7 @@
     baseWalkSpeed: 7
   - type: WarpPoint
     follow: true
-    location: space leviathan
+    location: ent-SpaceLeviathan
   - type: InputMover
   - type: MobMover
   - type: CombatMode

@@ -11,7 +11,7 @@
   - type: PressureProtection
     highPressureMultiplier: 0.02
     lowPressureMultiplier: 1000
-  - type: TemperatureProtection
+  - type: DirectionalTemperatureProtection
     heatingCoefficient: 0.001
     coolingCoefficient: 0.05
   - type: FireProtection

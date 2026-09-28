@@ -8,3 +8,9 @@
   femaleFirstNames: NamesKnightFirst
   dollPrototype: AppearanceKnightPerson
   skinColoration: TintedHues
+  defaultSoundsBySex:
+  - Knight
+  - Knight
+  - Knight
+  voices:
+  - Knight

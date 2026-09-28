@@ -17,3 +17,9 @@
   maxAge: 250
   maleFirstNames: names_shadowkin
   femaleFirstNames: names_shadowkin
+  defaultSoundsBySex:
+  - UnisexShadowkin
+  - UnisexShadowkin
+  - UnisexShadowkin
+  voices:
+  - UnisexShadowkin

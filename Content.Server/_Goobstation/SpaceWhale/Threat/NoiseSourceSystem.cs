@@ -1,4 +1,4 @@
-using Content.Server.Shuttles.Components;
+using Content.Shared.Shuttles.Components;
 using Content.Shared.CCVar;
 using Content.Shared.Humanoid;
 using Content.Shared.Mobs.Components;

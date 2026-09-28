@@ -29,8 +29,7 @@ ent-WeaponLauncherAdmemeImmovableRodSlow = пускатель неподвижн
     .desc = Стреляет неподвижными жезлами.
     .suffix = Адмемы
 
-ent-BaseWeaponLauncher = BaseWeaponLauncher
-    .desc = Дерзай — налетай, целься и стреляй.
+
 
 ent-WeaponLauncherHydraLethal = { ent-WeaponLauncherHydra }
     .desc = { ent-WeaponLauncherHydra.desc }

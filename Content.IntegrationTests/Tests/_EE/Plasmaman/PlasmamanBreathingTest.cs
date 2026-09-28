@@ -1,7 +1,7 @@
 using Content.IntegrationTests.Fixtures;
 using Content.Server.Body.Components;
 using Content.Server.Body.Systems;
-using Content.Server.Station.Systems;
+using Content.Shared.Station.Systems;
 using Content.Shared.Atmos.Components;
 using Content.Shared.Body.Components;
 using Content.Shared.Humanoid;

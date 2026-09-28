@@ -18,7 +18,7 @@ hand-labeler-ui-clear-label-text = Очистить
 
 # When the hand labeler applies a label successfully
 
-hand-labeler-ui-header = Ручной этикетировщик
+
 
 # The content of the label in the UI above the text entry input.
 

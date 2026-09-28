@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 using Content.Server._Tinystation.Speech.Components;
-using Content.Server.Speech.EntitySystems;
+using Content.Shared.Speech.EntitySystems;
 using Content.Shared.Speech;
 using Robust.Shared.Random;
 
@@ -36,8 +36,8 @@ public sealed partial class KnightAccentSystem : EntitySystem
         return msg;
     }
 
-    private void OnAccentGet(EntityUid uid, KnightAccentComponent component, AccentGetEvent args)
+    private void OnAccentGet(Entity<KnightAccentComponent> ent, ref AccentGetEvent args)
     {
-        args.Message = Accentuate(args.Message, component);
+        args.Message = Accentuate(args.Message, ent.Comp);
     }
 }

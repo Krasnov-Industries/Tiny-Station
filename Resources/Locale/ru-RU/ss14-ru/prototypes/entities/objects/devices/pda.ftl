@@ -168,8 +168,7 @@ ent-WizardPDA = КПК волшебника
 ent-ScurretPDA = { ent-ClearPDA }
     .desc = Временный КПК, выдаваемый временным слизенькам. Не делает ничего особенного. Вава!
 
-ent-BasePDA = КПК
-    .desc = Ассистент по персональным данным.
+
 
 ent-ChameleonAgentPDA = { ent-ChameleonPDA }
     .desc = { ent-ChameleonPDA.desc }

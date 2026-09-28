@@ -104,6 +104,8 @@ ghost-role-information-salvage-carp-description = Defend the loot inside the sal
 ghost-role-information-sentient-carp-name = Sentient Carp
 ghost-role-information-sentient-carp-description = Help the dragon flood the station with carps!
 
+ghost-role-information-sentient-sharkminnow-name = Sentient Sharkminnow
+
 ghost-role-information-willow-name = Willow the Kangaroo
 ghost-role-information-willow-description = You're a kangaroo named Willow! Willow likes to box.
 
@@ -356,3 +358,6 @@ ghost-role-information-knight-description = A noble warrior bound by honor and s
 
 ghost-role-information-knight-closet-name = Closet Knight
 ghost-role-information-knight-closet-description = A knight from a bygone era, discovered in an unlikely place. Restore your honor or conquer the station!
+
+ghost-role-information-space-changeling-name = Elder Headslug
+ghost-role-information-space-changeling-description = An adult changeling headslug, eager to assimilate crew members and ready to hide within the station. This headslug is especially frail and needs to find a dead body to assume a humanoid appearance.

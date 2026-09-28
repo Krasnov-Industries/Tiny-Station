@@ -1,4 +1,4 @@
-using Content.Server.Bible.Components;
+using Content.Shared.Bible.Components;
 using Content.Server.Popups;
 using Content.Shared.Item;
 using Content.Shared.Inventory.Events;

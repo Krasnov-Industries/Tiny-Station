@@ -19,7 +19,3 @@ ent-CableApcExtensionUncuttable = { ent-CableApcExtension }
     .desc = { ent-CableApcExtension.desc }
 ent-CableDet = детонационный шнур
     .desc = Спагетти для людей, ненавидящих стены.
-
-ent-CablePhysBase = { "" }
-    .desc = { "" }
-

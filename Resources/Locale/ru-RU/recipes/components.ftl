@@ -6,6 +6,3 @@ construction-graph-component-power-cell = батарейка
 construction-graph-component-apc-electronics = микросхема ЛКП
 construction-graph-component-payload-trigger = триггер
 construction-graph-component-borg-brain = ММИ или позитронный мозг
-
-construction-graph-component-any-computer-circuit-board = любая консольная плата
-

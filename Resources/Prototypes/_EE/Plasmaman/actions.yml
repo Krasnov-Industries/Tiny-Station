@@ -6,8 +6,10 @@
   components:
   - type: Action
     useDelay: 15
-    icon:
-      sprite: Interface/Actions/jump.rsi
-      state: icon
+  - type: Sprite
+    sprite: Interface/Actions/jump.rsi
+    layers:
+    - state: icon
+      map: ["enum.ActionVisuals.Icon"]
   - type: InstantAction
     event: !type:PlasmamanDashEvent {}

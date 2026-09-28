@@ -147,7 +147,7 @@ admin-trick-snap-joints-description = Удаляет все физические
 admin-trick-minigun-fire-description = Заставляет целевое оружие стрелять как миниган (очень быстро).
 admin-trick-set-bullet-amount-description = Быстро устанавливает значение количества незаспавненных патронов в оружии.
 
-admin-smite-chess-self = Вы чувствуете себя необычайно маленьким.
+
 
 admin-smite-kill-sign-hidden-description = Накладывает на игрока метку смерти для его товарищей. Скрыта от целевого игрока.
 

@@ -116,8 +116,7 @@ ent-BulletLaserWindowPiercingMagnum = пролетающий окна заряд
 ent-EnergyCrossbowBolt = энергозаряд
     .desc = Будет больно.
 
-ent-MuzzleFlashEffect = { "" }
-    .desc = { "" }
+
 
 ent-StickyHandPalm = ладонь руки липучки
     .desc = { ent-GrapplingHook.desc }

@@ -43,12 +43,19 @@ public sealed class LogWindowTest : InteractionTest
         var refresh = logWindow.Logs.RefreshButton;
         var cont = logWindow.Logs.LogsContainer;
 
+        async Task SearchForLog(Guid logGuid, string expectedMessage)
+        {
+            await Client.WaitPost(() => search.Text = logGuid.ToString());
+            await ClickControl(refresh);
+
+            await RunUntilSynced();
+            // Tinystation edit start - wait for the asynchronous EUI response
+            await WaitForSearchResult(cont, expectedMessage);
+            // Tinystation edit end
+        }
+
         // Search for the log we added earlier.
-        await Client.WaitPost(() => search.Text = guid.ToString());
-        await ClickControl(refresh);
-        // Tinystation edit start - wait for async EUI response instead of a fixed tick delay
-        await WaitForSearchResult(cont, $" test log 1: {guid}");
-        // Tinystation edit end
+        await SearchForLog(guid, $" test log 1: {guid}");
 
         // Add a new log
         guid = Guid.NewGuid();
@@ -58,11 +65,7 @@ public sealed class LogWindowTest : InteractionTest
         // Tinystation edit end
 
         // Update the search and refresh
-        await Client.WaitPost(() => search.Text = guid.ToString());
-        await ClickControl(refresh);
-        // Tinystation edit start - wait for async EUI response instead of a fixed tick delay
-        await WaitForSearchResult(cont, $" test log 2: {guid}");
-        // Tinystation edit end
+        await SearchForLog(guid, $" test log 2: {guid}");
     }
 
     // Tinystation added start - shared waits for async admin log persistence and EUI updates

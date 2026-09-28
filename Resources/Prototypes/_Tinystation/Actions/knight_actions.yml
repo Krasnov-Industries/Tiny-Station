@@ -7,9 +7,11 @@
   - type: Action
     useDelay: 45
     itemIconStyle: BigAction
-    icon:
-      sprite: _Tinystation/Interface/Actions/knight_actions.rsi
-      state: lay_on_hands
+  - type: Sprite
+    sprite: _Tinystation/Interface/Actions/knight_actions.rsi
+    layers:
+    - state: lay_on_hands
+      map: ["enum.ActionVisuals.Icon"]
   - type: TargetAction
     repeat: false
     deselectOnMiss: true
@@ -32,8 +34,10 @@
   - type: Action
     useDelay: 15
     itemIconStyle: BigAction
-    icon:
-      sprite: _Tinystation/Interface/Actions/knight_actions.rsi
-      state: righteous_fury
+  - type: Sprite
+    sprite: _Tinystation/Interface/Actions/knight_actions.rsi
+    layers:
+    - state: righteous_fury
+      map: ["enum.ActionVisuals.Icon"]
   - type: InstantAction
     event: !type:KnightRighteousFuryEvent

@@ -110,8 +110,7 @@ ent-BoxFolderBaseThreePapers = { ent-BoxFolderBaseEmpty }
     .desc = { ent-BoxFolderBaseEmpty.desc }
     .suffix = { ent-BoxFolderFillThreePapers.suffix }
 
-ent-BoxFolderNuclearCodes = папка с кодами ядерной аутентификации
-    .desc = { ent-BaseItem.desc }
+
 
 ent-BoxFolderPlasticClipboardThreePapers = { ent-BoxFolderPlasticClipboardEmpty }
     .desc = { ent-BoxFolderPlasticClipboardEmpty.desc }
